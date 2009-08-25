@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.ImageView;
+import android.graphics.BitmapFactory;
 import org.googlecode.userapi.User;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.R;
@@ -43,18 +45,27 @@ public class FriendsListAdapter extends BaseAdapter {
         layoutInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         VkontakteAPI api = CGuiTest.api;
         try {
-            friends = api.getFriends(api.id, 0, 15, VkontakteAPI.friendsTypes.friends);
+            friends = api.getFriends(api.id, 0, 5, VkontakteAPI.friendsTypes.friends).getList();
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (JSONException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 
     public View getView(int pos, View v, ViewGroup p) {
         View view = layoutInflater.inflate(layout, null);
         TextView name = (TextView) view.findViewById(R.id.name);
-        name.setText(friends.get(pos).getUserName());
+        ImageView photo = (ImageView) view.findViewById(R.id.photo);
+        User user = friends.get(pos);
+        name.setText(user.getUserName());
+            try {
+                byte[] photoByteArray = user.getUserPhoto();
+                photo.setImageBitmap(BitmapFactory.decodeByteArray(photoByteArray, 0, photoByteArray.length));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         return view;
     }
 
