@@ -18,9 +18,9 @@ public class CFriendsTab extends ListActivity implements AbsListView.OnScrollLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.friend_list);
+         setContentView(R.layout.friend_list);
         adapter = new FriendsListAdapter(this, R.layout.friend_row);
-        setListAdapter(adapter);
+        setListAdapter(adapter); 
         getListView().setOnScrollListener(this);
         TextView tv = (TextView) findViewById(R.id.new_counter);
         try {

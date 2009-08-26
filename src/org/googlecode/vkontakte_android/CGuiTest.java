@@ -4,6 +4,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.Gallery;
 import android.widget.Toast;
@@ -22,6 +23,8 @@ public class CGuiTest extends TabActivity {
 
         api = new VkontakteAPI();
         final LoginDialog ld = new LoginDialog(this);
+        ((EditText)ld.findViewById(R.id.login)).setText("fake4test@gmail.com");
+        ((EditText)ld.findViewById(R.id.pass)).setText("qwerty");
         ld.show();
         ld.setOnClick(new View.OnClickListener() {
             public void onClick(View view) {
