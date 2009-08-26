@@ -28,6 +28,23 @@ public class CGuiTest extends TabActivity {
                 try {
                     if (api.login(ld.getLogin(), ld.getPass())) {
                         ld.dismiss();
+// load icons from the files
+                        CImagesManager.loadImages(CGuiTest.this);
+
+                        final TabHost tabHost = getTabHost();
+
+                        tabHost.addTab(tabHost.newTabSpec("I")
+                                .setIndicator(getResources().getString(R.string.i))
+                                .setContent(new Intent(CGuiTest.this, CMeTab.class)));
+
+                        tabHost.addTab(tabHost.newTabSpec("Friends")
+                                .setIndicator(getResources().getString(R.string.friends))
+                                .setContent(new Intent(CGuiTest.this, CFriendsTab.class)));
+
+                        tabHost.addTab(tabHost.newTabSpec("Messages")
+                                .setIndicator(getResources().getString(R.string.messages))
+                                .setContent(new Intent(CGuiTest.this, CMessagesTab.class)));
+                        
                     } else {
                         Toast.makeText(getApplicationContext(), "login/pass incorrect", Toast.LENGTH_SHORT).show();
                     }
@@ -38,22 +55,6 @@ public class CGuiTest extends TabActivity {
             }
         });
         
-        // load icons from the files
-        CImagesManager.loadImages(this);
-        
-        final TabHost tabHost = getTabHost();
-            
-        tabHost.addTab(tabHost.newTabSpec("I")
-                .setIndicator(getResources().getString(R.string.i))
-                .setContent(new Intent(this, CMeTab.class)));
-        
-        tabHost.addTab(tabHost.newTabSpec("Friends")
-                .setIndicator(getResources().getString(R.string.friends))
-                .setContent(new Intent(this, CFriendsTab.class)));
-
-        tabHost.addTab(tabHost.newTabSpec("Messages")
-                .setIndicator(getResources().getString(R.string.messages))
-                .setContent(new Intent(this, CMessagesTab.class)));
 
     }
 }
