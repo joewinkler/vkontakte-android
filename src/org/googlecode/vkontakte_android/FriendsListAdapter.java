@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.ImageView;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import org.googlecode.userapi.User;
 import org.googlecode.userapi.VkontakteAPI;
@@ -54,19 +55,17 @@ public class FriendsListAdapter extends BaseAdapter {
     }
 
     public View getView(int pos, View v, ViewGroup p) {
-        View view = layoutInflater.inflate(layout, null);
-        TextView name = (TextView) view.findViewById(R.id.name);
-        ImageView photo = (ImageView) view.findViewById(R.id.photo);
-        User user = friends.get(pos);
-        name.setText(user.getUserName());
-            try {
-                byte[] photoByteArray = user.getUserPhoto();
-                photo.setImageBitmap(BitmapFactory.decodeByteArray(photoByteArray, 0, photoByteArray.length));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        return view;
+ 
+    	User user = friends.get(pos);
+    	Bitmap bm = null;
+    	try {
+            byte[] photoByteArray = user.getUserPhoto();
+            bm = BitmapFactory.decodeByteArray(photoByteArray, 0, photoByteArray.length);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    	
+        return CFriendFactory.getFriendView(context, user.getUserName(), bm, user.isOnline());
     }
 
 
