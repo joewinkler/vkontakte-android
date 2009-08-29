@@ -23,15 +23,15 @@ public class CMeTab extends Activity {
         setContentView(R.layout.main);
 
         TextView updates = (TextView) findViewById(updates_counter);
-        VkontakteAPI api = CGuiTest.api;
-        try {
-            ChangesHistory history = api.getChangesHistory();
-            updates.setText("messages: "+history.getMessagesCount()+", friends: "+history.getFriendsCount()+", photos: "+history.getPhotosCount());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();  
-        }
+//        VkontakteAPI api = CGuiTest.api;
+//        try {
+//            ChangesHistory history = api.getChangesHistory();
+//            updates.setText("messages: "+history.getMessagesCount()+", friends: "+history.getFriendsCount()+", photos: "+history.getPhotosCount());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 
         ImageButton b = (ImageButton) findViewById(R.id.ImageButton01);
         b.setImageDrawable(new BitmapDrawable(CImagesManager.getBitmap("ok")));

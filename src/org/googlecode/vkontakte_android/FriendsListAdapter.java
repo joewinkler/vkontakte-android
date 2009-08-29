@@ -1,77 +1,39 @@
 package org.googlecode.vkontakte_android;
 
-import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.database.Cursor;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
-import android.widget.ImageView;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import org.googlecode.userapi.User;
-import org.googlecode.userapi.VkontakteAPI;
-import org.googlecode.vkontakte_android.R;
-import org.json.JSONException;
+import org.googlecode.vkontakte_android.database.UserDao;
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 
-public class FriendsListAdapter extends BaseAdapter {
-
-    private List<User> friends = new LinkedList<User>();
+public class FriendsListAdapter extends ResourceCursorAdapter {
     private Context context;
-    private int layout;
-    private LayoutInflater layoutInflater;
     private boolean loading = false;
 
-    public int getCount() {
-        return friends.size();
-    }
-
-    public Object getItem(int pos) {
-        return (Object) pos;
-    }
-
-    public long getItemId(int pos) {
-        return pos;
-    }
-
-    public FriendsListAdapter(Context context, int layout) {
+    public FriendsListAdapter(Context context, int layout, Cursor cursor) {
+        super(context, layout, cursor);
         this.context = context;
-        this.layout = layout;
-        layoutInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        VkontakteAPI api = CGuiTest.api;
-        try {
-            friends = api.getFriends(api.id, 0, 5, VkontakteAPI.friendsTypes.friends).getList();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
-    public View getView(int pos, View v, ViewGroup p) {
-  
-    	User user = friends.get(pos);
-    	Bitmap bm = null;
-    	try {
-            byte[] photoByteArray = user.getUserPhoto();
-            bm = BitmapFactory.decodeByteArray(photoByteArray, 0, photoByteArray.length);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    	
-        return CFriendFactory.getFriendView(context, user.getUserName(), bm, user.isOnline());
-    }
-
-
-    public void prepareData() {
-//        this.count += 1;
-//        loading = true;
-//        this.notifyDataSetChanged();
+    @Override
+    public void bindView(View view, Context context, Cursor cursor) {
+        UserDao userDao = new UserDao(cursor);
+//    	Bitmap bm = null;
+//    	try {
+//            byte[] photoByteArray = userDao.getUserPhoto();
+//            bm = BitmapFactory.decodeByteArray(photoByteArray, 0, photoByteArray.length);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        TextView name = (TextView) view.findViewById(R.id.name);
+        TextView status = (TextView) view.findViewById(R.id.status);
+        name.setText(userDao.getUserName());
+        String statusText = "";
+        if (userDao.isNewFriend()) statusText+="new ";
+        if (userDao.isOnline()) statusText+="online";
+        else statusText+="offline";
+        status.setText(statusText);
     }
 }

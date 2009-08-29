@@ -47,14 +47,14 @@ public class MessagesListAdapter extends BaseAdapter {
         this.context = context;
         this.layout = layout;
         layoutInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        VkontakteAPI api = CGuiTest.api;
-        try {
-            messages = api.getPrivateMessages(api.id, 0, 5, VkontakteAPI.privateMessagesTypes.inbox);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        VkontakteAPI api = CGuiTest.api;
+//        try {
+//            messages = api.getPrivateMessages(api.id, 0, 5, VkontakteAPI.privateMessagesTypes.inbox);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public View getView(int pos, View v, ViewGroup p) {
