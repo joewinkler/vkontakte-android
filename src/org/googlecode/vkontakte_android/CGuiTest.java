@@ -4,10 +4,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.widget.EditText;
-import android.widget.TabHost;
-import android.widget.Gallery;
-import android.widget.Toast;
+import android.widget.*;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,10 +62,16 @@ public class CGuiTest extends TabActivity {
                                 .setIndicator(getResources().getString(R.string.friends))
                                 .setContent(new Intent(CGuiTest.this, CFriendsTab.class)));
 
+
                         tabHost.addTab(tabHost.newTabSpec("Messages")
                                 .setIndicator(getResources().getString(R.string.messages))
                                 .setContent(new Intent(CGuiTest.this, CMessagesTab.class)));
 
+                        //todo: remove - just P-o-C here
+                        TextView tv = new TextView(getApplicationContext());
+                        tv.setText("321");
+                        setTabIndicatorView(getTabWidget(), 2, tv);
+                        ////////////////////////////////
                     } else {
                         Toast.makeText(getApplicationContext(), "login/pass incorrect", Toast.LENGTH_SHORT).show();
                     }
@@ -80,6 +83,20 @@ public class CGuiTest extends TabActivity {
         });
 
 
+    }
+
+    public void setTabIndicatorView(TabWidget tabWidget, int i, View view) {
+        if (tabWidget.getChildAt(i) instanceof RelativeLayout) {
+            RelativeLayout relativeLayout = (RelativeLayout) tabWidget.getChildAt(i);
+            for (int j = 0; j < relativeLayout.getChildCount(); j++) {
+                if (relativeLayout.getChildAt(j) instanceof ImageView) {
+                    relativeLayout.removeViewAt(j);
+                    //todo: make compound with that remain ImageView and take only TextView as parameter
+                    relativeLayout.addView(view, j);
+                    break;
+                }
+            }
+        }
     }
 
     @Override
