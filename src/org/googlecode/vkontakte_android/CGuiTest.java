@@ -8,12 +8,17 @@ import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.Gallery;
 import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.util.Log;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.userapi.User;
 import org.googlecode.userapi.ListWithTotal;
 import org.googlecode.vkontakte_android.database.UserDao;
+import org.googlecode.vkontakte_android.service.CheckingService;
+
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
 import org.json.JSONException;
 
@@ -102,4 +107,36 @@ public class CGuiTest extends TabActivity {
 
 
     }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+      MenuItem menuitem1 = menu.add(Menu.NONE, 1, Menu.NONE, "Start service");
+      menuitem1.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+
+       @Override
+       public boolean onMenuItemClick(MenuItem item) {
+        Log.d("s", "start!!!");
+        CGuiTest.this.startService(new Intent(CGuiTest.this, CheckingService.class));
+        return false;
+       }
+
+      });
+
+      MenuItem menuitem2 = menu.add(Menu.NONE, 2, Menu.NONE, "Stop service");
+      menuitem2.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+
+       @Override
+       public boolean onMenuItemClick(MenuItem item) {
+        Log.d("s", "stop!!!");
+        CGuiTest.this.stopService(new Intent(CGuiTest.this, CheckingService.class));
+        return false;
+       }
+
+      });
+
+      return super.onCreateOptionsMenu(menu);
+     }
+
+    
 }
