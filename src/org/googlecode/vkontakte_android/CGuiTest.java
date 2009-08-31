@@ -67,6 +67,13 @@ public class CGuiTest extends TabActivity {
                                 .setIndicator(getResources().getString(R.string.messages))
                                 .setContent(new Intent(CGuiTest.this, CMessagesTab.class)));
 
+                        tabHost.addTab(tabHost.newTabSpec("Messages")
+                                .setIndicator(getResources().getString(R.string.messages))
+                                .setContent(new Intent(CGuiTest.this, CMessagesTab.class)));
+                        tabHost.addTab(tabHost.newTabSpec("Messages")
+                                .setIndicator(getResources().getString(R.string.messages))
+                                .setContent(new Intent(CGuiTest.this, CMessagesTab.class)));
+
                         //todo: remove - just P-o-C here
                         TextView tv = new TextView(getApplicationContext());
                         tv.setText("321");
@@ -120,7 +127,7 @@ public class CGuiTest extends TabActivity {
     private void refresh() {
         Log.d("s", "start!!!");
         Toast.makeText(this, "Update started", Toast.LENGTH_SHORT).show();
-        CGuiTest.this.startService(new Intent(CGuiTest.this, CheckingService.class));
+        startService(new Intent(this, CheckingService.class));
     }
 
 
