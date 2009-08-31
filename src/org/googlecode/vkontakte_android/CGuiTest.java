@@ -3,7 +3,7 @@ package org.googlecode.vkontakte_android;
 
 import android.app.TabActivity;
 import android.content.Intent;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.*;
@@ -11,25 +11,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.MenuInflater;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.util.Log;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.graphics.RectF;
+import android.graphics.Color;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.shapes.RoundRectShape;
 import org.googlecode.userapi.VkontakteAPI;
-import org.googlecode.userapi.User;
-import org.googlecode.userapi.ListWithTotal;
-import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.service.CheckingService;
 
-import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_USER_NEW;
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_USER_ONLINE;
-import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.LinkedList;
 
 public class CGuiTest extends TabActivity {
     public static VkontakteAPI api;
@@ -66,7 +63,7 @@ public class CGuiTest extends TabActivity {
                                 .setContent(new Intent(CGuiTest.this, CMeTab.class)));
 
                         tabHost.addTab(tabHost.newTabSpec("Friends")
-                                .setIndicator(getResources().getString(R.string.friends))
+                                .setIndicator(getResources().getString(R.string.friends), getResources().getDrawable(R.drawable.ic_menu_friendslist))
                                 .setContent(new Intent(CGuiTest.this, CFriendsTab.class)));
 
 
@@ -76,19 +73,16 @@ public class CGuiTest extends TabActivity {
 
  
                         //todo: remove - just P-o-C here
-                        final TextView tv = new TextView(getApplicationContext());
-                        tv.setText("321");
-                        setTabIndicatorView(getTabWidget(), 2, tv);
-                        ////////////////////////////////
+                        final TextView tv = TabHelper.injectTabCounter(getTabWidget(), 2, getApplicationContext());
+
                         //todo: register/unregister onResume/onPause
-                        
                         getContentResolver().registerContentObserver(UserapiProvider.USERS_URI, false, new ContentObserver(new Handler()) {
                             @Override
                             public void onChange(boolean b) {
                                 Cursor cursor = getContentResolver().query(UserapiProvider.USERS_URI, null, null, null, null);//todo: change cursor to new only
-                                if (cursor.getCount()==0) tv.setVisibility(View.INVISIBLE);
+                                if (cursor.getCount() == 0) tv.setVisibility(View.INVISIBLE);
                                 else {
-                                    tv.setText(cursor.getCount() + "");
+                                    tv.setText(String.valueOf(cursor.getCount()));
                                     tv.setVisibility(View.VISIBLE);
                                 }
                             }
@@ -104,20 +98,6 @@ public class CGuiTest extends TabActivity {
         });
 
 
-    }
-
-    public void setTabIndicatorView(TabWidget tabWidget, int i, View view) {
-        if (tabWidget.getChildAt(i) instanceof RelativeLayout) {
-            RelativeLayout relativeLayout = (RelativeLayout) tabWidget.getChildAt(i);
-            for (int j = 0; j < relativeLayout.getChildCount(); j++) {
-                if (relativeLayout.getChildAt(j) instanceof ImageView) {
-                    relativeLayout.removeViewAt(j);
-                    //todo: make compound with that remain ImageView and take only TextView as parameter
-                    relativeLayout.addView(view, j);
-                    break;
-                }
-            }
-        }
     }
 
     @Override
@@ -146,37 +126,4 @@ public class CGuiTest extends TabActivity {
         Toast.makeText(this, "Update started", Toast.LENGTH_SHORT).show();
         startService(new Intent(this, CheckingService.class));
     }
-
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//
-//      MenuItem menuitem1 = menu.add(Menu.NONE, 1, Menu.NONE, "Start service");
-//      menuitem1.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-//
-//       @Override
-//       public boolean onMenuItemClick(MenuItem item) {
-//        Log.d("s", "start!!!");
-//        CGuiTest.this.startService(new Intent(CGuiTest.this, CheckingService.class));
-//        return false;
-//       }
-//
-//      });
-
-//      MenuItem menuitem2 = menu.add(Menu.NONE, 2, Menu.NONE, "Stop service");
-//      menuitem2.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-//
-//       @Override
-//       public boolean onMenuItemClick(MenuItem item) {
-//        Log.d("s", "stop!!!");
-//        CGuiTest.this.stopService(new Intent(CGuiTest.this, CheckingService.class));
-//        return false;
-//       }
-//
-//      });
-//
-//      return super.onCreateOptionsMenu(menu);
-//     }
-//
-//    
 }

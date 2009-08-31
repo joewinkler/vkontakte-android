@@ -1,8 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="resfresh" android:id="@+id/refresh"
           android:icon="@drawable/ic_menu_refresh"/>
+    <item android:title="settings" android:id="@+id/settings"
+          android:icon="@android:drawable/ic_menu_preferences"/>
     <item android:title="about" android:id="@+id/about"
           android:icon="@android:drawable/ic_menu_info_details"/>
-    <item android:title="settings" android:id="@+id/settings" />
-
 </menu>
