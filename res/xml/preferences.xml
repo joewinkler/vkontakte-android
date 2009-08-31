@@ -12,7 +12,7 @@
 		<CheckBoxPreference android:key="sound"
 			android:title="@string/sound_title" android:defaultValue="true" />
 
-		<CheckBoxPreference android:key="notif"
+		<CheckBoxPreference android:key="pics"
 			android:title="@string/load_pics_title" android:defaultValue="true" />
 
 

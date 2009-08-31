@@ -16,8 +16,10 @@ import org.json.JSONException;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -27,6 +29,9 @@ public class CheckingService extends Service {
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
     //boolean m_hasConnection = true;
 
+    private static SharedPreferences s_prefs; 
+    
+    
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -35,6 +40,7 @@ public class CheckingService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        s_prefs = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     @Override
@@ -96,7 +102,8 @@ public class CheckingService extends Service {
 
         if (incomingMess > 0) // new incoming messages
         {
-            UpdatesNotifier.notify(getApplicationContext(), "New messages: " + incomingMess);
+        	if (useNotifications(this))
+              UpdatesNotifier.notify(getApplicationContext(), "New messages: " + incomingMess, useSound(this));
             kit.setPreviosUnreadMessNum(res.get(UpdateType.MESSAGES));
         } else // some messages were read by another way
         {
@@ -112,7 +119,8 @@ public class CheckingService extends Service {
             return;
 
         if (incomingFr > 0) {
-            UpdatesNotifier.notify(getApplicationContext(), "New friends: " + incomingFr);
+        	if (useNotifications(this))
+              UpdatesNotifier.notify(getApplicationContext(), "New friends: " + incomingFr, useSound(this));
             kit.setPreviosFriendshipRequestsNum(res.get(UpdateType.FRIENDSHIP_REQ));
         } else {
             kit.setPreviosFriendshipRequestsNum(res.get(UpdateType.MESSAGES));
@@ -127,13 +135,41 @@ public class CheckingService extends Service {
             return;
 
         if (incomingTags > 0) {
-            UpdatesNotifier.notify(getApplicationContext(), "New photo tags: " + incomingTags);
+        	if (useNotifications(this))
+              UpdatesNotifier.notify(getApplicationContext(), "New photo tags: " + incomingTags, useSound(this));
             kit.setPreviosNewPhotoTagsNum(res.get(UpdateType.TAGS));
         } else {
             kit.setPreviosNewPhotoTagsNum(res.get(UpdateType.TAGS));
         }
     }
 
+    // ========= preferences
+	static boolean useSound(Context ctx) {
+
+		return s_prefs.getBoolean("sound", true);
+	}
+
+	static boolean usePics(Context ctx) {
+
+		return s_prefs.getBoolean("pics", true);
+	}
+
+	static boolean useNotifications(Context ctx) {
+
+		return s_prefs.getBoolean("notif", true);
+	}
+
+	static int getRefreshTime(Context ctx) {
+
+		return s_prefs.getInt("period", 30);
+	}
+    
+    private void restartAlarm(int period)
+    {
+      //TODO implement	
+    }
+    
+    
     @Override
     public void onDestroy() {
         Log.d("serv", "service stopped");
