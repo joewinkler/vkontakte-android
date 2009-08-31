@@ -1,5 +1,6 @@
 package org.googlecode.vkontakte_android;
 
+
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.DialogInterface;
@@ -73,13 +74,7 @@ public class CGuiTest extends TabActivity {
                                 .setIndicator(getResources().getString(R.string.messages))
                                 .setContent(new Intent(CGuiTest.this, CMessagesTab.class)));
 
-                        tabHost.addTab(tabHost.newTabSpec("Messages")
-                                .setIndicator(getResources().getString(R.string.messages))
-                                .setContent(new Intent(CGuiTest.this, CMessagesTab.class)));
-                        tabHost.addTab(tabHost.newTabSpec("Messages")
-                                .setIndicator(getResources().getString(R.string.messages))
-                                .setContent(new Intent(CGuiTest.this, CMessagesTab.class)));
-
+ 
                         //todo: remove - just P-o-C here
                         final TextView tv = new TextView(getApplicationContext());
                         tv.setText("321");
@@ -133,12 +128,15 @@ public class CGuiTest extends TabActivity {
     }
 
 
-    @Override
+    @Override 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
                 refresh();
                 return true;
+            case R.id.settings:
+            	startActivity(new Intent(this, CSettings.class));
+            	return true;
         }
         return super.onOptionsItemSelected(item);
     }
