@@ -4,6 +4,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.*;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +12,8 @@ import android.view.View;
 import android.view.MenuInflater;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.util.Log;
+import android.database.ContentObserver;
+import android.database.Cursor;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.userapi.User;
 import org.googlecode.userapi.ListWithTotal;
@@ -18,6 +21,9 @@ import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.service.CheckingService;
 
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_USER_NEW;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_USER_ONLINE;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -75,10 +81,23 @@ public class CGuiTest extends TabActivity {
                                 .setContent(new Intent(CGuiTest.this, CMessagesTab.class)));
 
                         //todo: remove - just P-o-C here
-                        TextView tv = new TextView(getApplicationContext());
+                        final TextView tv = new TextView(getApplicationContext());
                         tv.setText("321");
                         setTabIndicatorView(getTabWidget(), 2, tv);
                         ////////////////////////////////
+                        //todo: register/unregister onResume/onPause
+                        
+                        getContentResolver().registerContentObserver(UserapiProvider.USERS_URI, false, new ContentObserver(new Handler()) {
+                            @Override
+                            public void onChange(boolean b) {
+                                Cursor cursor = getContentResolver().query(UserapiProvider.USERS_URI, null, null, null, null);//todo: change cursor to new only
+                                if (cursor.getCount()==0) tv.setVisibility(View.INVISIBLE);
+                                else {
+                                    tv.setText(cursor.getCount() + "");
+                                    tv.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        });
                     } else {
                         Toast.makeText(getApplicationContext(), "login/pass incorrect", Toast.LENGTH_SHORT).show();
                     }

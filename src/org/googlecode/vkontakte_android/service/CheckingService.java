@@ -7,6 +7,11 @@ import java.util.LinkedList;
 import java.util.Collections;
 
 import org.googlecode.vkontakte_android.service.ApiCheckingKit.UpdateType;
+import org.googlecode.vkontakte_android.CGuiTest;
+import org.googlecode.vkontakte_android.database.UserDao;
+import org.googlecode.userapi.User;
+import org.googlecode.userapi.VkontakteAPI;
+import org.googlecode.userapi.ListWithTotal;
 import org.json.JSONException;
 import android.app.Service;
 import android.content.Context;
@@ -59,6 +64,17 @@ public class CheckingService extends Service {
         //todo: implement
         try {
             ApiCheckingKit kit = ApiCheckingKit.getInstance();
+
+            VkontakteAPI api = ApiCheckingKit.getS_api();
+            List<UserDao> userList = new LinkedList<UserDao>();
+            ListWithTotal<User> f1 = api.getFriends(api.id, 0, 512, VkontakteAPI.friendsTypes.friends_new);
+            for (User user : f1.getList()) {
+                UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), true);
+                userList.add(userDao);
+            }
+            UserDao.bulkSave(getApplicationContext(), userList);
+
+
             Map<UpdateType, Long> res = kit.getUpdates(); //fetch updates from site
             processMessages(kit, res);
             processFriends(kit, res);

@@ -32,6 +32,10 @@ class ApiCheckingKit {
 
     //========================================
 
+    public static VkontakteAPI getS_api() {
+        return s_api;
+    }
+
     enum UpdateType {
         MESSAGES, FRIENDSHIP_REQ, TAGS
     }
