@@ -120,7 +120,7 @@ public class UserapiProvider extends ContentProvider {
         long rowId = tvDatabase.insert(table, column, contentValues);
         if (rowId > 0) {
             Uri result = ContentUris.withAppendedId(uri, rowId);
-            getContext().getContentResolver().notifyChange(result, null);
+//            getContext().getContentResolver().notifyChange(result, null);
             return result;
         } else return null;
     }
@@ -195,7 +195,7 @@ public class UserapiProvider extends ContentProvider {
                 + (!TextUtils.isEmpty(where) ? " AND ("
                 + where + ')' : "");
         int count = tvDatabase.update(table, contentValues, where, whereArgs);
-        getContext().getContentResolver().notifyChange(uri, null);
+//        getContext().getContentResolver().notifyChange(uri, null);
         return count;
     }
 
@@ -228,7 +228,7 @@ public class UserapiProvider extends ContentProvider {
         }
         tvDatabase.setTransactionSuccessful();
         tvDatabase.endTransaction();
-        getContext().getContentResolver().notifyChange(uri, null);
+//        getContext().getContentResolver().notifyChange(uri, null);
         return count;
     }
 }

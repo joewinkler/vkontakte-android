@@ -79,7 +79,7 @@ public class CGuiTest extends TabActivity {
                         getContentResolver().registerContentObserver(UserapiProvider.USERS_URI, false, new ContentObserver(new Handler()) {
                             @Override
                             public void onChange(boolean b) {
-                                Cursor cursor = getContentResolver().query(UserapiProvider.USERS_URI, null, null, null, null);//todo: change cursor to new only
+                                Cursor cursor = managedQuery(UserapiProvider.USERS_URI, null, null, null, null);//todo: change cursor to new only
                                 if (cursor.getCount() == 0) tv.setVisibility(View.INVISIBLE);
                                 else {
                                     tv.setText(String.valueOf(cursor.getCount()));

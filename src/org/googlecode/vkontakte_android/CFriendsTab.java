@@ -29,7 +29,7 @@ public class CFriendsTab extends ListActivity implements AbsListView.OnScrollLis
         getListView().setOnScrollListener(this);
         TextView tv = (TextView) findViewById(R.id.new_counter);
         try {
-            long counter = CGuiTest.api.getFriends(CGuiTest.api.id, 0, 0, VkontakteAPI.friendsTypes.friends_new).getCount();
+            long counter = CGuiTest.api.getChangesHistory().getFriendsCount();
             tv.setText("new friends: " + counter);
         } catch (IOException e) {
             e.printStackTrace();
