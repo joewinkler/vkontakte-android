@@ -24,7 +24,7 @@ public class CheckingService extends Service {
     private static final int UPDATE_FRIENDS = 1;
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
     //boolean m_hasConnection = true;
-
+    
     private static SharedPreferences s_prefs;
 
 
@@ -102,8 +102,8 @@ public class CheckingService extends Service {
 
         if (incomingMess > 0) // new incoming messages
         {
-            if (useNotifications(this))
-                UpdatesNotifier.notify(getApplicationContext(), "New messages: " + incomingMess, useSound(this));
+            if (useNotifications())
+                UpdatesNotifier.notify(getApplicationContext(), "New messages: " + incomingMess, useSound());
             kit.setPreviosUnreadMessNum(res.get(UpdateType.MESSAGES));
         } else // some messages were read by another way
         {
@@ -119,8 +119,8 @@ public class CheckingService extends Service {
             return;
 
         if (incomingFr > 0) {
-            if (useNotifications(this))
-                UpdatesNotifier.notify(getApplicationContext(), "New friends: " + incomingFr, useSound(this));
+            if (useNotifications())
+                UpdatesNotifier.notify(getApplicationContext(), "New friends: " + incomingFr, useSound());
             kit.setPreviosFriendshipRequestsNum(res.get(UpdateType.FRIENDSHIP_REQ));
         } else {
             kit.setPreviosFriendshipRequestsNum(res.get(UpdateType.MESSAGES));
@@ -135,8 +135,8 @@ public class CheckingService extends Service {
             return;
 
         if (incomingTags > 0) {
-            if (useNotifications(this))
-                UpdatesNotifier.notify(getApplicationContext(), "New photo tags: " + incomingTags, useSound(this));
+            if (useNotifications())
+                UpdatesNotifier.notify(getApplicationContext(), "New photo tags: " + incomingTags, useSound());
             kit.setPreviosNewPhotoTagsNum(res.get(UpdateType.TAGS));
         } else {
             kit.setPreviosNewPhotoTagsNum(res.get(UpdateType.TAGS));
@@ -144,22 +144,22 @@ public class CheckingService extends Service {
     }
 
     // ========= preferences
-    static boolean useSound(Context ctx) {
+    static boolean useSound() {
 
         return s_prefs.getBoolean("sound", true);
     }
 
-    static boolean usePics(Context ctx) {
+    static boolean usePics() {
 
         return s_prefs.getBoolean("pics", true);
     }
 
-    static boolean useNotifications(Context ctx) {
+    static boolean useNotifications() {
 
         return s_prefs.getBoolean("notif", true);
     }
 
-    static int getRefreshTime(Context ctx) {
+    static int getRefreshTime() {
 
         return s_prefs.getInt("period", 30);
     }
@@ -172,6 +172,11 @@ public class CheckingService extends Service {
     @Override
     public void onDestroy() {
         Log.d("serv", "service stopped");
+        try {
+			ApiCheckingKit.getS_api().logout();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
         //todo: stop all running threads
         super.onDestroy();
     }

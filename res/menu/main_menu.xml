@@ -5,4 +5,5 @@
           android:icon="@android:drawable/ic_menu_preferences"/>
     <item android:title="about" android:id="@+id/about"
           android:icon="@android:drawable/ic_menu_info_details"/>
+    <item android:title="logout" android:id="@+id/logout"/>
 </menu>
