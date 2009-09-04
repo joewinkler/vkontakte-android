@@ -21,71 +21,105 @@ import android.util.Log;
 
 public class CheckingService extends Service {
 
-    private static final int UPDATE_FRIENDS = 1;
+	private static String TAG = "VK-Service";
+	
+	public enum contentToUpdate 
+	{
+		FRIENDS,
+		MESSAGES,
+		WALL,
+		HISTORY,
+		ALL
+	}
+	
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
     //boolean m_hasConnection = true;
     
     private static SharedPreferences s_prefs;
 
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
         s_prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        try {
+        	ApiCheckingKit.s_ctx = getApplicationContext();
+			ApiCheckingKit.login();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
 
     @Override
-    public void onStart(final Intent intent, int startId) {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("serv", "service started");
-                switch (intent.getIntExtra("action", -1)) {
-                    case UPDATE_FRIENDS:
-                        updateFriends();
-                        break;
-                    default:
-                        updateHistory();
-                }
-            }
-        });
-        threads.add(t);
-        t.start();
-    }
+	public void onStart(final Intent intent, int startId) {
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+			
+				contentToUpdate what = 
+					contentToUpdate.values()[intent.getIntExtra("action", 4)];
+				Log.d(TAG, "updating "+what+" is starting...");
+				try {
+					switch (what) {
+					case FRIENDS:
+						updateFriends();
+						break;
+					case WALL:
+						updateWall();
+						break;
+					case MESSAGES:
+						updateMessages();
+						break;
+					case HISTORY:
+						updateHistory();
+						break;
+					default:
+						updateMessages();
+					    updateWall();
+					    updateFriends();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		threads.add(t);
+		t.start();
+	}
 
-    private void updateFriends() {
+    private void updateFriends() throws IOException, JSONException {
+    	Log.d(TAG, "updating friends");
+        int[] updated = refreshFriends(ApiCheckingKit.getS_api(), getApplicationContext());
+        Log.d(TAG,"removed: " + updated[0] + "; added: " + updated[1]);
+    }
+    
+    private void updateMessages() {
+    	Log.d(TAG, "updating messages");
         //todo: implement
     }
+    
+    private void updateWall() {
+    	Log.d(TAG, "updating wall");
+		// todo: implement
+	}
 
-    private void updateHistory() {
-        //todo: implement
-        try {
-            ApiCheckingKit kit = ApiCheckingKit.getInstance();
+	private void updateHistory() throws IOException, JSONException {
+		Log.d(TAG, "updating history");
+		ApiCheckingKit kit = ApiCheckingKit.getInstance();
+		VkontakteAPI api = ApiCheckingKit.getS_api();
+		Map<UpdateType, Long> res = kit.getHistoryUpdates(); // fetch updates from the site
+		processMessages(kit, res);
+		processFriends(kit, res);
+		processPhotoTags(kit, res);
+	}
 
-            VkontakteAPI api = ApiCheckingKit.getS_api();
-            int[] updated = refreshFriends(api, getApplicationContext());
-            System.out.println("removed:" + updated[0] + "; added:" + updated[1]);
-            Map<UpdateType, Long> res = kit.getUpdates(); //fetch updates from site
-            processMessages(kit, res);
-            processFriends(kit, res);
-            processPhotoTags(kit, res);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private int[] refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
-        List<UserDao> users = new LinkedList<UserDao>();
-        List<User> friends = api.getFriends();
-        System.out.println("got users:" + friends.size());
-        for (User user : friends) {
+	private int[] refreshFriends(VkontakteAPI api, Context context)
+			throws IOException, JSONException {
+		List<UserDao> users = new LinkedList<UserDao>();
+		List<User> friends = api.getFriends();
+		Log.d(TAG,"got users: " + friends.size());
+		for (User user : friends) {
             UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), false);
             users.add(userDao);
         }
@@ -170,6 +204,11 @@ public class CheckingService extends Service {
 
 
     @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
     public void onDestroy() {
         Log.d("serv", "service stopped");
         try {
@@ -177,9 +216,16 @@ public class CheckingService extends Service {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-        //todo: stop all running threads
+        // stop all running threads
+		for (Thread t: threads)
+		{
+			if (t.isAlive())
+				t.interrupt();
+		}
         super.onDestroy();
     }
+    
+
 }
 
 

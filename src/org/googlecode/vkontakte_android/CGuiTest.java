@@ -23,12 +23,14 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.service.CheckingService;
+import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
 
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 
 import java.io.IOException;
 
-public class CGuiTest extends TabActivity {
+public class CGuiTest extends TabActivity { 
+	private static String TAG = "VK-Gui";
     public static VkontakteAPI api;
 
     /**
@@ -38,22 +40,26 @@ public class CGuiTest extends TabActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //TODO handle UnknownHostException
+        
         //TODO handle JSONException in api methods
         
         api = new VkontakteAPI();
         if (CSettings.isLogged(this))
         {
         	try{
-        	Log.d("login","already logged. using existing log/pass");
-        	api.login(CSettings.getLogin(this), CSettings.getPass(this));
-        	initializeActivity(this);
-        	return;
+        	Log.d(TAG,"already logged. using existing log/pass");
+        	if (api.login(CSettings.getLogin(this), CSettings.getPass(this)))
+        	{
+        	  initializeActivity(this);
+        	  return;
+        	}
+        	else 
+             Toast.makeText(getApplicationContext(), "Either login or password is incorrect", Toast.LENGTH_SHORT).show();	
         	}
         	catch (IOException ex)
         	{
         		//show toast and then login dialog
-        		Toast.makeText(getApplicationContext(), "Either login or password is incorrect", Toast.LENGTH_SHORT).show();
+        		Toast.makeText(getApplicationContext(), "Connection problems", Toast.LENGTH_SHORT).show();
         	}
         }
         
@@ -67,7 +73,7 @@ public class CGuiTest extends TabActivity {
                 try {
                     String login = ld.getLogin();
                     String pass = ld.getPass();
-                    Log.w(login, pass);
+                    Log.i(TAG, login+":"+pass);
                     if (api.login(login, pass)) {
                         ld.dismiss();
                         CSettings.saveLogin(CGuiTest.this, login, pass);
@@ -88,7 +94,8 @@ public class CGuiTest extends TabActivity {
     
     private void initializeActivity(Context ctx)
     {
-        refresh();
+    	refresh(contentToUpdate.ALL);
+        
         // load icons from the files
 		CImagesManager.loadImages(ctx);
 
@@ -108,7 +115,7 @@ public class CGuiTest extends TabActivity {
 				new Intent(CGuiTest.this, CMessagesTab.class)));
 
 		// todo: remove - just P-o-C here
-		final TextView tv = TabHelper.injectTabCounter(getTabWidget(), 2,
+		final TextView tv = TabHelper.injectTabCounter(getTabWidget(), 1,
 				getApplicationContext());
 
 		// todo: register/unregister onResume/onPause
@@ -141,7 +148,7 @@ public class CGuiTest extends TabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                refresh();
+                refresh(contentToUpdate.ALL);
                 return true;
             case R.id.settings:
             	startActivity(new Intent(this, CSettings.class));
@@ -163,9 +170,14 @@ public class CGuiTest extends TabActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void refresh() {
-        Log.d("s", "start!!!");
-        Toast.makeText(this, "Update started", Toast.LENGTH_SHORT).show();
-        startService(new Intent(this, CheckingService.class));
-    }
+
+    /*
+     *  makes Service to refresh given content
+     */
+    private void refresh(CheckingService.contentToUpdate what) {
+		Log.d(TAG, "request to refresh");
+		Toast.makeText(this, "Update started", Toast.LENGTH_SHORT).show();
+		startService(new Intent(this, CheckingService.class).putExtra("action",what.ordinal()));
+				//CheckingService.contentToUpdate.FRIENDS));
+	}
 }

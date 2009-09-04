@@ -6,19 +6,24 @@ import java.util.Map;
 
 import org.googlecode.userapi.ChangesHistory;
 import org.googlecode.userapi.VkontakteAPI;
+import org.googlecode.vkontakte_android.CSettings;
 import org.json.JSONException;
 
+import android.content.Context;
 import android.util.Log;
 
 /*
  *  A kit of methods that allows to check the account for some updates
  */
 class ApiCheckingKit {
-
+ 
+	private static String TAG = "VK-Service";
+	
     //========================================
 
     private ApiCheckingKit() throws IOException {
-        s_api.login("fake4test@gmail.com", "qwerty");
+    	
+         
     }
 
     private static VkontakteAPI s_api = new VkontakteAPI();
@@ -31,6 +36,18 @@ class ApiCheckingKit {
     }
 
     //========================================
+    public static Context s_ctx; 
+
+    /*
+     *  make the instance of service's API to login.
+     *  call it before using ApiCheckingKit first time
+     */
+    public static void login() throws IOException
+    {
+    	Log.d(TAG, "service is logging...");
+        s_api.login(CSettings.getLogin(s_ctx), CSettings.getPass(s_ctx));
+    	
+    }
 
     public static VkontakteAPI getS_api() {
         return s_api;
@@ -42,7 +59,7 @@ class ApiCheckingKit {
 
     static Map<UpdateType, Long> s_updates = new HashMap<UpdateType, Long>();
 
-    public Map<UpdateType, Long> getUpdates() throws IOException, JSONException {
+    public Map<UpdateType, Long> getHistoryUpdates() throws IOException, JSONException {
         s_updates.clear();
 
         ChangesHistory changes = s_api.getChangesHistory();
