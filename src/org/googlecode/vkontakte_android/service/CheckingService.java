@@ -21,20 +21,19 @@ import android.util.Log;
 
 public class CheckingService extends Service {
 
-	private static String TAG = "VK-Service";
-	
-	public enum contentToUpdate 
-	{
-		FRIENDS,
-		MESSAGES,
-		WALL,
-		HISTORY,
-		ALL
-	}
-	
+    private static String TAG = "VK-Service";
+
+    public enum contentToUpdate {
+        FRIENDS,
+        MESSAGES,
+        WALL,
+        HISTORY,
+        ALL
+    }
+
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
     //boolean m_hasConnection = true;
-    
+
     private static SharedPreferences s_prefs;
 
     @Override
@@ -42,84 +41,83 @@ public class CheckingService extends Service {
         super.onCreate();
         s_prefs = PreferenceManager.getDefaultSharedPreferences(this);
         try {
-        	ApiCheckingKit.s_ctx = getApplicationContext();
-			ApiCheckingKit.login();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+            ApiCheckingKit.s_ctx = getApplicationContext();
+            ApiCheckingKit.login();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-	public void onStart(final Intent intent, int startId) {
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-			
-				contentToUpdate what = 
-					contentToUpdate.values()[intent.getIntExtra("action", 4)];
-				Log.d(TAG, "updating "+what+" is starting...");
-				try {
-					switch (what) {
-					case FRIENDS:
-						updateFriends();
-						break;
-					case WALL:
-						updateWall();
-						break;
-					case MESSAGES:
-						updateMessages();
-						break;
-					case HISTORY:
-						updateHistory();
-						break;
-					default:
-						updateMessages();
-					    updateWall();
-					    updateFriends();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		threads.add(t);
-		t.start();
-	}
+    public void onStart(final Intent intent, int startId) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                contentToUpdate what =
+                        contentToUpdate.values()[intent.getIntExtra("action", 4)];
+                Log.d(TAG, "updating " + what + " is starting...");
+                try {
+                    switch (what) {
+                        case FRIENDS:
+                            updateFriends();
+                            break;
+                        case WALL:
+                            updateWall();
+                            break;
+                        case MESSAGES:
+                            updateMessages();
+                            break;
+                        case HISTORY:
+                            updateHistory();
+                            break;
+                        default:
+                            updateMessages();
+                            updateWall();
+                            updateFriends();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        threads.add(t);
+        t.start();
+    }
 
     private void updateFriends() throws IOException, JSONException {
-    	Log.d(TAG, "updating friends");
+        Log.d(TAG, "updating friends");
         int[] updated = refreshFriends(ApiCheckingKit.getS_api(), getApplicationContext());
-        Log.d(TAG,"removed: " + updated[0] + "; added: " + updated[1]);
+        Log.d(TAG, "removed: " + updated[0] + "; added: " + updated[1]);
     }
-    
+
     private void updateMessages() {
-    	Log.d(TAG, "updating messages");
+        Log.d(TAG, "updating messages");
         //todo: implement
     }
-    
+
     private void updateWall() {
-    	Log.d(TAG, "updating wall");
-		// todo: implement
-	}
+        Log.d(TAG, "updating wall");
+        // todo: implement
+    }
 
-	private void updateHistory() throws IOException, JSONException {
-		Log.d(TAG, "updating history");
-		ApiCheckingKit kit = ApiCheckingKit.getInstance();
-		VkontakteAPI api = ApiCheckingKit.getS_api();
-		Map<UpdateType, Long> res = kit.getHistoryUpdates(); // fetch updates from the site
-		processMessages(kit, res);
-		processFriends(kit, res);
-		processPhotoTags(kit, res);
-	}
+    private void updateHistory() throws IOException, JSONException {
+        Log.d(TAG, "updating history");
+        ApiCheckingKit kit = ApiCheckingKit.getInstance();
+        VkontakteAPI api = ApiCheckingKit.getS_api();
+        Map<UpdateType, Long> res = kit.getHistoryUpdates(); // fetch updates from the site
+        processMessages(kit, res);
+        processFriends(kit, res);
+        processPhotoTags(kit, res);
+    }
 
-	private int[] refreshFriends(VkontakteAPI api, Context context)
-			throws IOException, JSONException {
-		List<UserDao> users = new LinkedList<UserDao>();
-		List<User> friends = api.getFriends();
-		Log.d(TAG,"got users: " + friends.size());
-		for (User user : friends) {
+    private int[] refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
+        List<UserDao> users = new LinkedList<UserDao>();
+        List<User> friends = api.getMyFriends();
+        Log.d(TAG, "got users: " + friends.size());
+        for (User user : friends) {
             UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), false);
             users.add(userDao);
         }
@@ -212,19 +210,18 @@ public class CheckingService extends Service {
     public void onDestroy() {
         Log.d("serv", "service stopped");
         try {
-			ApiCheckingKit.getS_api().logout();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+            ApiCheckingKit.getS_api().logout();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // stop all running threads
-		for (Thread t: threads)
-		{
-			if (t.isAlive())
-				t.interrupt();
-		}
+        for (Thread t : threads) {
+            if (t.isAlive())
+                t.interrupt();
+        }
         super.onDestroy();
     }
-    
+
 
 }
 
