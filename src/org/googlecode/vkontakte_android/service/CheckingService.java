@@ -8,6 +8,7 @@ import java.util.Collections;
 
 import org.googlecode.vkontakte_android.service.ApiCheckingKit.UpdateType;
 import org.googlecode.vkontakte_android.database.UserDao;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.userapi.User;
 import org.googlecode.userapi.VkontakteAPI;
 import org.json.JSONException;
@@ -91,6 +92,9 @@ public class CheckingService extends Service {
         Log.d(TAG, "updating friends");
         int[] updated = refreshFriends(ApiCheckingKit.getS_api(), getApplicationContext());
         Log.d(TAG, "removed: " + updated[0] + "; added: " + updated[1]);
+        Log.d(TAG, "updating new friends");
+        int updatedNew = refreshNewFriends(ApiCheckingKit.getS_api(), getApplicationContext());
+        Log.d(TAG, "total new:" + updatedNew);
     }
 
     private void updateMessages() {
@@ -122,6 +126,18 @@ public class CheckingService extends Service {
             users.add(userDao);
         }
         return UserDao.bulkUpdateOrRemove(context, users);
+    }
+
+    private int refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
+        List<UserDao> users = new LinkedList<UserDao>();
+        List<User> friends = api.getMyNewFriends();
+        Log.d(TAG, "got new users: " + friends.size());
+        for (User user : friends) {
+            UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), true);
+            userDao.saveOrUpdate(context);
+        }
+        context.getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
+        return friends.size();
     }
 
 

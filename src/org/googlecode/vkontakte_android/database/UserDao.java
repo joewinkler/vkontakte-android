@@ -119,6 +119,8 @@ public class UserDao extends org.googlecode.userapi.User {
         insertValues.put(KEY_USER_MALE, isMale() ? 1 : 0);
         insertValues.put(KEY_USER_ONLINE, isOnline() ? 1 : 0);
         insertValues.put(KEY_USER_NEW, isNewFriend() ? 1 : 0);
+        if (isNewFriend()) System.out.println("new!");
+        else System.out.println("old :(");
         if (channel == null) {
             context.getContentResolver().insert(USERS_URI, insertValues);
             return 1;
