@@ -1,6 +1,8 @@
 package org.googlecode.vkontakte_android;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -44,5 +46,42 @@ public class CSettings extends PreferenceActivity  implements Preference.OnPrefe
 		}
 		return true;
 	}
+
+	//================  work with login/pass
+	
+	public static void saveLogin(Context ctx, String login, String pass) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		Editor ed = prefs.edit();
+		ed.putString("login", login);
+		ed.commit();
+		ed.putString("password", pass);
+		ed.commit();
+	}
+	
+	public static boolean isLogged(Context ctx)
+	{
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		return prefs.contains("login") && prefs.contains("password");
+	}
+	
+	public static void clearPrivateInfo(Context ctx)
+	{
+		Editor ed = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
+		ed.remove("login");
+		ed.commit();
+		ed.remove("password");
+		ed.commit();
+	}
+	
+	public static String getPass(Context ctx)
+	{
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getString("password", "");
+	}
+	
+	public static String getLogin(Context ctx)
+	{
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getString("login", "");
+	}
+	
 
 }
