@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.text.TextUtils;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
@@ -43,8 +44,15 @@ public class CGuiTest extends TabActivity {
         if (CSettings.isLogged(this)) {
             try {
                 Log.d(TAG, "already logged. using existing log/pass");
-                if (api.login(CSettings.getLogin(this), CSettings.getPass(this))) {
+//                if (api.login(CSettings.getLogin(this), CSettings.getPass(this))) {
+                if (!TextUtils.isEmpty(CSettings.getSid(this))) {
+                    api.setSid(CSettings.getSid(this));
+                    System.out.println("logged with sid");
                     initializeActivity(this);
+                    return;
+                } else if (api.login(CSettings.getLogin(this), CSettings.getPass(this))) {
+                    initializeActivity(this);
+                    CSettings.saveLogin(CGuiTest.this, CSettings.getLogin(this), CSettings.getPass(this), api.getRemixpassword(), api.getSid());//todo: refresh only remix
                     return;
                 } else
                     Toast.makeText(getApplicationContext(), "Either login or password is incorrect", Toast.LENGTH_SHORT).show();
@@ -54,7 +62,6 @@ public class CGuiTest extends TabActivity {
                 Toast.makeText(getApplicationContext(), "Connection problems", Toast.LENGTH_SHORT).show();
             }
         }
-
 
         final LoginDialog ld = new LoginDialog(this);
         ((EditText) ld.findViewById(R.id.login)).setText("fake4test@gmail.com");
@@ -68,7 +75,7 @@ public class CGuiTest extends TabActivity {
                     Log.i(TAG, login + ":" + pass);
                     if (api.login(login, pass)) {
                         ld.dismiss();
-                        CSettings.saveLogin(CGuiTest.this, login, pass);
+                        CSettings.saveLogin(CGuiTest.this, login, pass, api.getRemixpassword(), api.getSid());
                         initializeActivity(CGuiTest.this);
                     } else {
                         Toast.makeText(getApplicationContext(), "login/pass incorrect", Toast.LENGTH_SHORT).show();

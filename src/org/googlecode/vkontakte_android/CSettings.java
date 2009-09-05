@@ -42,12 +42,16 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
 
     //================  work with login/pass
 
-    public static void saveLogin(Context ctx, String login, String pass) {
+    public static void saveLogin(Context ctx, String login, String pass, String remixpassword, String sid) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         Editor ed = prefs.edit();
         ed.putString("login", login);
         ed.commit();
         ed.putString("password", pass);
+        ed.commit();
+        ed.putString("remixpassword", remixpassword);
+        ed.commit();
+        ed.putString("sid", sid);
         ed.commit();
     }
 
@@ -70,5 +74,13 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
 
     public static String getLogin(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString("login", "");
+    }
+
+    public static String getRemixPass(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString("remixpassword", "");
+    }
+
+    public static String getSid(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString("sid", "");
     }
 }
