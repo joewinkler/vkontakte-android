@@ -9,8 +9,10 @@ import java.util.Collections;
 import org.googlecode.vkontakte_android.service.ApiCheckingKit.UpdateType;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.userapi.Message;
 import org.googlecode.userapi.User;
 import org.googlecode.userapi.VkontakteAPI;
+import org.googlecode.userapi.VkontakteAPI.privateMessagesTypes;
 import org.json.JSONException;
 import android.app.Service;
 import android.content.Context;
@@ -76,6 +78,7 @@ public class CheckingService extends Service {
                             updateMessages();
                             updateWall();
                             updateFriends();
+                            updateHistory();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -144,15 +147,29 @@ public class CheckingService extends Service {
     private void processMessages(ApiCheckingKit kit, Map<UpdateType, Long> res) {
         long incomingMess = res.get(UpdateType.MESSAGES)
                 - kit.getPreviosUnreadMessNum();
-
+        Log.d(TAG, "process messages: "+incomingMess);
         if (incomingMess == 0) //messages count didn't changed since last checking
             return;
 
         if (incomingMess > 0) // new incoming messages
         {
-            if (useNotifications())
-                UpdatesNotifier.notify(getApplicationContext(), "New messages: " + incomingMess, useSound());
-            kit.setPreviosUnreadMessNum(res.get(UpdateType.MESSAGES));
+        	//TODO check this
+        	VkontakteAPI api = ApiCheckingKit.getS_api();
+        	try {
+				List<Message> mess = api.getPrivateMessages(api.id, 0, 1024, privateMessagesTypes.inbox);
+				Message last = mess.get(mess.size()-1);
+				if (useNotifications())
+	                UpdatesNotifier.notifyMessages(getApplicationContext(), incomingMess, last.getSender().getUserId());
+	            kit.setPreviosUnreadMessNum(res.get(UpdateType.MESSAGES));
+        	
+        	} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            
         } else // some messages were read by another way
         {
             kit.setPreviosUnreadMessNum(res.get(UpdateType.MESSAGES));
@@ -167,8 +184,8 @@ public class CheckingService extends Service {
             return;
 
         if (incomingFr > 0) {
-            if (useNotifications())
-                UpdatesNotifier.notify(getApplicationContext(), "New friends: " + incomingFr, useSound());
+            //if (useNotifications())
+                //UpdatesNotifier.notify(getApplicationContext(), "New friends: " + incomingFr, useSound());
             kit.setPreviosFriendshipRequestsNum(res.get(UpdateType.FRIENDSHIP_REQ));
         } else {
             kit.setPreviosFriendshipRequestsNum(res.get(UpdateType.MESSAGES));
@@ -183,8 +200,8 @@ public class CheckingService extends Service {
             return;
 
         if (incomingTags > 0) {
-            if (useNotifications())
-                UpdatesNotifier.notify(getApplicationContext(), "New photo tags: " + incomingTags, useSound());
+            //if (useNotifications())
+                //UpdatesNotifier.notify(getApplicationContext(), "New photo tags: " + incomingTags, useSound());
             kit.setPreviosNewPhotoTagsNum(res.get(UpdateType.TAGS));
         } else {
             kit.setPreviosNewPhotoTagsNum(res.get(UpdateType.TAGS));

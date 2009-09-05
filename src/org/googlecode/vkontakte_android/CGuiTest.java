@@ -152,6 +152,14 @@ public class CGuiTest extends TabActivity {
     }
 
     @Override
+	protected void onNewIntent(Intent intent) {
+		String tag = intent.getStringExtra("tabToShow");
+		Log.d(TAG, "onNewIntent:: " + tag);
+		getTabHost().setCurrentTabByTag(tag);
+		super.onNewIntent(intent);
+	}
+    
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
