@@ -1,8 +1,8 @@
 package org.googlecode.vkontakte_android.provider;
 
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteDatabase;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class UserapiDatabaseHelper extends SQLiteOpenHelper {
@@ -12,6 +12,14 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_USER_MALE = "male";
     public static final String KEY_USER_ONLINE = "online";
     public static final String KEY_USER_NEW = "newfriend";
+
+    public static final String KEY_MESSAGE_ROWID = "_id";
+    public static final String KEY_MESSAGE_MESSAGEID = "messageid";
+    public static final String KEY_MESSAGE_DATE = "date";
+    public static final String KEY_MESSAGE_TEXT = "text";
+    public static final String KEY_MESSAGE_SENDERID = "senderid";
+    public static final String KEY_MESSAGE_RECEIVERID = "receiverid";
+    public static final String KEY_MESSAGE_READ = "read";
 
     public static final String KEY_FILE_ROWID = "_id";
     public static final String KEY_FILE_URL = "url";
@@ -28,6 +36,17 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             KEY_USER_MALE + " int, " +
             KEY_USER_ONLINE + " int, " +
             KEY_USER_NEW + " int " +
+            ");";
+
+    public static final String DATABASE_MESSAGES_TABLE = "messages";
+    private static final String DATABASE_MESSAGES_CREATE = "create table " + DATABASE_MESSAGES_TABLE + " (" +
+            KEY_MESSAGE_ROWID + " integer primary key autoincrement, " +
+            KEY_MESSAGE_MESSAGEID + " long, " +
+            KEY_MESSAGE_DATE + " long, " +
+            KEY_MESSAGE_TEXT + " text , " +
+            KEY_MESSAGE_SENDERID + " long, " +
+            KEY_MESSAGE_RECEIVERID + " long, " +
+            KEY_MESSAGE_READ + " int " +
             ");";
 
     public static final String DATABASE_FILES_TABLE = "files";
@@ -47,6 +66,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DATABASE_USERS_CREATE);
         db.execSQL(DATABASE_FILES_CREATE);
+        db.execSQL(DATABASE_MESSAGES_CREATE);
     }
 
     @Override
@@ -55,6 +75,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
                 + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_USERS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_FILES_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_MESSAGES_TABLE);
         onCreate(db);
     }
 }

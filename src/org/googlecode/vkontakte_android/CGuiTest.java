@@ -112,24 +112,43 @@ public class CGuiTest extends TabActivity {
                 new Intent(CGuiTest.this, CMessagesTab.class)));
 
         // todo: remove - just P-o-C here
-        final TextView tv = TabHelper.injectTabCounter(getTabWidget(), 1,
-                getApplicationContext());
+        final TextView friendsCounter = TabHelper.injectTabCounter(getTabWidget(), 1, getApplicationContext());
+        final TextView messagesCounter = TabHelper.injectTabCounter(getTabWidget(), 2, getApplicationContext());
 
         // todo: register/unregister onResume/onPause
-        getContentResolver().registerContentObserver(UserapiProvider.USERS_URI,
-                false, new ContentObserver(new Handler()) {
-                    @Override
-                    public void onChange(boolean b) {
-                        Cursor cursor = managedQuery(UserapiProvider.USERS_URI, null, UserapiDatabaseHelper.KEY_USER_NEW + "=?", new String[]{"1"}, null);
-                        // to new only
-                        if (cursor.getCount() == 0)
-                            tv.setVisibility(View.INVISIBLE);
-                        else {
-                            tv.setText(String.valueOf(cursor.getCount()));
-                            tv.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
+        getContentResolver().registerContentObserver(UserapiProvider.USERS_URI, false, new ContentObserver(new Handler()) {
+            @Override
+            public void onChange(boolean b) {
+                Cursor cursor = managedQuery(UserapiProvider.USERS_URI, null,
+                        UserapiDatabaseHelper.KEY_USER_NEW + "=?",
+                        new String[]{"1"},
+                        null);
+                // to new only
+                if (cursor.getCount() == 0)
+                    friendsCounter.setVisibility(View.INVISIBLE);
+                else {
+                    friendsCounter.setText(String.valueOf(cursor.getCount()));
+                    friendsCounter.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
+        getContentResolver().registerContentObserver(UserapiProvider.MESSAGES_URI, false, new ContentObserver(new Handler()) {
+            @Override
+            public void onChange(boolean b) {
+                Cursor cursor = managedQuery(UserapiProvider.MESSAGES_URI, null,
+                        UserapiDatabaseHelper.KEY_MESSAGE_READ + "=?",
+                        new String[]{"0"},
+                        null);
+                if (cursor.getCount() == 0)
+                    messagesCounter.setVisibility(View.INVISIBLE);
+                else {
+                    messagesCounter.setText(String.valueOf(cursor.getCount()));
+                    messagesCounter.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
     }
 
     @Override
