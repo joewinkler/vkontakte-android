@@ -16,7 +16,6 @@ public class MessageDao extends Message {
     private long rowId;
     private long senderId;
     private long receiverId;
-//    public static Cursor cursor = context.getContentResolver().query(MESSAGES_URI, null, KEY_MESSAGE_SENDERID + "=?" + " OR " + KEY_MESSAGE_RECEIVERID + "=?", new String[]{String.valueOf(userId), String.valueOf(userId)}, null);
 
     public MessageDao(Cursor cursor) {
         rowId = cursor.getLong(0);
@@ -54,7 +53,7 @@ public class MessageDao extends Message {
         return context.getContentResolver().bulkInsert(MESSAGES_URI, values);
     }
 
-    private long getSenderId() {
+    public long getSenderId() {
         return senderId;
     }
 

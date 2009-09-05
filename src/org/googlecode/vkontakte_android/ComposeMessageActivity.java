@@ -3,42 +3,32 @@ package org.googlecode.vkontakte_android;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.view.View;
-import android.content.Intent;
 import org.googlecode.vkontakte_android.database.MessageDao;
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
-import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_RECEIVERID;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_SENDERID;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
 
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-
-public class CMessagesTab extends ListActivity implements AbsListView.OnScrollListener {
+public class ComposeMessageActivity extends ListActivity implements AbsListView.OnScrollListener {
     private MessagesListAdapter adapter;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        long userId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, -1);
+
         List<MessageDao> list = new LinkedList<MessageDao>();
         list.add(new MessageDao(2, new Date(), "some text", -1, 1, true));
         MessageDao.bulkSave(this, list);
-        setContentView(R.layout.message_list);
-        adapter = new MessagesListAdapter(this, R.layout.message_row, managedQuery(UserapiProvider.MESSAGES_URI, null, null, null, KEY_MESSAGE_DATE + " DESC"));
+        setContentView(R.layout.messages);
+        adapter = new MessagesListAdapter(this, R.layout.message_row, managedQuery(UserapiProvider.MESSAGES_URI, null, KEY_MESSAGE_SENDERID + "=?" + " OR " + KEY_MESSAGE_RECEIVERID + "=?", new String[]{String.valueOf(userId), String.valueOf(userId)}, null));
         setListAdapter(adapter);
         getListView().setOnScrollListener(this);
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                MessageDao messageDao = new MessageDao(adapter.getCursor());
-                Intent intent = new Intent(getApplicationContext(), ComposeMessageActivity.class);
-                intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, messageDao.getSenderId());
-                startActivity(intent);
-            }
-        });
     }
 
     public void onScroll(AbsListView v, int i, int j, int k) {
