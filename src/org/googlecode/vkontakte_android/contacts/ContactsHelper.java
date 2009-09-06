@@ -15,9 +15,18 @@ public class ContactsHelper {
         contentResolver = context.getContentResolver();
     }
 
-//    public Uri findPerson(String fullName, String[] phone) {
-//
-//    }
+    public String getName(long vkId) {
+        final Uri id = findPersonByVkId(vkId);
+        final Cursor q = contentResolver.query(id, null, null, null, null);
+        try {
+
+            if (!q.moveToFirst()) return null;
+            return q.getString(q.getColumnIndexOrThrow(Contacts.PeopleColumns.NAME));
+
+        } finally {
+            q.close();
+        }
+    }
 
     /**
      * Ищет человека в локальной БД по id контакста
@@ -34,10 +43,17 @@ public class ContactsHelper {
                         Contacts.ContactMethodsColumns.KIND + "=" + Contacts.KIND_IM,
                 new String[]{"custom:vKontakte"}, null
         );
+        try {
 
-        if (!q.moveToFirst()) return null;
+            if (!q.moveToFirst()) return null;
+            return createPersonUri(q.getString(q.getColumnIndexOrThrow("_id")));
 
-        final String contactId = q.getString(q.getColumnIndexOrThrow("_id"));
+        } finally {
+            q.close();
+        }
+    }
+
+    public static Uri createPersonUri(String contactId) {
         return Contacts.People.CONTENT_FILTER_URI.buildUpon().appendPath(contactId).build();
     }
 
@@ -90,19 +106,20 @@ public class ContactsHelper {
                 null
         );
 
-        if (!q.moveToFirst()) {
-            q.close();
+        try {
+            if (!q.moveToFirst()) {
+                final ContentValues vk = new ContentValues();
+                vk.put(Contacts.GroupsColumns.NAME, name);
+                vk.put(Contacts.GroupsColumns.NOTES, notes);
+                vk.put(Contacts.GroupsColumns.SHOULD_SYNC, "false");
+                return Integer.parseInt(cr.insert(Contacts.Groups.CONTENT_URI, vk).getLastPathSegment());
+            }
 
-            final ContentValues vk = new ContentValues();
-            vk.put(Contacts.GroupsColumns.NAME, name);
-            vk.put(Contacts.GroupsColumns.NOTES, notes);
-            vk.put(Contacts.GroupsColumns.SHOULD_SYNC, "false");
-            return Integer.parseInt(cr.insert(Contacts.Groups.CONTENT_URI, vk).getLastPathSegment());
+            return q.getInt(q.getColumnIndexOrThrow("_id"));
+
+        } finally {
+            q.close();
         }
 
-        final int id = q.getInt(q.getColumnIndexOrThrow("_id"));
-        q.close();
-
-        return id;
     }
 }
