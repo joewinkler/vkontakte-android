@@ -83,4 +83,9 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
     public static String getSid(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString("sid", "");
     }
+    
+    public static int getPeriod(Context ctx)
+    {
+    	 return PreferenceManager.getDefaultSharedPreferences(ctx).getInt("period", 60);
+    }
 }
