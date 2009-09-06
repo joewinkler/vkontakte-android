@@ -5,6 +5,7 @@
 
 	<string name="set_status">Установить статус</string>
 	<string name="ok">Ok</string>
+	<string name="send">Send</string>
 	<string name="remove_status">Убрать</string>
 	<string name="online_only"> Только онлайн</string>
 	<string name="from">От: </string>

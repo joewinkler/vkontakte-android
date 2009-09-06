@@ -43,7 +43,7 @@
             </intent-filter>
         </activity>
         <provider android:name=".provider.UserapiProvider" android:authorities="org.googlecode.vkontakte_android"/>
-        <service android:enabled="true" android:name=".service.CheckingService"></service>
+        <service android:enabled="true" android:name=".service.CheckingService"/>
     </application>
 
 

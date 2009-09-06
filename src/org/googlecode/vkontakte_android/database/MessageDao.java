@@ -57,7 +57,7 @@ public class MessageDao extends Message {
         return senderId;
     }
 
-    private long getReceiverId() {
+    public long getReceiverId() {
         return receiverId;
     }
 
