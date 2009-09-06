@@ -1,7 +1,13 @@
 package org.googlecode.vkontakte_android.download;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.AbstractHttpClient;
+import org.googlecode.vkontakte_android.CGuiTest;
+
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +26,27 @@ public class ContactsDownloader {
     public ContactsDownloader() {
     }
 
+    public List<VkRecord> download() throws IOException {
+        final AbstractHttpClient client = CGuiTest.api.getHttpClient();
+
+        List<ContactsDownloader.VkRecord> records = new ArrayList<ContactsDownloader.VkRecord>(600);
+
+        for (int page = 1; page < 100; page++) {
+            final HttpGet get = new HttpGet("http://pda.vkontakte.ru/friends" + page);
+            final HttpResponse response = client.execute(get);
+
+            final List<VkRecord> chunk = parse(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+            if (chunk.isEmpty()) break;
+            records.addAll(chunk);
+        }
+
+        return records;
+    }
+
     public List<VkRecord> parse(Reader in) throws IOException {
         final BufferedReader rd = new BufferedReader(in);
 
-        List<ContactsDownloader.VkRecord> records = new ArrayList<ContactsDownloader.VkRecord>(600);
+        List<ContactsDownloader.VkRecord> records = new ArrayList<ContactsDownloader.VkRecord>(20);
         ContactsDownloader.VkRecord curr = null;
 
         final Pattern idAndName = Pattern.compile("<a href=./id(\\d+).>(.+?)</a>");
