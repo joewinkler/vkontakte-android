@@ -170,7 +170,7 @@ public class CGuiTest extends TabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                refresh(contentToUpdate.ALL);
+                refresh(contentToUpdate.MESSAGES_ALL);
                 return true;
             case R.id.settings:
                 startActivity(new Intent(this, CSettings.class));
