@@ -18,8 +18,8 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         MessageDao messageDao = new MessageDao(cursor);
         TextView name = (TextView) view.findViewById(R.id.name);
+        name.setText(messageDao.getSenderId()+" ");
         TextView message = (TextView) view.findViewById(R.id.message);
         message.setText(messageDao.getText());
-        System.out.println("text:" + messageDao.getText());
     }
 }
