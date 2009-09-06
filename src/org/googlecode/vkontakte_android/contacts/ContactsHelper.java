@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.provider.Contacts;
 
 public class ContactsHelper {
@@ -37,7 +38,7 @@ public class ContactsHelper {
     public Uri findPersonByVkId(long vkId) {
 
         final Cursor q = contentResolver.query(
-                Contacts.ContactMethods.CONTENT_URI, new String[]{"_id"},
+                Contacts.ContactMethods.CONTENT_URI, new String[]{BaseColumns._ID},
                 Contacts.ContactMethodsColumns.AUX_DATA + "=? and " +
                         Contacts.ContactMethodsColumns.DATA + "=" + vkId + " and " +
                         Contacts.ContactMethodsColumns.KIND + "=" + Contacts.KIND_IM,
@@ -46,7 +47,7 @@ public class ContactsHelper {
         try {
 
             if (!q.moveToFirst()) return null;
-            return createPersonUri(q.getString(q.getColumnIndexOrThrow("_id")));
+            return createPersonUri(q.getString(q.getColumnIndexOrThrow(BaseColumns._ID)));
 
         } finally {
             q.close();
@@ -100,7 +101,7 @@ public class ContactsHelper {
         final ContentResolver cr = contentResolver;
         final Cursor q = cr.query(
                 Contacts.Groups.CONTENT_URI,
-                new String[]{"_id", Contacts.GroupsColumns.NAME},
+                new String[]{BaseColumns._ID, Contacts.GroupsColumns.NAME},
                 Contacts.GroupsColumns.NAME + "=?",
                 new String[]{name},
                 null
@@ -115,7 +116,7 @@ public class ContactsHelper {
                 return Integer.parseInt(cr.insert(Contacts.Groups.CONTENT_URI, vk).getLastPathSegment());
             }
 
-            return q.getInt(q.getColumnIndexOrThrow("_id"));
+            return q.getInt(q.getColumnIndexOrThrow(BaseColumns._ID));
 
         } finally {
             q.close();

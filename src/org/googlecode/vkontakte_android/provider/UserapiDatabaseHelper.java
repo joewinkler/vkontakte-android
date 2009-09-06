@@ -3,17 +3,18 @@ package org.googlecode.vkontakte_android.provider;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.BaseColumns;
 import android.util.Log;
 
 public class UserapiDatabaseHelper extends SQLiteOpenHelper {
-    public static final String KEY_USER_ROWID = "_id";
+    public static final String KEY_USER_ROWID = BaseColumns._ID;
     public static final String KEY_USER_USERID = "userid";
     public static final String KEY_USER_NAME = "name";
     public static final String KEY_USER_MALE = "male";
     public static final String KEY_USER_ONLINE = "online";
     public static final String KEY_USER_NEW = "newfriend";
 
-    public static final String KEY_MESSAGE_ROWID = "_id";
+    public static final String KEY_MESSAGE_ROWID = BaseColumns._ID;
     public static final String KEY_MESSAGE_MESSAGEID = "messageid";
     public static final String KEY_MESSAGE_DATE = "date";
     public static final String KEY_MESSAGE_TEXT = "text";
@@ -21,7 +22,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_MESSAGE_RECEIVERID = "receiverid";
     public static final String KEY_MESSAGE_READ = "read";
 
-    public static final String KEY_FILE_ROWID = "_id";
+    public static final String KEY_FILE_ROWID = BaseColumns._ID;
     public static final String KEY_FILE_URL = "url";
     public static final String KEY_FILE_DATA = "data";
 
