@@ -18,6 +18,7 @@ public class ContactsHelper {
 
     public String getName(long vkId) {
         final Uri id = findPersonByVkId(vkId);
+        // toDo оптимизировать
         final Cursor q = contentResolver.query(id, null, null, null, null);
         try {
 
