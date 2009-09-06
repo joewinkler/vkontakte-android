@@ -101,6 +101,7 @@ public class CheckingService extends Service {
 					case MESSAGES_ALL:  //TODO count from Intent
 						updateInMessages(100);
 						updateOutMessages(100);
+						
 						break;
 					case MESSAGES_IN:
 						updateInMessages(100);
@@ -152,13 +153,16 @@ public class CheckingService extends Service {
 			}
 			cursor.close();
 		}
+		
 		UpdatesNotifier.notifyMessages(this, countNew, single); 
+		getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
 		//TODO get real counter from provider
 	}
 
 	private void updateOutMessages(int count) throws IOException, JSONException {
 		VkontakteAPI api = ApiCheckingKit.getS_api();
 		api.getOutbox(0, count);
+		getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
     }
 	
 	
