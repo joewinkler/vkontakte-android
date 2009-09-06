@@ -5,12 +5,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.content.Intent;
 import org.googlecode.userapi.Message;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_RECEIVERID;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_SENDERID;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.vkontakte_android.service.CheckingService;
 
 import java.io.IOException;
 import java.util.Date;
@@ -24,28 +27,32 @@ public class ComposeMessageActivity extends ListActivity implements AbsListView.
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final long userId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, -1);
-        final String vkId = getIntent().getData().getLastPathSegment(); // toDo new
+        long userId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, -1);
+        if (userId == -1) {
+            userId = Long.parseLong(getIntent().getData().getLastPathSegment()); // toDo new 
+        }
 
-        List<MessageDao> list = new LinkedList<MessageDao>();
-        list.add(new MessageDao(2, new Date(), "some text", -1, 1, true));
-        MessageDao.bulkSave(this, list);
         setContentView(R.layout.messages);
         adapter = new MessagesListAdapter(this, R.layout.message_row, managedQuery(UserapiProvider.MESSAGES_URI, null, KEY_MESSAGE_SENDERID + "=?" + " OR " + KEY_MESSAGE_RECEIVERID + "=?", new String[]{String.valueOf(userId), String.valueOf(userId)}, null));
         setListAdapter(adapter);
         getListView().setOnScrollListener(this);
         final TextView textView = (TextView) findViewById(R.id.mess_to_send);
+        final long finalUserId = userId;
         findViewById(R.id.send_reply).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Message message = new Message();
                 message.setDate(new Date());
-//                message.setReceiverId(userId);
-                message.setReceiverId(11723128);
+                message.setReceiverId(finalUserId);
                 message.setText(textView.getText().toString());
                 try {
                     String result = CGuiTest.api.sendMessageToUser(message);
-                    System.out.println("send result: " + result);
+                    if (true) {
+                        Toast.makeText(getApplicationContext(), "message sent!", Toast.LENGTH_SHORT).show();
+                        textView.setText("");
+                        startService(new Intent(getApplicationContext(), CheckingService.class).putExtra("action", CheckingService.contentToUpdate.MESSAGES_OUT.ordinal()));
+                        //todo: scroll
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
