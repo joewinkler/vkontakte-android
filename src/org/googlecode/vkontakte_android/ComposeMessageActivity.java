@@ -2,20 +2,20 @@ package org.googlecode.vkontakte_android;
 
 import android.app.ListActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.TextView;
-import android.view.View;
+import org.googlecode.userapi.Message;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_RECEIVERID;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_SENDERID;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import org.googlecode.userapi.Message;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.io.IOException;
 
 public class ComposeMessageActivity extends ListActivity implements AbsListView.OnScrollListener {
     private MessagesListAdapter adapter;
@@ -25,6 +25,7 @@ public class ComposeMessageActivity extends ListActivity implements AbsListView.
         super.onCreate(savedInstanceState);
 
         final long userId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, -1);
+        final String vkId = getIntent().getData().getLastPathSegment(); // toDo new
 
         List<MessageDao> list = new LinkedList<MessageDao>();
         list.add(new MessageDao(2, new Date(), "some text", -1, 1, true));
@@ -44,7 +45,7 @@ public class ComposeMessageActivity extends ListActivity implements AbsListView.
                 message.setText(textView.getText().toString());
                 try {
                     String result = CGuiTest.api.sendMessageToUser(message);
-                    System.out.println("send result: "+result);
+                    System.out.println("send result: " + result);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

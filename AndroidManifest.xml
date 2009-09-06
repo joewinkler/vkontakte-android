@@ -14,20 +14,16 @@
         </activity>
         <activity android:name=".CMeTab"
                   android:label="@string/app_name">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity android:name=".CMessagesTab"
                   android:label="@string/app_name">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity android:name=".ComposeMessageActivity"
                   android:label="@string/app_name">
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.SENDTO"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="imto" android:host="vkontakte"/>
             </intent-filter>
         </activity>
         <activity android:name=".CFriendsTab"
