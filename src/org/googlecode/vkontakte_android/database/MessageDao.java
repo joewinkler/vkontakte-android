@@ -5,6 +5,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import org.googlecode.userapi.Message;
+import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
+
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.MESSAGES_URI;
 
@@ -71,7 +74,18 @@ public class MessageDao extends Message {
         } else if (cursor != null) cursor.close();
         return messageDao;
     }
+    public static MessageDao findByMessageId(Context context, long id) {
+        if (id == -1) return null;
+        Cursor cursor = context.getContentResolver().query(MESSAGES_URI,null, UserapiDatabaseHelper.KEY_MESSAGE_MESSAGEID+"=?", new String[]{String.valueOf(id)}, null);
+        MessageDao messageDao = null;
+        if (cursor != null && cursor.moveToNext()) {
+            messageDao = new MessageDao(cursor);
+            cursor.close();
+        } else if (cursor != null) cursor.close();
+        return messageDao;
+    }
 
+    
     public int delete(Context context) {
         return context.getContentResolver().delete(ContentUris.withAppendedId(MESSAGES_URI, rowId), null, null);
     }
@@ -91,22 +105,21 @@ public class MessageDao extends Message {
 //        return messageDao;
 //    }
 
-//    public int saveOrUpdate(Context context) {
-//        MessageDao channel = MessageDao.findByUserId(context, userId);
-//        ContentValues insertValues = new ContentValues();
-//        insertValues.put(KEY_USER_USERID, getUserId());
-//        insertValues.put(KEY_USER_NAME, getUserName());
-//        insertValues.put(KEY_USER_MALE, isMale() ? 1 : 0);
-//        insertValues.put(KEY_USER_ONLINE, isOnline() ? 1 : 0);
-//        insertValues.put(KEY_USER_NEW, isNewFriend() ? 1 : 0);
-//        if (isNewFriend()) System.out.println("new!");
-//        else System.out.println("old :(");
-//        if (channel == null) {
-//            context.getContentResolver().insert(USERS_URI, insertValues);
-//            return 1;
-//        } else {
-//            context.getContentResolver().update(ContentUris.withAppendedId(USERS_URI, channel.rowId), insertValues, null, null);
-//            return 0;
-//        }
-//    }
+    public int saveOrUpdate(Context context) {
+        MessageDao message = MessageDao.findByMessageId(context, id) ;
+        ContentValues insertValues = new ContentValues();
+        insertValues.put(KEY_MESSAGE_MESSAGEID, this.getId());
+        insertValues.put(KEY_MESSAGE_DATE, this.getDate().getTime());
+        insertValues.put(KEY_MESSAGE_TEXT, this.getText());
+        insertValues.put(KEY_MESSAGE_SENDERID, this.getSenderId());
+        insertValues.put(KEY_MESSAGE_RECEIVERID, this.getReceiverId());//todo: save if not exist
+        insertValues.put(KEY_MESSAGE_READ, this.isRead() ? 0 : 1);
+        if (message == null) {
+            context.getContentResolver().insert(UserapiProvider.MESSAGES_URI, insertValues);
+            return 1;
+        } else {
+            context.getContentResolver().update(ContentUris.withAppendedId(UserapiProvider.MESSAGES_URI, message.rowId), insertValues, null, null);
+            return 0;
+        }
+    }
 }
