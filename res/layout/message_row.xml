@@ -9,14 +9,15 @@
                android:layout_alignParentLeft="true"
                android:visibility="invisible"
                android:src="@drawable/ic_sms_unread_msg_indicator"/>
-    <LinearLayout android:layout_height="fill_parent" android:layout_width="fill_parent"
-            android:orientation="vertical">
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                  android:text="Friend's name"
-                  android:textStyle="bold" android:id="@+id/name"/>
+    <LinearLayout android:layout_height="fill_parent"
+                  android:layout_width="fill_parent"
+                  android:orientation="vertical">
         <TextView android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
-                  android:text="Status"
+                  android:textStyle="bold"
+                  android:id="@+id/name"/>
+        <TextView android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
                   android:id="@+id/message"/>
     </LinearLayout>
 </LinearLayout>

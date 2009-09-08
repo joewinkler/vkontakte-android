@@ -1,5 +1,24 @@
 package org.googlecode.vkontakte_android.service;
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Collections;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.googlecode.vkontakte_android.CSettings;
+import org.googlecode.vkontakte_android.service.ApiCheckingKit.UpdateType;
+import org.googlecode.vkontakte_android.database.MessageDao;
+import org.googlecode.vkontakte_android.database.UserDao;
+import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.userapi.Message;
+import org.googlecode.userapi.User;
+import org.googlecode.userapi.VkontakteAPI;
+import org.googlecode.userapi.VkontakteAPI.privateMessagesTypes;
+import org.json.JSONException;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -8,19 +27,6 @@ import android.database.Cursor;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import org.googlecode.userapi.Message;
-import org.googlecode.userapi.User;
-import org.googlecode.userapi.VkontakteAPI;
-import org.googlecode.vkontakte_android.CSettings;
-import org.googlecode.vkontakte_android.database.MessageDao;
-import org.googlecode.vkontakte_android.database.UserDao;
-import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
-import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import org.googlecode.vkontakte_android.service.ApiCheckingKit.UpdateType;
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.util.*;
 
 public class CheckingService extends Service {
 
@@ -30,7 +36,8 @@ public class CheckingService extends Service {
         FRIENDS, MESSAGES_ALL, MESSAGES_IN, MESSAGES_OUT, WALL, HISTORY, ALL
     }
 
-    private ThreadGroup threads = new ThreadGroup("downloads");
+    private List<Thread> threads = Collections
+            .synchronizedList(new LinkedList<Thread>());
     // boolean m_hasConnection = true;
 
     private static SharedPreferences s_prefs;
@@ -66,79 +73,99 @@ public class CheckingService extends Service {
             @Override
             public void run() {
                 Log.d(TAG, "checking by timer");
-                doCheck(in);
+                try {
+                    updateHistory();
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (JSONException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             }
         }
         int period = CSettings.getPeriod(getApplicationContext());
-        m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, 1000 * 5);
+        m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, 1000 * 30);
         Log.d(TAG, "Timer with period: " + period);
     }
 
-    public void doCheck(Intent in) {
+    @Override
+    public synchronized void onStart(final Intent intent, int startId) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        contentToUpdate what = contentToUpdate.values()[in.getIntExtra("action", 1)];
-        Log.d(TAG, "updating " + what + " is starting...");
-        try {
-            switch (what) {
-                case FRIENDS:
-                    updateFriends();
-                    break;
-                case WALL:
-                    updateWall();
-                    break;
-                case MESSAGES_ALL:  //TODO count from Intent
-                    updateInMessages(100);
-                    updateOutMessages(100);
-
-                    break;
-                case MESSAGES_IN:
-                    updateInMessages(100);
-                    break;
-                case MESSAGES_OUT:
-                    updateOutMessages(1); //should be called when user sends messages
-                    break;
-                case HISTORY:
-                    updateHistory();
-                    break;
-                default:
-                    updateMessages();
-                    updateWall();
-                    updateFriends();
-                    updateHistory();
+                contentToUpdate what = contentToUpdate.values()[intent
+                        .getIntExtra("action", 1)];
+                Log.d(TAG, "updating " + what + " is starting...");
+                try {
+                    switch (what) {
+                        case FRIENDS:
+                            updateFriends();
+                            break;
+                        case WALL:
+                            updateWall();
+                            break;
+                        case MESSAGES_ALL:  //TODO count from Intent
+                            updateInMessages(100);
+                            updateOutMessages(100);
+                            break;
+                        case MESSAGES_IN:
+                            updateInMessages(100);
+                            break;
+                        case MESSAGES_OUT:
+                            updateOutMessages(1); //should be called when user sends messages
+                            break;
+                        case HISTORY:
+                            updateHistory();
+                            break;
+                        default:
+                            updateMessages();
+                            updateWall();
+                            updateFriends();
+                            updateHistory();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        });
+        threads.add(t);
+        t.start();
     }
 
     // =============== updating methods
 
-    private void updateInMessages(int count) throws IOException, JSONException {
+    private void updateInMessages(long count) throws IOException, JSONException {
         VkontakteAPI api = ApiCheckingKit.getS_api();
-        List<Message> messages = api.getInbox(0, count);
+        List<Message> messages = api.getInbox(0, (int) count);
+        MessageDao single = null;
+        int countNew = 0;
         for (Message m : messages) {
             MessageDao md = new MessageDao(m.getId(), m.getDate(), m.getText(), m.getSender().getUserId(), m.getReceiver().getUserId(), m.isRead());
-            md.saveOrUpdate(this);
-        }
-        Cursor cursor = this.getContentResolver().query(UserapiProvider.MESSAGES_URI, null,
-                UserapiDatabaseHelper.KEY_MESSAGE_READ + "=?",
-                new String[]{"0"},
-                null);
-        int countNew = 0;
-        MessageDao single = null;
-        if (cursor != null) {
-
-            countNew = cursor.getCount();
-            if (countNew == 1) {
-                cursor.moveToNext();
-                single = new MessageDao(cursor);
-            }
-            cursor.close();
+            countNew += md.saveOrUpdate(this);
+            single = md;
         }
 
-        UpdatesNotifier.notifyMessages(this, countNew, single);
+//		Cursor cursor = this.getContentResolver().query(UserapiProvider.MESSAGES_URI, null,
+//                UserapiDatabaseHelper.KEY_MESSAGE_READ + "=?",
+//                new String[]{"0"},
+//                null);
+//		int countNew = 0;
+
+//		if (cursor!=null){
+//
+//			countNew=cursor.getCount();
+//			if (countNew==1){
+//				cursor.moveToNext();
+//				single=new MessageDao(cursor);
+//			}
+//			cursor.close();
+//		}
+
+//		UpdatesNotifier.notifyMessages(this, countNew, single);
+        if (countNew>0)
+        UpdatesNotifier.notifyMessages(this, count, single);
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
         //TODO get real counter from provider
     }
@@ -175,18 +202,11 @@ public class CheckingService extends Service {
         Log.d(TAG, "updating history");
         ApiCheckingKit kit = ApiCheckingKit.getInstance();
         VkontakteAPI api = ApiCheckingKit.getS_api();
-        Map<UpdateType, Long> res = kit.getHistoryUpdates(); // fetch updates
-        // from the site
-//		processMessages(kit, res);
-//		processFriends(kit, res);
-//		processPhotoTags(kit, res);
+        updateInMessages(api.getChangesHistory().getFriendsCount());
     }
 
     private int[] refreshFriends(VkontakteAPI api, Context context)
             throws IOException, JSONException {
-
-        // toDo replace
-
         List<UserDao> users = new LinkedList<UserDao>();
         List<User> friends = api.getMyFriends();
         Log.d(TAG, "got users: " + friends.size());
@@ -208,8 +228,7 @@ public class CheckingService extends Service {
                     user.isMale(), user.isOnline(), true);
             userDao.saveOrUpdate(context);
         }
-        context.getContentResolver().notifyChange(UserapiProvider.USERS_URI,
-                null);
+        context.getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
         return friends.size();
     }
 
@@ -322,7 +341,10 @@ public class CheckingService extends Service {
             e.printStackTrace();
         }
         // stop all running threads
-        threads.interrupt();
+        for (Thread t : threads) {
+            if (t.isAlive())
+                t.interrupt();
+        }
         super.onDestroy();
     }
 

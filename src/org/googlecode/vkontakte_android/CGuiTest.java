@@ -98,41 +98,41 @@ public class CGuiTest extends TabActivity {
 
         final TabHost tabHost = getTabHost();
 
-        tabHost.addTab(tabHost.newTabSpec("I").setIndicator(
-                getResources().getString(R.string.i)).setContent(
-                new Intent(CGuiTest.this, CMeTab.class)));
-
-        tabHost.addTab(tabHost.newTabSpec("Friends").setIndicator(
-                getResources().getString(R.string.friends),
-                getResources().getDrawable(R.drawable.ic_menu_friendslist))
-                .setContent(new Intent(CGuiTest.this, CFriendsTab.class)));
+//        tabHost.addTab(tabHost.newTabSpec("I").setIndicator(
+//                getResources().getString(R.string.i)).setContent(
+//                new Intent(CGuiTest.this, CMeTab.class)));
+//
+//        tabHost.addTab(tabHost.newTabSpec("Friends").setIndicator(
+//                getResources().getString(R.string.friends),
+//                getResources().getDrawable(R.drawable.ic_menu_friendslist))
+//                .setContent(new Intent(CGuiTest.this, CFriendsTab.class)));
 
         tabHost.addTab(tabHost.newTabSpec("Messages").setIndicator(
                 getResources().getString(R.string.messages)).setContent(
                 new Intent(CGuiTest.this, CMessagesTab.class)));
 
         // todo: remove - just P-o-C here
-        final TextView friendsCounter = TabHelper.injectTabCounter(getTabWidget(), 1, getApplicationContext());
-        final TextView messagesCounter = TabHelper.injectTabCounter(getTabWidget(), 2, getApplicationContext());
-
-        // todo: register/unregister onResume/onPause
-        getContentResolver().registerContentObserver(UserapiProvider.USERS_URI, false, new ContentObserver(new Handler()) {
-            @Override
-            public void onChange(boolean b) {
-                Cursor cursor = managedQuery(UserapiProvider.USERS_URI, null,
-                        UserapiDatabaseHelper.KEY_USER_NEW + "=?",
-                        new String[]{"1"},
-                        null);
-                // to new only
-                if (cursor.getCount() == 0)
-                    friendsCounter.setVisibility(View.INVISIBLE);
-                else {
-                    friendsCounter.setText(String.valueOf(cursor.getCount()));
-                    friendsCounter.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-        getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
+//        final TextView friendsCounter = TabHelper.injectTabCounter(getTabWidget(), 1, getApplicationContext());
+        final TextView messagesCounter = TabHelper.injectTabCounter(getTabWidget(), 0, getApplicationContext());
+//
+//        // todo: register/unregister onResume/onPause
+//        getContentResolver().registerContentObserver(UserapiProvider.USERS_URI, false, new ContentObserver(new Handler()) {
+//            @Override
+//            public void onChange(boolean b) {
+//                Cursor cursor = managedQuery(UserapiProvider.USERS_URI, null,
+//                        UserapiDatabaseHelper.KEY_USER_NEW + "=?",
+//                        new String[]{"1"},
+//                        null);
+//                // to new only
+//                if (cursor.getCount() == 0)
+//                    friendsCounter.setVisibility(View.INVISIBLE);
+//                else {
+//                    friendsCounter.setText(String.valueOf(cursor.getCount()));
+//                    friendsCounter.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        });
+//        getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
         getContentResolver().registerContentObserver(UserapiProvider.MESSAGES_URI, false, new ContentObserver(new Handler()) {
             @Override
             public void onChange(boolean b) {
@@ -170,7 +170,7 @@ public class CGuiTest extends TabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                refresh(contentToUpdate.MESSAGES_ALL);
+                refresh(contentToUpdate.HISTORY);
                 return true;
             case R.id.settings:
                 startActivity(new Intent(this, CSettings.class));
