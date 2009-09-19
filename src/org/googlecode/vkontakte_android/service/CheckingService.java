@@ -25,29 +25,30 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class CheckingService extends Service {
 
     private static String TAG = "VK-Service";
+    private Timer m_timer = new Timer();
+    private static SharedPreferences s_prefs;
+    private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
+   //private boolean m_hasConnection = true;
 
+    
     public enum contentToUpdate {
         FRIENDS, MESSAGES_ALL, MESSAGES_IN, MESSAGES_OUT, WALL, HISTORY, ALL
     }
-
-    private List<Thread> threads = Collections
-            .synchronizedList(new LinkedList<Thread>());
-    // boolean m_hasConnection = true;
-
-    private static SharedPreferences s_prefs;
 
     @Override
     public void onCreate() {
         super.onCreate();
         s_prefs = PreferenceManager.getDefaultSharedPreferences(this);
         try {
-            ApiCheckingKit.s_ctx = getApplicationContext();
+            ApiCheckingKit.s_ctx = getApplicationContext(); 
+            //TODO if login fails
             ApiCheckingKit.login();
             restartScheduledUpdates();
         } catch (IOException e) {
@@ -55,46 +56,21 @@ public class CheckingService extends Service {
         }
     }
 
-    /*
-      * starts a thread checking api periodically
-      */
-    Thread m_periodCheckingThread;
-    Timer m_timer = new Timer();
-
-    private void restartScheduledUpdates() {
-        try {
-            //m_timer.cancel();
-        } catch (IllegalStateException ex) {
-            Log.d(TAG, "Timer has been tried to cancel");
-        }
-        final Intent in = new Intent().putExtra("action",
-                contentToUpdate.MESSAGES_ALL.ordinal());
-        class CheckingTask extends TimerTask {
-            @Override
-            public void run() {
-                Log.d(TAG, "checking by timer");
-                try {
-                    updateHistory();
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (JSONException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-            }
-        }
-        int period = CSettings.getPeriod(getApplicationContext());
-        m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, 1000 * 30);
-        Log.d(TAG, "Timer with period: " + period);
+    @Override
+    public void onStart(final Intent intent, int startId) {
+        doCheck(intent.getIntExtra("action", 1));
     }
 
-    @Override
-    public synchronized void onStart(final Intent intent, int startId) {
-        Thread t = new Thread(new Runnable() {
+    /**
+     * Check given content type for updates
+     * @param toUpdate - ordinal of contentToUpdate
+     */
+    private void doCheck(final int toUpdate)  {
+    	Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
 
-                contentToUpdate what = contentToUpdate.values()[intent
-                        .getIntExtra("action", 1)];
+                contentToUpdate what = contentToUpdate.values()[toUpdate];
                 Log.d(TAG, "updating " + what + " is starting...");
                 try {
                     switch (what) {
@@ -132,8 +108,32 @@ public class CheckingService extends Service {
         });
         threads.add(t);
         t.start();
+     }
+     
+    /**
+     * Starts a thread checking api periodically
+     */
+     private void restartScheduledUpdates() {
+       
+        class CheckingTask extends TimerTask {
+            @Override
+            public void run() {
+                Log.d(TAG, "checking by timer");
+                try {
+                    updateHistory();
+                } catch (IOException e) {
+                    e.printStackTrace();  
+                } catch (JSONException e) {
+                    e.printStackTrace();  
+                }
+            }
+        }
+        int period = CSettings.getPeriod(getApplicationContext());
+        m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, 1000 * 30);
+        Log.d(TAG, "Timer with period: " + period);
     }
 
+    
     // =============== updating methods
 
     private void updateInMessages(long count) throws IOException, JSONException {
@@ -175,7 +175,6 @@ public class CheckingService extends Service {
         api.getOutbox(0, count);
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
     }
-
 
     private void updateFriends() throws IOException, JSONException {
         Log.d(TAG, "updating friends");
@@ -323,18 +322,9 @@ public class CheckingService extends Service {
         return s_prefs.getInt("period", 30);
     }
 
-    private void restartAlarm(int period) {
-        // TODO implement
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
     @Override
     public void onDestroy() {
-        Log.d("serv", "service stopped");
+        Log.d(TAG, "service stopped");
         try {
             ApiCheckingKit.getS_api().logout();
         } catch (IOException e) {
@@ -348,4 +338,28 @@ public class CheckingService extends Service {
         super.onDestroy();
     }
 
+    // ============ RPC stuff ============================ 
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		return binder;
+	}
+
+	private final IVkontakteService.Stub binder = new IVkontakteService.Stub() {
+		
+		@Override
+		public void sendMessage(String mess, long id) throws RemoteException {
+		}
+
+		@Override
+		public void sendStatus(String status) throws RemoteException {
+		}
+
+		@Override
+		public void update(int what) throws RemoteException {
+			doCheck(what);
+		}
+	};
+    
+    
 }
