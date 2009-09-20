@@ -27,9 +27,10 @@ public class ComposeMessageActivity extends ListActivity implements AbsListView.
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        long userId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, -1);
+        long userId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, 
+        		      getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_USER_USERID, -1));
         if (userId == -1) {
-            userId = Long.parseLong(getIntent().getData().getLastPathSegment()); // toDo new 
+           userId = Long.parseLong(getIntent().getData().getLastPathSegment()); // toDo new 
         }
 
         setContentView(R.layout.messages);
