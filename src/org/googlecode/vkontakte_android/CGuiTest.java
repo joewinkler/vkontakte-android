@@ -33,9 +33,12 @@ import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
 import java.io.IOException;
 
 public class CGuiTest extends TabActivity {
-    private static String TAG = "VK-Gui ";
+
+	public static CGuiTest s_instance; //TODO refactor
+		
+	private static String TAG = "VK-Gui ";
     public static VkontakteAPI api;
-    private IVkontakteService m_vkService;
+    public IVkontakteService m_vkService;
     private VkontakteServiceConnection m_connection = new VkontakteServiceConnection();
 
     /** 
@@ -45,6 +48,7 @@ public class CGuiTest extends TabActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        s_instance = this;
         initializeActivity();
         bindService();
 
@@ -54,36 +58,36 @@ public class CGuiTest extends TabActivity {
 		// TODO handle JSONException in api methods
 
 		api = new VkontakteAPI();
-//		if (CSettings.isLogged(this)) {
-//			try {
-//				Log.d(TAG, "already logged. using existing log/pass");
-//				// if (api.login(CSettings.getLogin(this),
-//				// CSettings.getPass(this))) {
-//				if (!TextUtils.isEmpty(CSettings.getSid(this))) {
-//					api.setSid(CSettings.getSid(this));
-//					System.out.println("logged with sid");
-//					initializeActivity(this);
-//					return;
-//				} else if (api.login(CSettings.getLogin(this), CSettings
-//						.getPass(this))) {
-//					initializeActivity(this);
-//					CSettings.saveLogin(CGuiTest.this,
-//							CSettings.getLogin(this), CSettings.getPass(this),
-//							api.getRemixpassword(), api.getSid());// todo:
-//																	// refresh
-//																	// only
-//																	// remix
-//					return;
-//				} else
-//					Toast.makeText(getApplicationContext(),
-//							"Either login or password is incorrect",
-//							Toast.LENGTH_SHORT).show();
-//			} catch (IOException ex) {
-//				// show toast and then login dialog
-//				Toast.makeText(getApplicationContext(), "Connection problems",
-//						Toast.LENGTH_SHORT).show();
-//			}
-//		}
+		if (CSettings.isLogged(this)) {
+			try {
+				Log.d(TAG, "already logged. using existing log/pass");
+				// if (api.login(CSettings.getLogin(this),
+				// CSettings.getPass(this))) {
+				if (!TextUtils.isEmpty(CSettings.getSid(this))) {
+					api.setSid(CSettings.getSid(this));
+					System.out.println("logged with sid");
+					initializeUserStuff();
+					return;
+				} else if (api.login(CSettings.getLogin(this), CSettings
+						.getPass(this))) {
+					initializeUserStuff();
+					CSettings.saveLogin(CGuiTest.this,
+							CSettings.getLogin(this), CSettings.getPass(this),
+							api.getRemixpassword(), api.getSid());// todo:
+																	// refresh
+																	// only
+																	// remix
+					return;
+				} else
+					Toast.makeText(getApplicationContext(),
+							"Either login or password is incorrect",
+							Toast.LENGTH_SHORT).show();
+			} catch (IOException ex) {
+				// show toast and then login dialog
+				Toast.makeText(getApplicationContext(), "Connection problems",
+						Toast.LENGTH_SHORT).show();
+			}
+		}
 
 		final LoginDialog ld = new LoginDialog(this);
 		((EditText) ld.findViewById(R.id.login)).setText("fake4test@gmail.com");
@@ -199,7 +203,7 @@ public class CGuiTest extends TabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                refresh(contentToUpdate.HISTORY);
+                refresh(contentToUpdate.ALL);
                 return true;
             case R.id.settings:
                 startActivity(new Intent(this, CSettings.class));

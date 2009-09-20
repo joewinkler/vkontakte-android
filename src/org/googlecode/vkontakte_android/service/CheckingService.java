@@ -1,6 +1,7 @@
 package org.googlecode.vkontakte_android.service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 import java.util.List;
 import java.util.LinkedList;
@@ -77,11 +78,11 @@ public class CheckingService extends Service {
                         case FRIENDS:
                             updateFriends();
                             break;
-                        case WALL:
+                        case WALL: 
                             updateWall();
                             break;
-                        case MESSAGES_ALL:  //TODO count from Intent
-                            updateInMessages(100);
+                        case MESSAGES_ALL:  
+                        	updateInMessages(100);
                             updateOutMessages(100);
                             break;
                         case MESSAGES_IN:
@@ -137,7 +138,7 @@ public class CheckingService extends Service {
     // =============== updating methods
 
     private void updateInMessages(long count) throws IOException, JSONException {
-        VkontakteAPI api = ApiCheckingKit.getS_api();
+        VkontakteAPI api = ApiCheckingKit.getApi();
         List<Message> messages = api.getInbox(0, (int) count);
         MessageDao single = null;
         int countNew = 0;
@@ -171,18 +172,18 @@ public class CheckingService extends Service {
     }
 
     private void updateOutMessages(int count) throws IOException, JSONException {
-        VkontakteAPI api = ApiCheckingKit.getS_api();
+        VkontakteAPI api = ApiCheckingKit.getApi();
         api.getOutbox(0, count);
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
     }
 
     private void updateFriends() throws IOException, JSONException {
         Log.d(TAG, "updating friends");
-        int[] updated = refreshFriends(ApiCheckingKit.getS_api(),
+        int[] updated = refreshFriends(ApiCheckingKit.getApi(),
                 getApplicationContext());
         Log.d(TAG, "removed: " + updated[0] + "; added: " + updated[1]);
         Log.d(TAG, "updating new friends");
-        int updatedNew = refreshNewFriends(ApiCheckingKit.getS_api(),
+        int updatedNew = refreshNewFriends(ApiCheckingKit.getApi(),
                 getApplicationContext());
         Log.d(TAG, "total new:" + updatedNew);
     }
@@ -200,7 +201,7 @@ public class CheckingService extends Service {
     private void updateHistory() throws IOException, JSONException {
         Log.d(TAG, "updating history");
         ApiCheckingKit kit = ApiCheckingKit.getInstance();
-        VkontakteAPI api = ApiCheckingKit.getS_api();
+        VkontakteAPI api = ApiCheckingKit.getApi();
         updateInMessages(api.getChangesHistory().getFriendsCount());
     }
 
@@ -326,7 +327,7 @@ public class CheckingService extends Service {
     public void onDestroy() {
         Log.d(TAG, "service stopped");
         try {
-            ApiCheckingKit.getS_api().logout();
+            ApiCheckingKit.getApi().logout();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -348,7 +349,17 @@ public class CheckingService extends Service {
 	private final IVkontakteService.Stub binder = new IVkontakteService.Stub() {
 		
 		@Override
-		public void sendMessage(String mess, long id) throws RemoteException {
+		public void sendMessage(String text, long id) throws RemoteException {
+            Message message = new Message();
+            message.setDate(new Date());
+            message.setReceiverId(id);
+            message.setText(text);
+			try {
+				ApiCheckingKit.getApi().sendMessageToUser(message);
+			} catch (IOException e) {
+				UpdatesNotifier.showError(getApplicationContext(),"Cannot send the message. Check connection.");
+				e.printStackTrace();
+			}
 		}
 
 		@Override

@@ -49,7 +49,7 @@ class ApiCheckingKit {
 
     }
 
-    public static VkontakteAPI getS_api() {
+    public static VkontakteAPI getApi() {
         return s_api;
     }
 

@@ -16,7 +16,16 @@ import android.widget.Toast;
 //TODO toast => notifier
 class UpdatesNotifier {
 	
-	//enum notifyType {MESSAGE, FRIEND, PHOTOTAG, WALL};
+	public static void showError(final Context ctx, final String error) {
+		new Thread() {
+            @Override
+            public void run() { 
+                Looper.prepare();
+                Toast.makeText(ctx, error, Toast.LENGTH_SHORT).show();
+                Looper.loop();
+            }
+		}.start();
+	}
 	
     public static void notifyMessages(final Context ctx, final long num, final MessageDao mess) {
         if (num<1) return;

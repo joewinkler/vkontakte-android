@@ -2,6 +2,8 @@ package org.googlecode.vkontakte_android;
 
 import android.app.ListActivity;
 import android.os.Bundle;
+import android.os.RemoteException;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.TextView;
@@ -14,6 +16,7 @@ import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KE
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_SENDERID;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService;
+import org.googlecode.vkontakte_android.service.IVkontakteService;
 
 import java.io.IOException;
 import java.util.Date;
@@ -42,21 +45,20 @@ public class ComposeMessageActivity extends ListActivity implements AbsListView.
         findViewById(R.id.send_reply).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Message message = new Message();
-                message.setDate(new Date());
-                message.setReceiverId(finalUserId);
-                message.setText(textView.getText().toString());
                 try {
-                    String result = CGuiTest.api.sendMessageToUser(message);
+                	IVkontakteService v = CGuiTest.s_instance.m_vkService;
+                	if (v == null) Log.e("null","!!!!!!!!!!!!");
+                   	v.sendMessage(textView.getText().toString(), finalUserId);
                     if (true) {
                         Toast.makeText(getApplicationContext(), "message sent!", Toast.LENGTH_SHORT).show();
                         textView.setText("");
-                        startService(new Intent(getApplicationContext(), CheckingService.class).putExtra("action", CheckingService.contentToUpdate.MESSAGES_OUT.ordinal()));
+                        CGuiTest.s_instance.m_vkService.update(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal());
                         //todo: scroll
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                }  catch (RemoteException e) {
+					Toast.makeText(ComposeMessageActivity.this, "Fatal error. Cannot connect to the service", Toast.LENGTH_SHORT);
+					e.printStackTrace();
+				}
             }
         });
     }
