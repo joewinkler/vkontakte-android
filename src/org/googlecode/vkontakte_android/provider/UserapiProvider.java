@@ -12,14 +12,17 @@ public class UserapiProvider extends ContentProvider {
     public static final Uri USERS_URI = Uri.parse("content://org.googlecode.vkontakte_android/users");
     public static final Uri MESSAGES_URI = Uri.parse("content://org.googlecode.vkontakte_android/messages");
     public static final Uri FILES_URI = Uri.parse("content://org.googlecode.vkontakte_android/files");
-
+    public static final Uri WALL_URI = Uri.parse("content://org.googlecode.vkontakte_android/wall");
+    
     private static final int ALL_USERS = 1;
     private static final int SINGLE_USER = 2;
     private static final int ALL_MESSAGES = 3;
     private static final int SINGLE_MESSAGE = 4;
     private static final int ALL_FILES = 5;
     private static final int SINGLE_FILE = 6;
-
+    private static final int ALL_WALL = 7;
+    private static final int SINGLE_WALL = 8;
+    
     private static UriMatcher uriMatcher;
     private UserapiDatabaseHelper databaseHelper;
     private SQLiteDatabase database;
@@ -32,6 +35,8 @@ public class UserapiProvider extends ContentProvider {
         uriMatcher.addURI("org.googlecode.vkontakte_android", "messages/#", SINGLE_MESSAGE);
         uriMatcher.addURI("org.googlecode.vkontakte_android", "files", ALL_FILES);
         uriMatcher.addURI("org.googlecode.vkontakte_android", "files/#", SINGLE_FILE);
+        uriMatcher.addURI("org.googlecode.vkontakte_android", "wall", ALL_WALL);
+        uriMatcher.addURI("org.googlecode.vkontakte_android", "wall/#", SINGLE_WALL);
     }
 
     public boolean onCreate() {
@@ -72,6 +77,15 @@ public class UserapiProvider extends ContentProvider {
                 table = DATABASE_FILES_TABLE;
                 mySort = KEY_FILE_ROWID;
                 column = KEY_FILE_ROWID;
+                break;
+            case ALL_WALL:
+                table = DATABASE_WALL_TABLE;
+                mySort = KEY_WALL_ROWID;
+                break;
+            case SINGLE_WALL:
+                table = DATABASE_WALL_TABLE;
+                mySort = KEY_WALL_ROWID;
+                column = KEY_WALL_ROWID;
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI:" + uri);

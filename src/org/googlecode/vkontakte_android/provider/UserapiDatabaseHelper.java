@@ -26,6 +26,13 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_FILE_URL = "url";
     public static final String KEY_FILE_DATA = "data";
 
+    public static final String KEY_WALL_ROWID = BaseColumns._ID;
+    public static final String KEY_WALL_TEXT = "text";
+    public static final String KEY_WALL_SENDERID = "senderid";
+    public static final String KEY_WALL_PIC = "pic";
+    public static final String KEY_WALL_DATA = "data";
+    
+    
     public static final String DATABASE_NAME = "userapi";
     private static final int DATABASE_VERSION = 1;
 
@@ -57,6 +64,15 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             + KEY_FILE_DATA + " blob "
             + ");";
 
+    public static final String DATABASE_WALL_TABLE = "wall";
+    private static final String DATABASE_WALL_CREATE = "create table " + DATABASE_WALL_TABLE + " ("
+            + KEY_WALL_ROWID + " integer primary key autoincrement, "
+            + KEY_MESSAGE_SENDERID + " long"
+            + KEY_WALL_TEXT + " text, "
+            + KEY_WALL_PIC + " blob "
+            + ");";
+
+    
     private static final String TAG = "UserapiDatabaseHelper";
 
     public UserapiDatabaseHelper(Context context) {

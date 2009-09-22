@@ -27,7 +27,9 @@ public class ContactsDownloader {
     }
 
     public List<VkRecord> download() throws IOException {
-        final AbstractHttpClient client = CGuiTest.api.getHttpClient();
+    	
+    	//TODO repair
+        final AbstractHttpClient client = null; //CGuiTest.api.getHttpClient();
 
         List<ContactsDownloader.VkRecord> records = new ArrayList<ContactsDownloader.VkRecord>(600);
 

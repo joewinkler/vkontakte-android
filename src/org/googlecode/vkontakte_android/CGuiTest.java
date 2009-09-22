@@ -37,7 +37,7 @@ public class CGuiTest extends TabActivity {
 	public static CGuiTest s_instance; //TODO refactor
 		
 	private static String TAG = "VK-Gui ";
-    public static VkontakteAPI api;
+    //public static VkontakteAPI api;
     public IVkontakteService m_vkService;
     private VkontakteServiceConnection m_connection = new VkontakteServiceConnection();
 
@@ -54,39 +54,13 @@ public class CGuiTest extends TabActivity {
 
     }
 
-    private void login() {
+    private void login() throws RemoteException {
 		// TODO handle JSONException in api methods
 
-		api = new VkontakteAPI();
-		if (CSettings.isLogged(this)) {
-			try {
-				Log.d(TAG, "already logged. using existing log/pass");
-				// if (api.login(CSettings.getLogin(this),
-				// CSettings.getPass(this))) {
-				if (!TextUtils.isEmpty(CSettings.getSid(this))) {
-					api.setSid(CSettings.getSid(this));
-					System.out.println("logged with sid");
-					initializeUserStuff();
-					return;
-				} else if (api.login(CSettings.getLogin(this), CSettings
-						.getPass(this))) {
-					initializeUserStuff();
-					CSettings.saveLogin(CGuiTest.this,
-							CSettings.getLogin(this), CSettings.getPass(this),
-							api.getRemixpassword(), api.getSid());// todo:
-																	// refresh
-																	// only
-																	// remix
-					return;
-				} else
-					Toast.makeText(getApplicationContext(),
-							"Either login or password is incorrect",
-							Toast.LENGTH_SHORT).show();
-			} catch (IOException ex) {
-				// show toast and then login dialog
-				Toast.makeText(getApplicationContext(), "Connection problems",
-						Toast.LENGTH_SHORT).show();
-			}
+		if (m_vkService.loginAuth()) {
+			Log.d(TAG, "Already authorized");
+			initializeUserStuff();
+			return;
 		}
 
 		final LoginDialog ld = new LoginDialog(this);
@@ -95,27 +69,24 @@ public class CGuiTest extends TabActivity {
 		ld.show();
 		ld.setOnClick(new View.OnClickListener() {
 			public void onClick(View view) {
+
+				String login = ld.getLogin();
+				String pass = ld.getPass();
+				Log.i(TAG, login + ":" + pass);
 				try {
-					String login = ld.getLogin();
-					String pass = ld.getPass();
-					Log.i(TAG, login + ":" + pass);
-					if (api.login(login, pass)) {
+					if (m_vkService.login(login, pass)) {
 						ld.dismiss();
-						CSettings.saveLogin(CGuiTest.this, login, pass, api
-								.getRemixpassword(), api.getSid());
 						initializeUserStuff();
 					} else {
 						Toast.makeText(getApplicationContext(),
-								"login/pass incorrect", Toast.LENGTH_SHORT)
-								.show();
+								"login/pass incorrect", Toast.LENGTH_SHORT).show();
 					}
-				} catch (IOException e) {
+				} catch (RemoteException e) {
+					CGuiTest.fatalError("RemoteException");
 					e.printStackTrace();
 				}
-
 			}
 		});
-
 	}
     
     
@@ -143,7 +114,7 @@ public class CGuiTest extends TabActivity {
     
     
     private void initializeUserStuff() {
-        // todo: remove - just P-o-C here
+        // todo: remove - just P-o-C here. +1 :(
 //      final TextView friendsCounter = TabHelper.injectTabCounter(getTabWidget(), 1, getApplicationContext());
       final TextView messagesCounter = TabHelper.injectTabCounter(getTabWidget(), 0, getApplicationContext());
 
@@ -210,13 +181,11 @@ public class CGuiTest extends TabActivity {
                 return true;
             case R.id.logout:
                 try {
-                    api.logout();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                stopService(new Intent(this, CheckingService.class));
-                CSettings.clearPrivateInfo(this);
+					m_vkService.logout();
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
                 finish();
                 return true;
         }
@@ -240,6 +209,9 @@ public class CGuiTest extends TabActivity {
         
     }
     
+    public static void fatalError(String text) {
+    	Toast.makeText(CGuiTest.s_instance, text, Toast.LENGTH_SHORT).show();
+    }
     
     // =========  RPC stuff ====================
 
@@ -258,7 +230,12 @@ public class CGuiTest extends TabActivity {
 			IBinder boundService ) {
           m_vkService = IVkontakteService.Stub.asInterface((IBinder)boundService);
 		  Log.d( TAG,"Service has been connected");
-		  login();
+		  try {
+			login();
+		} catch (RemoteException e) {
+			 
+			e.printStackTrace();
+		}
         }
 
         public void onServiceDisconnected(ComponentName className) {
