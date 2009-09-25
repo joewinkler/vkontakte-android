@@ -73,7 +73,7 @@ public class CGuiTest extends TabActivity {
 				String login = ld.getLogin();
 				String pass = ld.getPass();
 				Log.i(TAG, login + ":" + pass);
-				try {
+				try { 
 					if (m_vkService.login(login, pass)) {
 						ld.dismiss();
 						initializeUserStuff();

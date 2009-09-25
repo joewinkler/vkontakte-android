@@ -7,6 +7,8 @@
               android:hint="login"/>
     <EditText android:id="@+id/pass" android:layout_height="wrap_content" android:layout_width="fill_parent"
               android:hint="pass" android:password="true"/>
-    <Button android:id="@+id/button_login" android:layout_height="wrap_content" android:layout_width="fill_parent"
-            android:text="Login"/>
+    
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent"><Button android:id="@+id/button_login" android:layout_height="wrap_content" android:layout_width="fill_parent"
+            android:text="Login" android:layout_weight="50"/><Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="50" android:text="Cancel" android:id="@+id/cancel"></Button>
+</LinearLayout>
 </LinearLayout>

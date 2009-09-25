@@ -38,17 +38,6 @@ class ApiCheckingKit {
     //========================================
     public static Context s_ctx;
 
-    /*
-    *  make the instance of service's API to login.
-    *  call it before using ApiCheckingKit first time
-    */
-    public static void login() throws IOException {
-        Log.d(TAG, "service is logging...");
-//        s_api.login(CSettings.getLogin(s_ctx), CSettings.getPass(s_ctx));
-        s_api.setSid(CSettings.getSid(s_ctx));
-
-    }
-
     public static VkontakteAPI getApi() {
         return s_api;
     }
@@ -69,11 +58,6 @@ class ApiCheckingKit {
         s_updates.put(UpdateType.TAGS, changes.getPhotosCount());
         return s_updates;
     }
-
-    public void logout() throws IOException {
-        s_api.logout();
-    }
-
 
     //================================================
 
