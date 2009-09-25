@@ -49,7 +49,7 @@ public class CGuiTest extends TabActivity {
         super.onCreate(savedInstanceState);
 
         s_instance = this;
-        initializeActivity();
+        initializeActivity(); 
         bindService();
 
     }
@@ -67,7 +67,7 @@ public class CGuiTest extends TabActivity {
 		((EditText) ld.findViewById(R.id.login)).setText("fake4test@gmail.com");
 		((EditText) ld.findViewById(R.id.pass)).setText("qwerty");
 		ld.show();
-		ld.setOnClick(new View.OnClickListener() {
+		ld.setOnLoginClick(new View.OnClickListener() {
 			public void onClick(View view) {
 
 				String login = ld.getLogin();
@@ -85,6 +85,21 @@ public class CGuiTest extends TabActivity {
 					CGuiTest.fatalError("RemoteException");
 					e.printStackTrace();
 				}
+			}
+		});
+		
+		ld.setOnCancelClick(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				try {
+					m_vkService.stop();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				unbindService(m_connection);
+				ld.dismiss();
+				finish();
 			}
 		});
 	}
@@ -157,9 +172,15 @@ public class CGuiTest extends TabActivity {
 
     @Override
 	protected void onNewIntent(Intent intent) {
-		String tag = intent.getStringExtra("tabToShow");
-		Log.d(TAG, "onNewIntent:: " + tag);
-		getTabHost().setCurrentTabByTag(tag);
+//    	if (intent.hasExtra("error")) {
+//    		GuiUtils.error(intent);
+//    	} else if (intent.hasExtra("message")) {
+//    		GuiUtils.message(intent);
+//    	} else if (intent.hasExtra("tabToShow")) {
+//    		String tag = intent.getStringExtra("tabToShow");
+//    		Log.d(TAG, "onNewIntent:: " + tag);
+//    		getTabHost().setCurrentTabByTag(tag);
+//    	}
 		super.onNewIntent(intent);
 	}
     
@@ -182,10 +203,11 @@ public class CGuiTest extends TabActivity {
             case R.id.logout:
                 try {
 					m_vkService.logout();
+					m_vkService.stop();
 				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				unbindService(m_connection);
                 finish();
                 return true;
         }

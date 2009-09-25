@@ -8,5 +8,7 @@ interface IVkontakteService {
   boolean login(String login, String pass);
   boolean loginAuth();
   void logout();
+  
+  void stop();
    
 }

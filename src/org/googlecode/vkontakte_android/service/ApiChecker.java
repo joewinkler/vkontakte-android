@@ -17,7 +17,7 @@ import android.util.Log;
  */
 class ApiCheckingKit {
 
-    private static String TAG = "VK-Service";
+    private static String TAG = "ApiCheckingKit";
 
     //========================================
 

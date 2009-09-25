@@ -49,15 +49,10 @@ public class CheckingService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        m_binder = new VkontakteServiceBinder(this);
+        
         s_prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        try {
-            ApiCheckingKit.s_ctx = getApplicationContext(); 
-            //TODO if login fails
-            ApiCheckingKit.login();
-            restartScheduledUpdates();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ApiCheckingKit.s_ctx = getApplicationContext();
     }
 
     @Override
@@ -69,7 +64,7 @@ public class CheckingService extends Service {
      * Check given content type for updates
      * @param toUpdate - ordinal of contentToUpdate
      */
-    private void doCheck(final int toUpdate)  {
+    void doCheck(final int toUpdate)  {
     	Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -220,7 +215,7 @@ public class CheckingService extends Service {
         }
         return UserDao.bulkUpdateOrRemove(context, users);
     }
-
+ 
     private int refreshNewFriends(VkontakteAPI api, Context context)
             throws IOException, JSONException {
         List<UserDao> users = new LinkedList<UserDao>();
@@ -306,6 +301,7 @@ public class CheckingService extends Service {
 //	}
 
     // ========= preferences
+    
     static boolean useSound() {
 
         return s_prefs.getBoolean("sound", true);
@@ -329,11 +325,7 @@ public class CheckingService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "service stopped");
-        try {
-            ApiCheckingKit.getApi().logout();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         // stop all running threads
         for (Thread t : threads) {
             if (t.isAlive())
@@ -344,98 +336,13 @@ public class CheckingService extends Service {
 
     // ============ RPC stuff ============================ 
 
+    private IVkontakteService.Stub m_binder; 
+    
 	@Override
 	public IBinder onBind(Intent intent) {
-		return binder;
+		return m_binder;
 	}
 
-	private final IVkontakteService.Stub binder = new IVkontakteService.Stub() {
-		
-		@Override
-		public void sendMessage(String text, long id) throws RemoteException {
-            Message message = new Message();
-            message.setDate(new Date());
-            message.setReceiverId(id);
-            message.setText(text);
-			try {
-				ApiCheckingKit.getApi().sendMessageToUser(message);
-			} catch (IOException e) {
-				UpdatesNotifier.showError(getApplicationContext(),"Cannot send the message. Check connection.");
-				e.printStackTrace();
-			}
-		}
-
-		@Override
-		public void sendStatus(String status) throws RemoteException {
-		}
-
-		@Override
-		public void update(int what) throws RemoteException {
-			doCheck(what);
-		}
-
-		@Override
-		public boolean login(String login, String pass) throws RemoteException {
-			VkontakteAPI api = ApiCheckingKit.getApi();
-			Context ctx = getApplicationContext();
-			
-			try {
-			  if (api.login(login, pass)) {
-					CSettings.saveLogin(ctx, login, pass, api.getRemixpassword(), api.getSid());
-					return true;
-			  }
-			} catch (IOException e) {
-				e.printStackTrace();
-				UpdatesNotifier.showError(ctx, "Connection problems");
-				return false;
-			} 
-			return false;
-		}
-
-		@Override
-		public boolean loginAuth() throws RemoteException {
-			Context ctx = getApplicationContext();
-			VkontakteAPI api = ApiCheckingKit.getApi();
-			
-			if (CSettings.isLogged(ctx)) {
-				try {
-					Log.d(TAG, "already logged. using existing log/pass");
-					if (!TextUtils.isEmpty(CSettings.getSid(ctx))) {
-						api.setSid(CSettings.getSid(ctx));
-						System.out.println("logged with sid");
-						return true;
-					} else if (api.login(CSettings.getLogin(ctx), CSettings.getPass(ctx))) {
-						// todo: refresh only remix
-						CSettings.saveLogin(ctx,
-								CSettings.getLogin(ctx), CSettings.getPass(ctx),
-								api.getRemixpassword(), api.getSid());
-						return true;
-					} else {
-						UpdatesNotifier.showError(ctx, "Either login or password is incorrect");
-						//TODO clear settings
-						return false;
-					}
-				} catch (IOException ex) {
-					UpdatesNotifier.showError(ctx, "Connection problems");
-					return false;
-				}
-			} else {
-			  return false;	
-			}
-		}
-
-		@Override
-		public void logout() throws RemoteException {
-			try {
-				ApiCheckingKit.getApi().logout();
-				CSettings.clearPrivateInfo(getApplicationContext());
-			} catch (IOException e) {
-				UpdatesNotifier.showError(getApplicationContext(), "Connection problems");
-				e.printStackTrace();
-			}
-		}
 	
 	
-	
-	};
 }

@@ -26,7 +26,7 @@ public class PhotoListActivity extends Activity {
                 finish();
             }
         });
-        ld.setOnClick(new View.OnClickListener() {
+        ld.setOnLoginClick(new View.OnClickListener() {
             public void onClick(View view) {
                 try {
                     if (api.login(ld.getLogin(), ld.getPass())) {

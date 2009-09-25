@@ -47,8 +47,7 @@ public class ComposeMessageActivity extends ListActivity implements AbsListView.
             public void onClick(View view) {
                 try {
                 	IVkontakteService v = CGuiTest.s_instance.m_vkService;
-                	if (v == null) Log.e("null","!!!!!!!!!!!!");
-                   	v.sendMessage(textView.getText().toString(), finalUserId);
+                	v.sendMessage(textView.getText().toString(), finalUserId);
                     if (true) {
                         Toast.makeText(getApplicationContext(), "message sent!", Toast.LENGTH_SHORT).show();
                         textView.setText("");

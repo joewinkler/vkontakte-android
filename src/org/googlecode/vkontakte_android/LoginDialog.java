@@ -9,15 +9,21 @@ import org.googlecode.vkontakte_android.R;
 
 public class LoginDialog extends Dialog {
     private Button button;
+    private Button cancel;
 
     public LoginDialog(Context context) {
         super(context);
         setContentView(R.layout.login_dialog);
         button = (Button) findViewById(R.id.button_login);
+        cancel = (Button) findViewById(R.id.cancel);
     }
 
-    public void setOnClick(View.OnClickListener l) {
+    public void setOnLoginClick(View.OnClickListener l) {
         button.setOnClickListener(l);
+    }
+    
+    public void setOnCancelClick(View.OnClickListener l) {
+        cancel.setOnClickListener(l);
     }
 
     public String getLogin() {
