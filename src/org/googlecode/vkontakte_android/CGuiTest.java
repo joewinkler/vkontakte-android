@@ -17,20 +17,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.text.TextUtils;
-import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.service.IVkontakteService;
 import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
-
-import java.io.IOException;
 
 public class CGuiTest extends TabActivity {
 
@@ -119,7 +114,7 @@ public class CGuiTest extends TabActivity {
         tabHost.addTab(tabHost.newTabSpec("Friends").setIndicator(
                 getResources().getString(R.string.friends),
                 getResources().getDrawable(R.drawable.ic_menu_friendslist))
-                .setContent(new Intent(CGuiTest.this, CFriendsTab.class)));
+                .setContent(new Intent(CGuiTest.this, FriendsListTabActivity.class)));
 
         tabHost.addTab(tabHost.newTabSpec("Messages").setIndicator(
                 getResources().getString(R.string.messages)).setContent(
