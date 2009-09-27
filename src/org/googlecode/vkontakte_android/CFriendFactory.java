@@ -24,8 +24,8 @@ public class CFriendFactory {
 		TextView vmess = (TextView) v.findViewById(R.id.status);
 		vmess.setText(online ? "Online" : "Offline");
 
-		ImageButton b = (ImageButton) v.findViewById(R.id.send_message);
-		b.setImageDrawable(new BitmapDrawable(CImagesManager.getBitmap("send")));
+//		ImageButton b = (ImageButton) v.findViewById(R.id.send_message);
+//		b.setImageDrawable(new BitmapDrawable(CImagesManager.getBitmap("send")));
 
 		return v;
 

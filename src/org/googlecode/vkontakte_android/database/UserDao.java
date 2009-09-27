@@ -23,7 +23,7 @@ public class UserDao extends org.googlecode.userapi.User {
     private long photo;
     private long photoSmall;
     private boolean newFriend;
-
+    //todo: save urls/full avatars
 
     public UserDao(Cursor cursor) {
         rowId = cursor.getLong(0);
@@ -63,13 +63,13 @@ public class UserDao extends org.googlecode.userapi.User {
         int removed;
         List<Long> oldUsers = UserDao.getAllOldFriendsId(context);
         for (User user : users) {
-            System.out.println("updating "+user.getUserId());
+            System.out.println("updating " + user.getUserId());
             UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), false);
             added += userDao.saveOrUpdate(context);
             oldUsers.remove(userDao.getUserId());
         }
         for (Long id : oldUsers) {
-            System.out.println("deleting "+id);
+            System.out.println("deleting " + id);
             context.getContentResolver().delete(USERS_URI, KEY_USER_USERID + "=?", new String[]{String.valueOf(id)});
         }
         removed = oldUsers.size();

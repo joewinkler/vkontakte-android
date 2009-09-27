@@ -18,23 +18,18 @@ import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 
-public class CFriendsTab extends ListActivity implements AbsListView.OnScrollListener {
-    private FriendsListAdapter adapter;
+public class CFriendsTab extends ListActivity {
 
-
-    @Override 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState); 
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.friend_list);
-        adapter = new FriendsListAdapter(this, R.layout.friend_row, managedQuery(UserapiProvider.USERS_URI, null, null, null,
+        FriendsListAdapter adapter = new FriendsListAdapter(this, R.layout.friend_row, managedQuery(UserapiProvider.USERS_URI, null, null, null,
                 KEY_USER_NEW + " DESC, " + KEY_USER_ONLINE + " DESC"
         ));
         setListAdapter(adapter);
-        getListView().setOnScrollListener(this);
-        
-        
-        
-        
+
+        //todo: use tabcounter
 //        TextView tv = (TextView) findViewById(R.id.new_counter);
 //        try {
 //            long counter = CGuiTest.api.getChangesHistory().getFriendsCount();
@@ -46,14 +41,4 @@ public class CFriendsTab extends ListActivity implements AbsListView.OnScrollLis
 //        }
 
     }
-
-    public void onScroll(AbsListView v, int i, int j, int k) {
-    }
-
-    public void onScrollStateChanged(AbsListView v, int state) {
-        if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && getListView().getLastVisiblePosition() == adapter.getCount() - 1) {
-//            adapter.prepareData();
-        }
-    }
-
 }
