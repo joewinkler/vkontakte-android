@@ -22,6 +22,9 @@ public class UserapiProvider extends ContentProvider {
     private static final int SINGLE_FILE = 6;
     private static final int ALL_WALL = 7;
     private static final int SINGLE_WALL = 8;
+    private static final int ALL_PROFILES = 9;
+    private static final int SINGLE_PROFILE = 10;
+    
     
     private static UriMatcher uriMatcher;
     private UserapiDatabaseHelper databaseHelper;
@@ -37,8 +40,11 @@ public class UserapiProvider extends ContentProvider {
         uriMatcher.addURI("org.googlecode.vkontakte_android", "files/#", SINGLE_FILE);
         uriMatcher.addURI("org.googlecode.vkontakte_android", "wall", ALL_WALL);
         uriMatcher.addURI("org.googlecode.vkontakte_android", "wall/#", SINGLE_WALL);
+        uriMatcher.addURI("org.googlecode.vkontakte_android", "profiles", ALL_PROFILES);
+        uriMatcher.addURI("org.googlecode.vkontakte_android", "profiles/#", SINGLE_PROFILE);
     }
 
+    @Override
     public boolean onCreate() {
         Context context = getContext();
         databaseHelper = new UserapiDatabaseHelper(context);
@@ -46,6 +52,7 @@ public class UserapiProvider extends ContentProvider {
         return (database != null);
     }
 
+    @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sort) {
         String table;
         String column = null;
@@ -87,6 +94,15 @@ public class UserapiProvider extends ContentProvider {
                 mySort = KEY_WALL_ROWID;
                 column = KEY_WALL_ROWID;
                 break;
+            case ALL_PROFILES:
+                table = DATABASE_PROFILE_TABLE;
+                mySort = KEY_PROFILE_ROWID;
+                break;
+            case SINGLE_PROFILE:
+                table = DATABASE_PROFILE_TABLE;
+                mySort = KEY_PROFILE_ROWID;
+                column = KEY_PROFILE_ROWID;
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported URI:" + uri);
         }
@@ -107,6 +123,7 @@ public class UserapiProvider extends ContentProvider {
         return cursor;
     }
 
+    @Override
     public String getType(Uri uri) {
         switch (uriMatcher.match(uri)) {
             case ALL_USERS:
@@ -126,6 +143,7 @@ public class UserapiProvider extends ContentProvider {
         }
     }
 
+    @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
         String table;
         String column;
@@ -138,6 +156,11 @@ public class UserapiProvider extends ContentProvider {
                 table = DATABASE_MESSAGES_TABLE;
                 column = KEY_MESSAGE_ROWID;
                 break;
+            case ALL_PROFILES:
+                table = DATABASE_PROFILE_TABLE;
+                column = KEY_PROFILE_ROWID;
+                break;
+  
 //            case ALL_FILES:
 //                table = DATABASE_FILES_TABLE;
 //                column = KEY_FILE_ROWID;
@@ -157,6 +180,7 @@ public class UserapiProvider extends ContentProvider {
         } else return null;
     }
 
+    @Override
     public int delete(Uri uri, String where, String[] whereArgs) {
         String table;
         String column = null;
@@ -174,6 +198,13 @@ public class UserapiProvider extends ContentProvider {
             case SINGLE_MESSAGE:
                 table = DATABASE_MESSAGES_TABLE;
                 column = KEY_MESSAGE_ROWID;
+                break;
+            case ALL_PROFILES:
+                table = DATABASE_PROFILE_TABLE;
+                break;
+            case SINGLE_PROFILE:
+                table = DATABASE_PROFILE_TABLE;
+                column = KEY_PROFILE_ROWID;
                 break;
 //            case ALL_FILES:
 //                table = DATABASE_FILES_TABLE;
@@ -194,6 +225,7 @@ public class UserapiProvider extends ContentProvider {
         return count;
     }
 
+    @Override
     public int update(Uri uri, ContentValues contentValues, String where, String[] whereArgs) {
         String table;
         String column = null;
@@ -212,6 +244,14 @@ public class UserapiProvider extends ContentProvider {
                 table = DATABASE_MESSAGES_TABLE;
                 column = KEY_MESSAGE_ROWID;
                 break;
+            case ALL_PROFILES:
+                table = DATABASE_MESSAGES_TABLE;
+                break;
+            case SINGLE_PROFILE:
+                table = DATABASE_PROFILE_TABLE;
+                column = KEY_PROFILE_ROWID;
+                break;
+                
 //            case ALL_FILES:
 //                table = DATABASE_FILES_TABLE;
 //                break;
@@ -244,6 +284,10 @@ public class UserapiProvider extends ContentProvider {
             case ALL_MESSAGES:
                 table = DATABASE_MESSAGES_TABLE;
                 column = KEY_MESSAGE_ROWID;
+                break;
+            case ALL_PROFILES:
+                table = DATABASE_PROFILE_TABLE;
+                column = KEY_PROFILE_ROWID;
                 break;
 //            case ALL_FILES:
 //                table = DATABASE_FILES_TABLE;

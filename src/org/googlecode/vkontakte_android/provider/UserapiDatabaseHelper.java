@@ -1,5 +1,9 @@
 package org.googlecode.vkontakte_android.provider;
 
+import java.util.Date;
+
+import org.googlecode.userapi.Status;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -7,7 +11,10 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 public class UserapiDatabaseHelper extends SQLiteOpenHelper {
-    public static final String KEY_USER_ROWID = BaseColumns._ID;
+
+    private static final String TAG = "UserapiDatabaseHelper";
+	
+	public static final String KEY_USER_ROWID = BaseColumns._ID;
     public static final String KEY_USER_USERID = "userid";
     public static final String KEY_USER_NAME = "name";
     public static final String KEY_USER_MALE = "male";
@@ -32,6 +39,14 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_WALL_PIC = "pic";
     public static final String KEY_WALL_DATA = "data";
     
+    public static final String KEY_PROFILE_ROWID = BaseColumns._ID;
+    public static final String KEY_PROFILE_USER = "userid";
+    public static final String KEY_PROFILE_FIRSTNAME = "firstname";
+    public static final String KEY_PROFILE_SURNAME = "surname";
+    public static final String KEY_PROFILE_STATUS = "status";
+    public static final String KEY_PROFILE_SEX = "sex";
+    public static final String KEY_PROFILE_BIRTHDAY = "birthday";
+    public static final String KEY_PROFILE_PHONE = "phone";    
     
     public static final String DATABASE_NAME = "userapi";
     private static final int DATABASE_VERSION = 1;
@@ -72,9 +87,19 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             + KEY_WALL_PIC + " blob "
             + ");";
 
-    
-    private static final String TAG = "UserapiDatabaseHelper";
+    public static final String DATABASE_PROFILE_TABLE = "profiles";
+    private static final String DATABASE_PROFILE_CREATE = "create table " + DATABASE_PROFILE_TABLE + " ("
+            + KEY_PROFILE_ROWID + " integer primary key autoincrement, "
+            + KEY_PROFILE_ROWID + " long"
+            + KEY_PROFILE_FIRSTNAME + " text, "
+            + KEY_PROFILE_SURNAME + " text, "
+            + KEY_PROFILE_STATUS + " text, "
+            + KEY_PROFILE_SEX + " text"
+            + KEY_PROFILE_BIRTHDAY + " long"
+            + KEY_PROFILE_PHONE + " text"
+            + ");";
 
+    
     public UserapiDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -84,6 +109,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(DATABASE_USERS_CREATE);
         db.execSQL(DATABASE_FILES_CREATE);
         db.execSQL(DATABASE_MESSAGES_CREATE);
+        db.execSQL(DATABASE_PROFILE_CREATE);
     }
 
     @Override
@@ -93,6 +119,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_USERS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_FILES_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_MESSAGES_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_PROFILE_CREATE);
         onCreate(db);
     }
 }
