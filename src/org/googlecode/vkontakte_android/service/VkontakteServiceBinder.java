@@ -7,6 +7,7 @@ import org.googlecode.userapi.Credentials;
 import org.googlecode.userapi.Message;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.CSettings;
+import org.googlecode.vkontakte_android.database.MessageDao;
 
 import android.content.Context;
 import android.os.RemoteException;
@@ -82,21 +83,26 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub{
 
 	
 	@Override
-	public void sendMessage(String text, long id) throws RemoteException {
+	public boolean sendMessage(String text, long id) throws RemoteException {
         Message message = new Message();
         message.setDate(new Date());
         message.setReceiverId(id);
         message.setText(text);
 		try {
 			ApiCheckingKit.getApi().sendMessageToUser(message);
+			MessageDao md = new MessageDao(0, new Date(), text, 0, id, true);
+			md.saveOrUpdate(m_context);
 		} catch (IOException e) {
 			UpdatesNotifier.showError(m_context,"Cannot send the message. Check connection.");
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 	@Override
-	public void sendStatus(String status) throws RemoteException {
+	public boolean sendStatus(String status) throws RemoteException {
+		return false;
 	}
 
 	@Override
@@ -107,7 +113,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub{
 	
 	
 	@Override
-	public void logout() throws RemoteException {
+	public boolean logout() throws RemoteException {
 		try {
 			Log.d(TAG, "Logout");
 			ApiCheckingKit.getApi().logout();
@@ -115,12 +121,27 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub{
 		} catch (IOException e) {
 			UpdatesNotifier.showError(m_context, "Connection problems");
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 	@Override
 	public void stop() throws RemoteException {
 		m_service.stopSelf();
+	}
+
+	@Override
+	public boolean loadPrivateMessages(long userid, int num)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean loadProfile(long userid) throws RemoteException {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 

@@ -13,6 +13,7 @@ public class UserapiProvider extends ContentProvider {
     public static final Uri MESSAGES_URI = Uri.parse("content://org.googlecode.vkontakte_android/messages");
     public static final Uri FILES_URI = Uri.parse("content://org.googlecode.vkontakte_android/files");
     public static final Uri WALL_URI = Uri.parse("content://org.googlecode.vkontakte_android/wall");
+    public static final Uri PROFILES_URI = Uri.parse("content://org.googlecode.vkontakte_android/profiles");
     
     private static final int ALL_USERS = 1;
     private static final int SINGLE_USER = 2;
@@ -160,7 +161,7 @@ public class UserapiProvider extends ContentProvider {
                 table = DATABASE_PROFILE_TABLE;
                 column = KEY_PROFILE_ROWID;
                 break;
-  
+   
 //            case ALL_FILES:
 //                table = DATABASE_FILES_TABLE;
 //                column = KEY_FILE_ROWID;

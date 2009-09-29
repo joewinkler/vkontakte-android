@@ -44,6 +44,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_PROFILE_FIRSTNAME = "firstname";
     public static final String KEY_PROFILE_SURNAME = "surname";
     public static final String KEY_PROFILE_STATUS = "status";
+    public static final String KEY_PROFILE_PHOTO = "photo";
     public static final String KEY_PROFILE_SEX = "sex";
     public static final String KEY_PROFILE_BIRTHDAY = "birthday";
     public static final String KEY_PROFILE_PHONE = "phone";    
@@ -90,10 +91,11 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_PROFILE_TABLE = "profiles";
     private static final String DATABASE_PROFILE_CREATE = "create table " + DATABASE_PROFILE_TABLE + " ("
             + KEY_PROFILE_ROWID + " integer primary key autoincrement, "
-            + KEY_PROFILE_ROWID + " long"
+            + KEY_PROFILE_USER + " long"
             + KEY_PROFILE_FIRSTNAME + " text, "
             + KEY_PROFILE_SURNAME + " text, "
             + KEY_PROFILE_STATUS + " text, "
+            + KEY_PROFILE_PHOTO + " text"
             + KEY_PROFILE_SEX + " text"
             + KEY_PROFILE_BIRTHDAY + " long"
             + KEY_PROFILE_PHONE + " text"
