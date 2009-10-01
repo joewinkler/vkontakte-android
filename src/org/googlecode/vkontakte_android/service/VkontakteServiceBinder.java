@@ -5,9 +5,12 @@ import java.util.Date;
 
 import org.googlecode.userapi.Credentials;
 import org.googlecode.userapi.Message;
+import org.googlecode.userapi.ProfileInfo;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.CSettings;
 import org.googlecode.vkontakte_android.database.MessageDao;
+import org.googlecode.vkontakte_android.database.ProfileDao;
+import org.json.JSONException;
 
 import android.content.Context;
 import android.os.RemoteException;
@@ -140,7 +143,22 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub{
 
 	@Override
 	public boolean loadProfile(long userid) throws RemoteException {
-		// TODO Auto-generated method stub
+		ProfileInfo pr = null;
+		try {
+			pr = ApiCheckingKit.getApi().getMyProfile();
+			
+			ProfileDao dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr.getSurname(),
+					                  pr.getStatus().getText(), pr.getPhoto(), pr.getSex(), 
+					                  pr.getBirthday(), pr.getPhone());
+			dao.saveOrUpdate(m_context);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.d(TAG, pr.toString());
 		return false;
 	}
 

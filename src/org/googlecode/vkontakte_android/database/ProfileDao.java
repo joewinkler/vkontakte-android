@@ -49,7 +49,7 @@ public class ProfileDao {
     	this.status = st;
     	this.photo = photo;
     	this.sex = sex;
-    	this.birthday = bd.getTime();
+    	this.birthday = (bd==null)? 0 : bd.getTime();
     	this.phone = phone;
     }
     
