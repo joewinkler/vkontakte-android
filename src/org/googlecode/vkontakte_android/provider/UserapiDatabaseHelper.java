@@ -95,7 +95,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             + KEY_PROFILE_FIRSTNAME + " text, "
             + KEY_PROFILE_SURNAME + " text, "
             + KEY_PROFILE_STATUS + " text, "
-            + KEY_PROFILE_PHOTO + " text,"
+            + KEY_PROFILE_PHOTO + " blob,"  //?
             + KEY_PROFILE_SEX + " long,"
             + KEY_PROFILE_BIRTHDAY + " long,"
             + KEY_PROFILE_PHONE + " text"

@@ -122,7 +122,7 @@ public class CGuiTest extends TabActivity {
     }
 
 
-    private void initializeUserStuff() {
+    private void initializeUserStuff() throws RemoteException {
         // todo: remove - just P-o-C here. +1 :(
 //      final TextView friendsCounter = TabHelper.injectTabCounter(getTabWidget(), 1, getApplicationContext());
         final TextView messagesCounter = TabHelper.injectTabCounter(getTabWidget(), 0, getApplicationContext());
@@ -162,6 +162,10 @@ public class CGuiTest extends TabActivity {
             }
         });
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
+        
+        ////////////
+    	m_vkService.loadProfile(42);
+        
     }
 
     @Override
@@ -196,8 +200,9 @@ public class CGuiTest extends TabActivity {
                 return true;
             case R.id.about:
                 AboutDialog.makeDialog(this).show();
+            	
                 return true;
-            case R.id.logout:
+            case R.id.logout: 
                 try {
                     m_vkService.logout();
                     m_vkService.stop();

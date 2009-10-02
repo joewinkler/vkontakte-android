@@ -1,8 +1,12 @@
 package org.googlecode.vkontakte_android;
 
 import android.app.Activity;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
@@ -10,7 +14,11 @@ import android.widget.TextView;
 import static org.googlecode.vkontakte_android.R.id.updates_counter;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.userapi.ChangesHistory;
+import org.googlecode.userapi.VkontakteAPI.photosTypes;
+import org.googlecode.vkontakte_android.database.ProfileDao;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.json.JSONException;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 
 import java.io.IOException;
 
@@ -35,8 +43,18 @@ public class CMeTab extends Activity {
 
         ImageButton b = (ImageButton) findViewById(R.id.ImageButton01);
         b.setImageDrawable(new BitmapDrawable(CImagesManager.getBitmap("ok")));
+        b.setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				loadProfile();
+				
+			}
+        	
+        });
         
         TableLayout table = (TableLayout) findViewById(R.id.Wall);
+        
         
         
         //test
@@ -50,6 +68,18 @@ public class CMeTab extends Activity {
         table.addView(v3);
         table.addView(v4);
 		
+	}
+	
+	void loadProfile() {
+		Cursor c = managedQuery(UserapiProvider.PROFILES_URI, null, KEY_PROFILE_USER+"=?", new String[]{"48254917"}, null);
+        ProfileDao pd  = null;
+        if (c!=null && c.moveToFirst()) {
+        	pd = new ProfileDao(c);
+        }
+        byte photo[] = pd.photo;
+        Bitmap bm = BitmapFactory.decodeByteArray(photo, 0, photo.length);
+        ImageButton face = (ImageButton) findViewById(R.id.me_avatar);
+        face.setImageBitmap(bm);
 	}
 
 }

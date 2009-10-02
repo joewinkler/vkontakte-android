@@ -20,14 +20,14 @@ public class ProfileDao {
 	private static final String TAG = "ProfileDao";
 	
 	protected long rowid;
-    protected long id;
-    protected String firstname;
-    protected String surname;
-    protected String status;  //TODO make Status
-    protected String photo;
-    protected int sex;
-    protected Long birthday;
-    protected String phone;
+    public long id;
+    public String firstname;
+    public String surname;
+    public String status;  //TODO make Status
+    public byte[] photo;
+    public int sex;
+    public Long birthday;
+    public String phone;
     
     public ProfileDao(Cursor c) {
     	rowid = c.getLong(0);
@@ -35,14 +35,14 @@ public class ProfileDao {
     	firstname = c.getString(2);
     	surname = c.getString(3);
     	status = c.getString(4);
-    	photo = c.getString(5);
+    	photo = c.getBlob(5);
     	sex = c.getInt(6);
     	birthday = c.getLong(7);
     	phone = c.getString(8);
     }
     
     public ProfileDao(long id, String fn, String sn, String st, 
-    		          String photo, int sex, Date bd, String phone) {
+    		          byte[] photo, int sex, Date bd, String phone) {
     	this.id = id;
     	this.firstname = fn;
     	this.surname = sn;
