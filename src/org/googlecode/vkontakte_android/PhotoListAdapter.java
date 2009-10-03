@@ -43,7 +43,7 @@ public class PhotoListAdapter extends BaseAdapter {
         layoutInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
         try {
-        photos = api.getPhotos(api.id, 0, 10, VkontakteAPI.photosTypes.photos);
+        photos = api.getPhotos(api.myId, 0, 10, VkontakteAPI.photosTypes.photos);
         Log.w("photos:", photos.size() + "");
         notifyDataSetChanged();
     } catch (IOException e) {
