@@ -1,6 +1,8 @@
 package org.googlecode.vkontakte_android;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,9 +10,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.SimpleAdapter.ViewBinder;
 import static org.googlecode.vkontakte_android.R.id.updates_counter;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.userapi.ChangesHistory;
@@ -77,9 +82,88 @@ public class CMeTab extends Activity {
         	pd = new ProfileDao(c);
         }
         byte photo[] = pd.photo;
+        
+        
         Bitmap bm = BitmapFactory.decodeByteArray(photo, 0, photo.length);
+        
+        float ratio = bm.getWidth() / bm.getHeight();
+        Bitmap bface = Bitmap.createScaledBitmap(bm, 100, (int)(100/ratio), false);
+        
         ImageButton face = (ImageButton) findViewById(R.id.me_avatar);
-        face.setImageBitmap(bm);
+        face.setImageBitmap(bface);
+        
+        TextView fname = (TextView) findViewById(R.id.firstname);
+        fname.setText(pd.firstname);
+        
+        TextView sname = (TextView) findViewById(R.id.surname);
+        sname.setText(pd.surname);
+     
+        EditText edit = (EditText) findViewById(R.id.editor);
+        edit.setText(pd.status);
+        
+        fname.setOnLongClickListener(new EditingListener());
+        sname.setOnLongClickListener(new EditingListener());
+        
 	}
 
+	class EditingListener implements View.OnLongClickListener {
+
+		@Override
+		public boolean onLongClick(View v) {
+			if (! (v instanceof TextView)) {
+				throw new IllegalArgumentException("Must be TextView");
+			}
+			TextPicker pi = new TextPicker(CMeTab.this, (TextView)v);
+			pi.show();
+			return true;
+		}
+	}
+	
+}
+
+class TextPicker extends Dialog {
+
+	TextView m_view;
+	Button m_ok;
+	Button m_cancel;
+	EditText m_editor;
+	
+	public TextPicker(Context context, TextView view) {
+		super(context);
+		m_view = view;
+		setContentView(R.layout.textpicker_dialog);
+		m_ok = (Button) findViewById(R.id.button_settext);
+		m_cancel = (Button) findViewById(R.id.text_cancel);
+		m_editor = (EditText) findViewById(R.id.texttoset);
+		
+		m_editor.setText(m_view.getText());
+		m_editor.selectAll();
+		
+		m_ok.setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				CharSequence t = m_editor.getEditableText();
+				if (t != "") {
+				  m_view.setText(t);
+				}
+				dismiss();
+			}
+			
+		});
+		
+		m_cancel.setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				dismiss();
+			}
+			
+		});
+	}
+	
+	
+	
+	
+	
 }

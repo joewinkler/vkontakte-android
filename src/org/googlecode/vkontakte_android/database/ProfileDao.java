@@ -57,7 +57,7 @@ public class ProfileDao {
         ProfileDao profile = ProfileDao.findByUserId(context, id) ;
         ContentValues insertValues = new ContentValues();
         insertValues.put(KEY_PROFILE_USER, this.id);
-        insertValues.put(KEY_PROFILE_FIRSTNAME, this.birthday);
+        insertValues.put(KEY_PROFILE_FIRSTNAME, this.firstname);
         insertValues.put(KEY_PROFILE_SURNAME, this.surname);
         insertValues.put(KEY_PROFILE_STATUS, this.status);
         insertValues.put(KEY_PROFILE_PHOTO, this.photo);
