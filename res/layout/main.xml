@@ -6,7 +6,7 @@
               android:background="#ffffff">
     <LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent"
                   android:layout_height="wrap_content">
-
+ 
 
         <ImageButton android:layout_width="wrap_content" android:layout_height="wrap_content"
                      android:id="@+id/me_avatar" android:minWidth="100dip" android:minHeight="150dip"/><LinearLayout android:id="@+id/LinearLayout02" android:layout_height="wrap_content"
@@ -27,8 +27,8 @@
                           android:layout_height="wrap_content" android:minHeight="20dip">
 
 
-                <Button android:id="@+id/Button01" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:text="@string/ok"/>
+                <Button android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="@string/ok" android:id="@+id/send_status"/>
                 <ImageButton android:id="@+id/ImageButton01" android:layout_width="wrap_content"
                              android:layout_height="wrap_content"/>
             </LinearLayout>
