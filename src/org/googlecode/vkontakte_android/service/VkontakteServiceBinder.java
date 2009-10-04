@@ -17,13 +17,13 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
-public class VkontakteServiceBinder extends IVkontakteService.Stub{
+public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
 	private static final String TAG = "Service-Iface";
-	
+
 	private Context m_context;
 	private CheckingService m_service;
-	
+
 	VkontakteServiceBinder(CheckingService s) {
 		m_service = s;
 		m_context = s.getApplicationContext();
@@ -33,44 +33,40 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub{
 	public boolean login(String login, String pass) throws RemoteException {
 		VkontakteAPI api = ApiCheckingKit.getApi();
 		Context ctx = m_context;
-		
+
 		try {
 			Credentials cred = new Credentials(login, pass, null, null);
-		  if (api.login(cred)) {
-				CSettings.saveLogin(ctx, login, pass, api.getCred().getRemixpass(), api.getCred().getSession());
-				return true; 
-		  }
+			if (api.login(cred)) {
+				Log.d(TAG, "Successful log with login/pass"); 
+				CSettings.saveLogin(ctx, api.getCred());
+				return true;
+			} else {
+				Log.d(TAG, "Wrong login/pass");
+				return false;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			UpdatesNotifier.showError(ctx, "Connection problems");
+			//TODO what to do in this case?  
 			return false;
-		} 
-		return false;
+		}
 	}
 
 	@Override
 	public boolean loginAuth() throws RemoteException {
 		Context ctx = m_context;
 		VkontakteAPI api = ApiCheckingKit.getApi();
-		
+
 		if (CSettings.isLogged(ctx)) {
 			try {
-				
-				//TODO Check this!
-				Log.d(TAG, "already logged. using existing log/pass");
-				if (!TextUtils.isEmpty(CSettings.getSid(ctx))) {
-					Credentials cred = new Credentials(null, null, null, CSettings.getSid(ctx));
-					api.login(cred);
-					System.out.println("logged with sid");
-					return true;
-				} else if (api.login( new Credentials(CSettings.getLogin(ctx), CSettings.getPass(ctx), null, null))) {
-					// todo: refresh only remix
-					CSettings.saveLogin(ctx,
-							CSettings.getLogin(ctx), CSettings.getPass(ctx),
-							api.getCred().getRemixpass(), api.getCred().getSession());
+				Credentials cred = new Credentials(CSettings.getLogin(ctx),
+						CSettings.getPass(ctx), CSettings.getRemixPass(ctx),
+						CSettings.getSid(ctx));
+				if (api.login(cred)) {
+					Log.d(TAG, "Logged with credentials");
 					return true;
 				} else {
-					UpdatesNotifier.showError(ctx, "Either login or password is incorrect");
+					Log.d(TAG, "Cannot log with credentials");
 					CSettings.clearPrivateInfo(ctx);
 					return false;
 				}
@@ -79,24 +75,24 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub{
 				return false;
 			}
 		} else {
-		  Log.d(TAG, "Not authorized");
-		  return false;	
+			Log.d(TAG, "Not authorized");
+			return false;
 		}
 	}
 
-	
 	@Override
 	public boolean sendMessage(String text, long id) throws RemoteException {
-        Message message = new Message();
-        message.setDate(new Date());
-        message.setReceiverId(id);
-        message.setText(text);
+		Message message = new Message();
+		message.setDate(new Date());
+		message.setReceiverId(id);
+		message.setText(text);
 		try {
 			ApiCheckingKit.getApi().sendMessageToUser(message);
 			MessageDao md = new MessageDao(0, new Date(), text, 0, id, true);
 			md.saveOrUpdate(m_context);
 		} catch (IOException e) {
-			UpdatesNotifier.showError(m_context,"Cannot send the message. Check connection.");
+			UpdatesNotifier.showError(m_context,
+					"Cannot send the message. Check connection.");
 			e.printStackTrace();
 			return false;
 		}
@@ -113,8 +109,6 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub{
 		m_service.doCheck(what);
 	}
 
-	
-	
 	@Override
 	public boolean logout() throws RemoteException {
 		try {
@@ -146,16 +140,16 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub{
 		ProfileInfo pr = null;
 		try {
 			pr = ApiCheckingKit.getApi().getMyProfile();
-			
+
 			String photoUrl = pr.getPhoto();
-			byte photo[] = null; 
+			byte photo[] = null;
 			if (photoUrl != null) {
 				photo = ApiCheckingKit.getApi().getFileFromUrl(photoUrl);
 			}
-			
-			ProfileDao dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr.getSurname(),
-					                  pr.getStatus().getText(), photo, pr.getSex(), 
-					                  pr.getBirthday(), pr.getPhone());
+
+			ProfileDao dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr
+					.getSurname(), pr.getStatus().getText(), photo,
+					pr.getSex(), pr.getBirthday(), pr.getPhone());
 			dao.saveOrUpdate(m_context);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -167,6 +161,5 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub{
 		Log.d(TAG, pr.toString());
 		return false;
 	}
-
 
 }

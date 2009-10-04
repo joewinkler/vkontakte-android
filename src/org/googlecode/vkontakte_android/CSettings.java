@@ -1,5 +1,7 @@
 package org.googlecode.vkontakte_android;
 
+import org.googlecode.userapi.Credentials;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -17,7 +19,7 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         Preference ps = scr.findPreference("sound");
         ps.setOnPreferenceChangeListener(this);
 
-        Preference pn = scr.findPreference("notif");
+        Preference pn = scr.findPreference("notif"); 
         pn.setOnPreferenceChangeListener(this);
 
         Preference list = scr.findPreference("period");
@@ -42,6 +44,19 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
 
     //================  work with login/pass
 
+    public static void saveLogin(Context ctx, Credentials cred) {
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        Editor ed = prefs.edit();
+        ed.putString("login", cred.getLogin());
+        ed.commit();
+        ed.putString("password", cred.getPass());
+        ed.commit();
+        ed.putString("remixpassword", cred.getRemixpass());
+        ed.commit();
+        ed.putString("sid", cred.getSession());
+        ed.commit();
+    }
+    
     public static void saveLogin(Context ctx, String login, String pass, String remixpassword, String sid) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         Editor ed = prefs.edit();
@@ -60,28 +75,38 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         return prefs.contains("login") && prefs.contains("password");
     }
 
+    public static void clearSid(Context ctx) {
+    	Editor ed = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
+        ed.remove("sid");
+        ed.commit();
+    }
+    
     public static void clearPrivateInfo(Context ctx) {
         Editor ed = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
         ed.remove("login");
         ed.commit();
         ed.remove("password");
         ed.commit();
+        ed.remove("remixpassword");
+        ed.commit();
+        ed.remove("sid");
+        ed.commit();
     }
 
     public static String getPass(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getString("password", "");
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString("password", null);
     }
 
     public static String getLogin(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getString("login", "");
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString("login", null);
     }
 
     public static String getRemixPass(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getString("remixpassword", "");
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString("remixpassword", null);
     }
 
     public static String getSid(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getString("sid", "");
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getString("sid", null);
     }
 
     public static int getPeriod(Context ctx) {
