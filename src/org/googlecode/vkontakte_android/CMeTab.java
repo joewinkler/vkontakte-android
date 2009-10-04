@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -49,6 +50,23 @@ public class CMeTab extends Activity {
 //            e.printStackTrace();
 //        }
 
+        Button b1 = (Button) findViewById(R.id.send_status);
+        b1.setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				EditText editor = (EditText) findViewById(R.id.editor);
+				String status = ((SpannableStringBuilder)editor.getText()).toString();
+				try {
+					CGuiTest.s_instance.m_vkService.sendStatus(status);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				
+			}
+        	
+        });
+        
         ImageButton b = (ImageButton) findViewById(R.id.ImageButton01);
         b.setImageDrawable(new BitmapDrawable(CImagesManager.getBitmap("ok")));
         b.setOnClickListener(new View.OnClickListener(){
