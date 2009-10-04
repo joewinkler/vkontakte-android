@@ -101,14 +101,15 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
 	@Override
 	public boolean sendStatus(String status) throws RemoteException {
+        boolean result = false;
 		try {
-			ApiCheckingKit.getApi().setStatus(status);
+			result = ApiCheckingKit.getApi().setStatus(status);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return result;
 	}
 
 	@Override
