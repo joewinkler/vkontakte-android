@@ -14,6 +14,8 @@ interface IVkontakteService {
   
   //load user's profile to the cache and return if successful
   boolean loadProfile(long userid);
+  boolean loadMyProfile();
+
   
   
   void stop();

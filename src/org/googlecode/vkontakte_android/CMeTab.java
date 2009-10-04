@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +30,8 @@ import java.io.IOException;
 
 public class CMeTab extends Activity {
 
+	private static final String TAG = "org.googlecode.vkontakte_android.CMeTab";
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -52,7 +55,12 @@ public class CMeTab extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				loadProfile();
+				try {
+					loadProfile();
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 			}
         	
@@ -75,18 +83,28 @@ public class CMeTab extends Activity {
 		
 	}
 	
-	void loadProfile() {
-		Cursor c = managedQuery(UserapiProvider.PROFILES_URI, null, KEY_PROFILE_USER+"=?", new String[]{"48254917"}, null);
-        ProfileDao pd  = null;
+	boolean loadProfile() throws RemoteException {
+    	
+		if (! CGuiTest.s_instance.m_vkService.loadMyProfile()) {
+		  return false;	
+		}
+		Cursor c = managedQuery(UserapiProvider.PROFILES_URI, null, KEY_PROFILE_USER+"=?", 
+				new String[]{ CSettings.myId.toString() }, null);
+        
+		ProfileDao pd  = null;
         if (c!=null && c.moveToFirst()) {
         	pd = new ProfileDao(c);
+        } else {
+        	Log.e(TAG, "No such profile in DB");
+        	return false;
         }
+        
         byte photo[] = pd.photo;
-        
-        
         Bitmap bm = BitmapFactory.decodeByteArray(photo, 0, photo.length);
         
-        float ratio = bm.getWidth() / bm.getHeight();
+        
+        float ratio = (float)bm.getWidth() / (float)bm.getHeight();
+        Log.d(TAG, "size"+bm.getHeight()+" "+bm.getWidth()+" "+ratio);
         Bitmap bface = Bitmap.createScaledBitmap(bm, 100, (int)(100/ratio), false);
         
         ImageButton face = (ImageButton) findViewById(R.id.me_avatar);
@@ -103,7 +121,8 @@ public class CMeTab extends Activity {
         
         fname.setOnLongClickListener(new EditingListener());
         sname.setOnLongClickListener(new EditingListener());
-        
+
+        return true;
 	}
 
 	class EditingListener implements View.OnLongClickListener {

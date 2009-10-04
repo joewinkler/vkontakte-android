@@ -164,8 +164,7 @@ public class CGuiTest extends TabActivity {
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
         
         ////////////
-    	m_vkService.loadProfile(42);
-        
+       
     }
 
     @Override

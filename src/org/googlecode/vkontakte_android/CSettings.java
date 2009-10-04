@@ -44,6 +44,8 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
 
     //================  work with login/pass
 
+    public static Long myId = 0L;
+    
     public static void saveLogin(Context ctx, Credentials cred) {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         Editor ed = prefs.edit();
