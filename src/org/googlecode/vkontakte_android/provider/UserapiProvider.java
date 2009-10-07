@@ -14,17 +14,18 @@ import android.util.Log;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 
 public class UserapiProvider extends ContentProvider {
-	
-	private static final String TAG = "UserapiProvider";
-	
-	public static final String APP_DIR = "/data/data/org.googlecode.vkontakte_android/";
-	
+
+    private static final String TAG = "UserapiProvider";
+
+    public static final String APP_DIR = "/data/data/org.googlecode.vkontakte_android/";
+
     public static final Uri USERS_URI = Uri.parse("content://org.googlecode.vkontakte_android/users");
     public static final Uri MESSAGES_URI = Uri.parse("content://org.googlecode.vkontakte_android/messages");
     public static final Uri FILES_URI = Uri.parse("content://org.googlecode.vkontakte_android/files");
     public static final Uri WALL_URI = Uri.parse("content://org.googlecode.vkontakte_android/wall");
     public static final Uri PROFILES_URI = Uri.parse("content://org.googlecode.vkontakte_android/profiles");
-    
+    public static final Uri STATUSES_URI = Uri.parse("content://org.googlecode.vkontakte_android/statuses");
+
     private static final int ALL_USERS = 1;
     private static final int SINGLE_USER = 2;
     private static final int ALL_MESSAGES = 3;
@@ -35,8 +36,10 @@ public class UserapiProvider extends ContentProvider {
     private static final int SINGLE_WALL = 8;
     private static final int ALL_PROFILES = 9;
     private static final int SINGLE_PROFILE = 10;
-    
-    
+    private static final int ALL_STATUSES = 11;
+    private static final int SINGLE_STATUS = 12;
+
+
     private static UriMatcher uriMatcher;
     private UserapiDatabaseHelper databaseHelper;
     private SQLiteDatabase database;
@@ -53,6 +56,8 @@ public class UserapiProvider extends ContentProvider {
         uriMatcher.addURI("org.googlecode.vkontakte_android", "wall/#", SINGLE_WALL);
         uriMatcher.addURI("org.googlecode.vkontakte_android", "profiles", ALL_PROFILES);
         uriMatcher.addURI("org.googlecode.vkontakte_android", "profiles/#", SINGLE_PROFILE);
+        uriMatcher.addURI("org.googlecode.vkontakte_android", "statuses", ALL_STATUSES);
+        uriMatcher.addURI("org.googlecode.vkontakte_android", "statuses/#", SINGLE_STATUS);
     }
 
     @Override
@@ -115,6 +120,15 @@ public class UserapiProvider extends ContentProvider {
                 mySort = KEY_PROFILE_ROWID;
                 column = KEY_PROFILE_ROWID;
                 break;
+            case ALL_STATUSES:
+                table = DATABASE_STATUS_TABLE;
+                mySort = KEY_STATUS_ROWID;
+                break;
+            case SINGLE_STATUS:
+                table = DATABASE_STATUS_TABLE;
+                mySort = KEY_STATUS_ROWID;
+                column = KEY_STATUS_ROWID;
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported URI:" + uri);
         }
@@ -150,6 +164,10 @@ public class UserapiProvider extends ContentProvider {
 //                return "vnd.android.cursor.dir/vnd.org.googlecode.vkontakte_android.file";
 //            case SINGLE_FILE:
 //                return "vnd.android.cursor.item/vnd.org.googlecode.vkontakte_android.file";
+            case ALL_STATUSES:
+                return "vnd.android.cursor.dir/vnd.org.googlecode.vkontakte_android.status";
+            case SINGLE_STATUS:
+                return "vnd.android.cursor.item/vnd.org.googlecode.vkontakte_android.status";
             default:
                 throw new IllegalArgumentException("Unsupported URI:" + uri);
         }
@@ -172,7 +190,11 @@ public class UserapiProvider extends ContentProvider {
                 table = DATABASE_PROFILE_TABLE;
                 column = KEY_PROFILE_ROWID;
                 break;
-   
+            case ALL_STATUSES:
+                table = DATABASE_STATUS_TABLE;
+                column = KEY_STATUS_ROWID;
+                break;
+
 //            case ALL_FILES:
 //                table = DATABASE_FILES_TABLE;
 //                column = KEY_FILE_ROWID;
@@ -217,6 +239,13 @@ public class UserapiProvider extends ContentProvider {
             case SINGLE_PROFILE:
                 table = DATABASE_PROFILE_TABLE;
                 column = KEY_PROFILE_ROWID;
+                break;
+            case ALL_STATUSES:
+                table = DATABASE_STATUS_TABLE;
+                break;
+            case SINGLE_STATUS:
+                table = DATABASE_STATUS_TABLE;
+                column = KEY_STATUS_ROWID;
                 break;
 //            case ALL_FILES:
 //                table = DATABASE_FILES_TABLE;
@@ -263,7 +292,14 @@ public class UserapiProvider extends ContentProvider {
                 table = DATABASE_PROFILE_TABLE;
                 column = KEY_PROFILE_ROWID;
                 break;
-                
+            case ALL_STATUSES:
+                table = DATABASE_STATUS_TABLE;
+                break;
+            case SINGLE_STATUS:
+                table = DATABASE_STATUS_TABLE;
+                column = KEY_STATUS_ROWID;
+                break;
+
 //            case ALL_FILES:
 //                table = DATABASE_FILES_TABLE;
 //                break;
@@ -301,6 +337,10 @@ public class UserapiProvider extends ContentProvider {
                 table = DATABASE_PROFILE_TABLE;
                 column = KEY_PROFILE_ROWID;
                 break;
+            case ALL_STATUSES:
+                table = DATABASE_STATUS_TABLE;
+                column = KEY_STATUS_ROWID;
+                break;
 //            case ALL_FILES:
 //                table = DATABASE_FILES_TABLE;
 //                column = KEY_FILE_ROWID;
@@ -319,27 +359,22 @@ public class UserapiProvider extends ContentProvider {
 //        getContext().getContentResolver().notifyChange(uri, null);
         return count;
     }
-    
+
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
+        try {
+            return this.openFileHelper(uri, mode);
+        }
+        catch (FileNotFoundException e) {
+            Log.i(TAG, "File not found: " + uri.toString());
+            throw new FileNotFoundException();
+        }
+    }
 
-      try {
-    	  
-    	  
-    	  
-         return this.openFileHelper(uri, mode);
-      }
-      catch (FileNotFoundException e) {
-        Log.i(TAG, "File not found: "+uri.toString());
-        throw new FileNotFoundException();
-      }
-    }
-    
     private void createFolders() {
-    	File f = new File(APP_DIR+"profiles");
-  	    f.mkdir();
-  	    f = new File(APP_DIR+"photos");
-  	    f.mkdir();
+        File f = new File(APP_DIR + "profiles");
+        f.mkdir();
+        f = new File(APP_DIR + "photos");
+        f.mkdir();
     }
-    
 }

@@ -16,6 +16,7 @@
 	<string name="i">Я</string>
 	<string name="friends">Друзья</string>
 	<string name="messages">Сообщения</string>
+	<string name="updates">Updates</string>
 
 	<string name="prefs_title">Настройки</string>
 	<string name="period_title">Период обновления</string>

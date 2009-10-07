@@ -39,6 +39,7 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         status.setText(statusText);
         //todo: load avatars
         ImageView photo = (ImageView) view.findViewById(R.id.photo);
+        
 //        try {
 //            byte[] photoByteArray = userDao.getUserPhoto();
 //            Bitmap bm = BitmapFactory.decodeByteArray(photoByteArray, 0, photoByteArray.length);

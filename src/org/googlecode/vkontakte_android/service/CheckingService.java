@@ -9,8 +9,10 @@ import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.googlecode.userapi.Status;
 import org.googlecode.vkontakte_android.CGuiTest;
 import org.googlecode.vkontakte_android.CSettings;
+import org.googlecode.vkontakte_android.database.StatusDao;
 import org.googlecode.vkontakte_android.service.ApiCheckingKit.UpdateType;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.UserDao;
@@ -39,18 +41,18 @@ public class CheckingService extends Service {
     private Timer m_timer = new Timer();
     private static SharedPreferences s_prefs;
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
-   //private boolean m_hasConnection = true;
+    //private boolean m_hasConnection = true;
 
-    
+
     public enum contentToUpdate {
-        FRIENDS, MESSAGES_ALL, MESSAGES_IN, MESSAGES_OUT, WALL, HISTORY, ALL
+        FRIENDS, MESSAGES_ALL, MESSAGES_IN, MESSAGES_OUT, WALL, HISTORY, STATUSES, ALL
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         m_binder = new VkontakteServiceBinder(this);
-        
+
         s_prefs = PreferenceManager.getDefaultSharedPreferences(this);
         ApiCheckingKit.s_ctx = getApplicationContext();
     }
@@ -62,10 +64,11 @@ public class CheckingService extends Service {
 
     /**
      * Check given content type for updates
+     *
      * @param toUpdate - ordinal of contentToUpdate
      */
-    void doCheck(final int toUpdate)  {
-    	Thread t = new Thread(new Runnable() {
+    void doCheck(final int toUpdate) {
+        Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
 
@@ -76,11 +79,11 @@ public class CheckingService extends Service {
                         case FRIENDS:
                             updateFriends();
                             break;
-                        case WALL: 
+                        case WALL:
                             updateWall();
                             break;
-                        case MESSAGES_ALL:  
-                        	updateInMessages(100);
+                        case MESSAGES_ALL:
+                            updateInMessages(100);
                             updateOutMessages(100);
                             break;
                         case MESSAGES_IN:
@@ -92,7 +95,11 @@ public class CheckingService extends Service {
                         case HISTORY:
                             updateHistory();
                             break;
+                        case STATUSES:
+                            updateStatuses();
+                            break;
                         default:
+                            updateStatuses();
                             updateMessages();
                             updateWall();
                             updateFriends();
@@ -107,13 +114,13 @@ public class CheckingService extends Service {
         });
         threads.add(t);
         t.start();
-     }
-     
+    }
+
     /**
      * Starts a thread checking api periodically
      */
-     private void restartScheduledUpdates() {
-       
+    private void restartScheduledUpdates() {
+
         class CheckingTask extends TimerTask {
             @Override
             public void run() {
@@ -121,9 +128,9 @@ public class CheckingService extends Service {
                 try {
                     updateHistory();
                 } catch (IOException e) {
-                    e.printStackTrace();  
+                    e.printStackTrace();
                 } catch (JSONException e) {
-                    e.printStackTrace();  
+                    e.printStackTrace();
                 }
             }
         }
@@ -132,7 +139,7 @@ public class CheckingService extends Service {
         Log.d(TAG, "Timer with period: " + period);
     }
 
-    
+
     // =============== updating methods
 
     private void updateInMessages(long count) throws IOException, JSONException {
@@ -163,8 +170,8 @@ public class CheckingService extends Service {
 //		}
 
 //		UpdatesNotifier.notifyMessages(this, countNew, single);
-        if (countNew>0)
-        UpdatesNotifier.notifyMessages(this, count, single);
+        if (countNew > 0)
+            UpdatesNotifier.notifyMessages(this, count, single);
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
         //TODO get real counter from provider
     }
@@ -203,6 +210,24 @@ public class CheckingService extends Service {
         updateInMessages(api.getChangesHistory().getFriendsCount());
     }
 
+    private void updateStatuses() throws IOException, JSONException {
+        Log.d(TAG, "updating statuses");
+        VkontakteAPI api = ApiCheckingKit.getApi();
+        int updated = 0;
+        int start = 0;
+        int fetchSize = 100;
+        do {
+            List<Status> statuses = api.getTimeline(start, fetchSize);
+            List<StatusDao> statusDaos = new LinkedList<StatusDao>();
+            for (Status status : statuses) {
+                StatusDao statusDao = new StatusDao(status.getStatusId(), status.getUserId(), status.getUserName(), status.getDate(), status.getText());
+                statusDaos.add(statusDao);
+            }
+            updated = StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);
+            start += fetchSize;
+        } while (updated != 0);
+    }
+
     private int[] refreshFriends(VkontakteAPI api, Context context)
             throws IOException, JSONException {
         List<UserDao> users = new LinkedList<UserDao>();
@@ -215,7 +240,7 @@ public class CheckingService extends Service {
         }
         return UserDao.bulkUpdateOrRemove(context, users);
     }
- 
+
     private int refreshNewFriends(VkontakteAPI api, Context context)
             throws IOException, JSONException {
         List<UserDao> users = new LinkedList<UserDao>();
@@ -301,7 +326,7 @@ public class CheckingService extends Service {
 //	}
 
     // ========= preferences
-    
+
     static boolean useSound() {
 
         return s_prefs.getBoolean("sound", true);
@@ -336,13 +361,12 @@ public class CheckingService extends Service {
 
     // ============ RPC stuff ============================ 
 
-    private IVkontakteService.Stub m_binder; 
-    
-	@Override
-	public IBinder onBind(Intent intent) {
-		return m_binder;
-	}
+    private IVkontakteService.Stub m_binder;
 
-	
-	
+    @Override
+    public IBinder onBind(Intent intent) {
+        return m_binder;
+    }
+
+
 }

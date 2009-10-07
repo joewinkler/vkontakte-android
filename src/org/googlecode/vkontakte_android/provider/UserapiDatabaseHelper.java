@@ -1,9 +1,5 @@
 package org.googlecode.vkontakte_android.provider;
 
-import java.util.Date;
-
-import org.googlecode.userapi.Status;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -20,6 +16,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_USER_MALE = "male";
     public static final String KEY_USER_ONLINE = "online";
     public static final String KEY_USER_NEW = "newfriend";
+    public static final String KEY_USER_AVATAR = "_data";
 
     public static final String KEY_MESSAGE_ROWID = BaseColumns._ID;
     public static final String KEY_MESSAGE_MESSAGEID = "messageid";
@@ -48,6 +45,13 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_PROFILE_BIRTHDAY = "birthday";
     public static final String KEY_PROFILE_PHONE = "phone";    
     public static final String KEY_PROFILE_PHOTO = "_data";
+    
+    public static final String KEY_STATUS_ROWID = BaseColumns._ID;
+    public static final String KEY_STATUS_STATUSID = "statusid";
+    public static final String KEY_STATUS_USERID = "userid";
+    public static final String KEY_STATUS_USERNAME = "username";
+    public static final String KEY_STATUS_DATE = "date";    
+    public static final String KEY_STATUS_TEXT = "text";    
     
     public static final String DATABASE_NAME = "userapi";
     private static final int DATABASE_VERSION = 1;
@@ -101,6 +105,16 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             + KEY_PROFILE_PHOTO + " text"
             + ");";
  
+    public static final String DATABASE_STATUS_TABLE = "statuses";
+    private static final String DATABASE_STATUS_CREATE = "create table " + DATABASE_STATUS_TABLE + " ("
+            + KEY_STATUS_ROWID + " integer primary key autoincrement, "
+            + KEY_STATUS_STATUSID + " long,"
+            + KEY_STATUS_USERID + " long,"
+            + KEY_STATUS_USERNAME + " text, "
+            + KEY_STATUS_DATE + " long,"
+            + KEY_STATUS_TEXT + " text"
+            + ");";
+
     
     public UserapiDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -112,6 +126,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(DATABASE_FILES_CREATE);
         db.execSQL(DATABASE_MESSAGES_CREATE);
         db.execSQL(DATABASE_PROFILE_CREATE);
+        db.execSQL(DATABASE_STATUS_CREATE);
     }
 
     @Override
@@ -122,6 +137,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_FILES_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_MESSAGES_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_PROFILE_CREATE);
+        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_STATUS_CREATE);
         onCreate(db);
     }
 }

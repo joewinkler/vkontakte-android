@@ -61,6 +61,8 @@ public class CGuiTest extends TabActivity {
         final LoginDialog ld = new LoginDialog(this);
         ((EditText) ld.findViewById(R.id.login)).setText("fake4test@gmail.com");
         ((EditText) ld.findViewById(R.id.pass)).setText("qwerty");
+        ((EditText) ld.findViewById(R.id.login)).setText("the_very@mail.ru");
+        ((EditText) ld.findViewById(R.id.pass)).setText("99ispi");
         ld.show();
         ld.setOnLoginClick(new View.OnClickListener() {
             public void onClick(View view) {
@@ -119,6 +121,10 @@ public class CGuiTest extends TabActivity {
         tabHost.addTab(tabHost.newTabSpec("Messages").setIndicator(
                 getResources().getString(R.string.messages)).setContent(
                 new Intent(CGuiTest.this, CMessagesTab.class)));
+
+        tabHost.addTab(tabHost.newTabSpec("Updates").setIndicator(
+                getResources().getString(R.string.updates)).setContent(
+                new Intent(CGuiTest.this, UpdatesListTabActivity.class)));
     }
 
 
@@ -162,9 +168,9 @@ public class CGuiTest extends TabActivity {
             }
         });
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
-        
+
         ////////////
-       
+
     }
 
     @Override
@@ -199,9 +205,9 @@ public class CGuiTest extends TabActivity {
                 return true;
             case R.id.about:
                 AboutDialog.makeDialog(this).show();
-            	
+
                 return true;
-            case R.id.logout: 
+            case R.id.logout:
                 try {
                     m_vkService.logout();
                     m_vkService.stop();
