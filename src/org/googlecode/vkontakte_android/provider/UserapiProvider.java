@@ -1,5 +1,6 @@
 package org.googlecode.vkontakte_android.provider;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import android.content.*;
@@ -57,6 +58,7 @@ public class UserapiProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         Context context = getContext();
+        createFolders();
         databaseHelper = new UserapiDatabaseHelper(context);
         database = databaseHelper.getWritableDatabase();
         return (database != null);
@@ -322,12 +324,22 @@ public class UserapiProvider extends ContentProvider {
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
 
       try {
+    	  
+    	  
+    	  
          return this.openFileHelper(uri, mode);
       }
       catch (FileNotFoundException e) {
         Log.i(TAG, "File not found: "+uri.toString());
         throw new FileNotFoundException();
       }
+    }
+    
+    private void createFolders() {
+    	File f = new File(APP_DIR+"profiles");
+  	    f.mkdir();
+  	    f = new File(APP_DIR+"photos");
+  	    f.mkdir();
     }
     
 }

@@ -16,6 +16,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 public class ProfileDao {
 	private static final String TAG = "ProfileDao";
@@ -65,7 +66,9 @@ public class ProfileDao {
         
         if (profile == null) {
         	//TODO updating "_data"
-        	insertValues.put("_data", UserapiProvider.APP_DIR+"photos/id" + this.id + ".ava");
+        	String filename = UserapiProvider.APP_DIR+"profiles/id" + this.id + ".ava";
+        	insertValues.put("_data", filename);
+        	Log.d(TAG, "Writing " + filename);
         	return context.getContentResolver().insert(UserapiProvider.PROFILES_URI, insertValues);
         } else {
         	Uri uri = ContentUris.withAppendedId(UserapiProvider.PROFILES_URI, profile.rowid);
