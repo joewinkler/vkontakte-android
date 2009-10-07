@@ -1,6 +1,7 @@
 package org.googlecode.vkontakte_android.service;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 
 import org.googlecode.userapi.Credentials;
@@ -13,6 +14,7 @@ import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.json.JSONException;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
@@ -154,12 +156,18 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 			if (photoUrl != null) {
 				photo = ApiCheckingKit.getApi().getFileFromUrl(photoUrl);
 			}
-
+			
+			
+			
 			CSettings.myId = pr.getId();
-			ProfileDao dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr
-					.getSurname(), pr.getStatus().getText(), photo,
+			ProfileDao dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr.getSurname(), pr.getStatus().getText(),
 					pr.getSex(), pr.getBirthday(), pr.getPhone());
-			dao.saveOrUpdate(m_context);
+			Uri uri = dao.saveOrUpdate(m_context);
+			Log.d(TAG,uri.toString());
+			OutputStream os = m_context.getContentResolver().openOutputStream(uri);
+			os.write(photo);
+			os.close();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;

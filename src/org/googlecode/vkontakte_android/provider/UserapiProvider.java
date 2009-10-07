@@ -1,14 +1,23 @@
 package org.googlecode.vkontakte_android.provider;
 
+import java.io.FileNotFoundException;
+
 import android.content.*;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
+import android.util.Log;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 
 public class UserapiProvider extends ContentProvider {
+	
+	private static final String TAG = "UserapiProvider";
+	
+	public static final String APP_DIR = "/data/data/org.googlecode.vkontakte_android/";
+	
     public static final Uri USERS_URI = Uri.parse("content://org.googlecode.vkontakte_android/users");
     public static final Uri MESSAGES_URI = Uri.parse("content://org.googlecode.vkontakte_android/messages");
     public static final Uri FILES_URI = Uri.parse("content://org.googlecode.vkontakte_android/files");
@@ -308,4 +317,17 @@ public class UserapiProvider extends ContentProvider {
 //        getContext().getContentResolver().notifyChange(uri, null);
         return count;
     }
+    
+    @Override
+    public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
+
+      try {
+         return this.openFileHelper(uri, mode);
+      }
+      catch (FileNotFoundException e) {
+        Log.i(TAG, "File not found: "+uri.toString());
+        throw new FileNotFoundException();
+      }
+    }
+    
 }

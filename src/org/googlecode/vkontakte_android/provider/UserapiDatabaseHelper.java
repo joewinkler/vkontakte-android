@@ -44,10 +44,10 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_PROFILE_FIRSTNAME = "firstname";
     public static final String KEY_PROFILE_SURNAME = "surname";
     public static final String KEY_PROFILE_STATUS = "status";
-    public static final String KEY_PROFILE_PHOTO = "photo";
     public static final String KEY_PROFILE_SEX = "sex";
     public static final String KEY_PROFILE_BIRTHDAY = "birthday";
     public static final String KEY_PROFILE_PHONE = "phone";    
+    public static final String KEY_PROFILE_PHOTO = "_data";
     
     public static final String DATABASE_NAME = "userapi";
     private static final int DATABASE_VERSION = 1;
@@ -95,12 +95,12 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             + KEY_PROFILE_FIRSTNAME + " text, "
             + KEY_PROFILE_SURNAME + " text, "
             + KEY_PROFILE_STATUS + " text, "
-            + KEY_PROFILE_PHOTO + " blob,"  //?
             + KEY_PROFILE_SEX + " long,"
             + KEY_PROFILE_BIRTHDAY + " long,"
-            + KEY_PROFILE_PHONE + " text"
+            + KEY_PROFILE_PHONE + " text,"
+            + KEY_PROFILE_PHOTO + " text"
             + ");";
-
+ 
     
     public UserapiDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

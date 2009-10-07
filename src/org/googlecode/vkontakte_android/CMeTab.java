@@ -2,11 +2,13 @@ package org.googlecode.vkontakte_android;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.text.SpannableStringBuilder;
@@ -22,8 +24,11 @@ import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.json.JSONException;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
+import static org.googlecode.vkontakte_android.provider.UserapiProvider.PROFILES_URI;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class CMeTab extends Activity {
 
@@ -113,8 +118,16 @@ public class CMeTab extends Activity {
             return false;
         }
 
-        byte photo[] = pd.photo;
-        Bitmap bm = BitmapFactory.decodeByteArray(photo, 0, photo.length);
+        Uri uri = ContentUris.withAppendedId(PROFILES_URI, pd.rowid);
+        InputStream is = null;
+		try {
+			is = getContentResolver().openInputStream(uri);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+        
+        Bitmap bm = BitmapFactory.decodeStream(is); 
+        //= BitmapFactory.decodeByteArray(photo, 0, photo.length);
 
 
         float ratio = (float) bm.getWidth() / (float) bm.getHeight();

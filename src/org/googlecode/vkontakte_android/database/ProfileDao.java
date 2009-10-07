@@ -15,16 +15,16 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 
 public class ProfileDao {
 	private static final String TAG = "ProfileDao";
 	
-	protected long rowid;
+	public long rowid;
     public long id;
     public String firstname;
     public String surname;
     public String status;  //TODO make Status
-    public byte[] photo;
     public int sex;
     public Long birthday;
     public String phone;
@@ -35,42 +35,42 @@ public class ProfileDao {
     	firstname = c.getString(2);
     	surname = c.getString(3);
     	status = c.getString(4);
-    	photo = c.getBlob(5);
     	sex = c.getInt(6);
     	birthday = c.getLong(7);
     	phone = c.getString(8);
     }
     
     public ProfileDao(long id, String fn, String sn, String st, 
-    		          byte[] photo, int sex, Date bd, String phone) {
+    		          int sex, Date bd, String phone) {
     	this.id = id;
     	this.firstname = fn;
     	this.surname = sn;
     	this.status = st;
-    	this.photo = photo;
     	this.sex = sex;
     	this.birthday = (bd==null)? 0 : bd.getTime();
     	this.phone = phone;
     }
     
-    public int saveOrUpdate(Context context) {
+    
+    public Uri saveOrUpdate(Context context) {
         ProfileDao profile = ProfileDao.findByUserId(context, id) ;
         ContentValues insertValues = new ContentValues();
         insertValues.put(KEY_PROFILE_USER, this.id);
         insertValues.put(KEY_PROFILE_FIRSTNAME, this.firstname);
         insertValues.put(KEY_PROFILE_SURNAME, this.surname);
         insertValues.put(KEY_PROFILE_STATUS, this.status);
-        insertValues.put(KEY_PROFILE_PHOTO, this.photo);
         insertValues.put(KEY_PROFILE_SEX, this.sex);
         insertValues.put(KEY_PROFILE_BIRTHDAY, this.birthday);
         insertValues.put(KEY_PROFILE_PHONE, this.phone);
         
         if (profile == null) {
-            context.getContentResolver().insert(UserapiProvider.PROFILES_URI, insertValues);
-            return 1;
+        	//TODO updating "_data"
+        	insertValues.put("_data", UserapiProvider.APP_DIR+"photos/id" + this.id + ".ava");
+        	return context.getContentResolver().insert(UserapiProvider.PROFILES_URI, insertValues);
         } else {
-            context.getContentResolver().update(ContentUris.withAppendedId(UserapiProvider.PROFILES_URI, profile.rowid), insertValues, null, null);
-            return 0;
+        	Uri uri = ContentUris.withAppendedId(UserapiProvider.PROFILES_URI, profile.rowid);
+            context.getContentResolver().update(uri, insertValues, null, null);
+            return uri;
         }
     }
 
