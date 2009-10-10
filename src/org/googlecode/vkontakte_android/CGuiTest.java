@@ -127,29 +127,24 @@ public class CGuiTest extends TabActivity {
 
 
     private void initializeUserStuff() throws RemoteException {
-        // todo: remove - just P-o-C here. +1 :(
-//      final TextView friendsCounter = TabHelper.injectTabCounter(getTabWidget(), 1, getApplicationContext());
+        // todo: possibly move to tabs activities itself
+        final TextView friendsCounter = TabHelper.injectTabCounter(getTabWidget(), 1, getApplicationContext());
         final TextView messagesCounter = TabHelper.injectTabCounter(getTabWidget(), 0, getApplicationContext());
 
-        //
-//      // todo: register/unregister onResume/onPause
-//      getContentResolver().registerContentObserver(UserapiProvider.USERS_URI, false, new ContentObserver(new Handler()) {
-//          @Override
-//          public void onChange(boolean b) {
-//              Cursor cursor = managedQuery(UserapiProvider.USERS_URI, null,
-//                      UserapiDatabaseHelper.KEY_USER_NEW + "=?",
-//                      new String[]{"1"},
-//                      null);
-//              // to new only
-//              if (cursor.getCount() == 0)
-//                  friendsCounter.setVisibility(View.INVISIBLE);
-//              else {
-//                  friendsCounter.setText(String.valueOf(cursor.getCount()));
-//                  friendsCounter.setVisibility(View.VISIBLE);
-//              }
-//          }
-//      });
-//      getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
+        // todo: register/unregister onResume/onPause
+        getContentResolver().registerContentObserver(UserapiProvider.USERS_URI, false, new ContentObserver(new Handler()) {
+            @Override
+            public void onChange(boolean b) {
+                Cursor cursor = managedQuery(UserapiProvider.USERS_URI, null, UserapiDatabaseHelper.KEY_USER_NEW + "=1", null, null);
+                if (cursor.getCount() == 0)
+                    friendsCounter.setVisibility(View.INVISIBLE);
+                else {
+                    friendsCounter.setText(String.valueOf(cursor.getCount()));
+                    friendsCounter.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
         getContentResolver().registerContentObserver(UserapiProvider.MESSAGES_URI, false, new ContentObserver(new Handler()) {
             @Override
             public void onChange(boolean b) {
@@ -166,9 +161,6 @@ public class CGuiTest extends TabActivity {
             }
         });
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
-
-        ////////////
-
     }
 
     @Override
