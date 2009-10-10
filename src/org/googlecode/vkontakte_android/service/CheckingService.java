@@ -183,14 +183,13 @@ public class CheckingService extends Service {
     }
 
     private void updateFriends() throws IOException, JSONException {
-        Log.d(TAG, "updating friends");
-        int[] updated = refreshFriends(ApiCheckingKit.getApi(),
-                getApplicationContext());
+        Log.d(TAG, "updating friends:");
+        int[] updated = refreshFriends(ApiCheckingKit.getApi(), getApplicationContext());
         Log.d(TAG, "removed: " + updated[0] + "; added: " + updated[1]);
-        Log.d(TAG, "updating new friends");
-        int updatedNew = refreshNewFriends(ApiCheckingKit.getApi(),
-                getApplicationContext());
-        Log.d(TAG, "total new:" + updatedNew);
+
+        Log.d(TAG, "updating new friends:");
+        int[] updatedNew = refreshNewFriends(ApiCheckingKit.getApi(), getApplicationContext());
+        Log.d(TAG, "removed: " + updatedNew[0] + "; added: " + updatedNew[1]);
     }
 
     private void updateMessages() {
@@ -213,7 +212,7 @@ public class CheckingService extends Service {
     private void updateStatuses() throws IOException, JSONException {
         Log.d(TAG, "updating statuses");
         VkontakteAPI api = ApiCheckingKit.getApi();
-        int updated = 0;
+        int updated;
         int start = 0;
         int fetchSize = 100;
         do {
@@ -228,31 +227,36 @@ public class CheckingService extends Service {
         } while (updated != 0);
     }
 
-    private int[] refreshFriends(VkontakteAPI api, Context context)
-            throws IOException, JSONException {
-        List<UserDao> users = new LinkedList<UserDao>();
+    private int[] refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         List<User> friends = api.getMyFriends();
         Log.d(TAG, "got users: " + friends.size());
+        StringBuilder notIn = new StringBuilder();
+        int added = 0;
+        boolean isNew = false;
         for (User user : friends) {
-            UserDao userDao = new UserDao(user.getUserId(), user.getUserName(),
-                    user.isMale(), user.isOnline(), false);
-            users.add(userDao);
+            UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew);
+            added += userDao.saveOrUpdate(context);
+            notIn.append(user.getUserId()).append(",");
         }
-        return UserDao.bulkUpdateOrRemove(context, users);
+        notIn.deleteCharAt(notIn.length() - 1);//remove last ','
+        int deleted = getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
+        return new int[]{deleted, added};
     }
 
-    private int refreshNewFriends(VkontakteAPI api, Context context)
-            throws IOException, JSONException {
-        List<UserDao> users = new LinkedList<UserDao>();
+    private int[] refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         List<User> friends = api.getMyNewFriends();
         Log.d(TAG, "got new users: " + friends.size());
+        StringBuilder notIn = new StringBuilder();
+        int added = 0;
+        boolean isNew = true;
         for (User user : friends) {
-            UserDao userDao = new UserDao(user.getUserId(), user.getUserName(),
-                    user.isMale(), user.isOnline(), true);
-            userDao.saveOrUpdate(context);
+            UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew);
+            added += userDao.saveOrUpdate(context);
+            notIn.append(user.getUserId()).append(",");
         }
-        context.getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
-        return friends.size();
+        notIn.deleteCharAt(notIn.length() - 1);//remove last ','
+        int deleted = getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=1" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
+        return new int[]{deleted, added};
     }
 
 //	private void processMessages(ApiCheckingKit kit, Map<UpdateType, Long> res) {

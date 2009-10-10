@@ -42,51 +42,21 @@ public class UserDao extends org.googlecode.userapi.User {
         this.newFriend = newFriend;
     }
 
-    public static int bulkSave(Context context, List<UserDao> userListDao) {
-        ContentValues[] values = new ContentValues[userListDao.size()];
-        int i = 0;
-        for (UserDao userDao : userListDao) {
-            ContentValues insertValues = new ContentValues();
-            insertValues.put(KEY_USER_USERID, userDao.getUserId());
-            insertValues.put(KEY_USER_NAME, userDao.getUserName());
-            insertValues.put(KEY_USER_MALE, userDao.isMale() ? 1 : 0);
-            insertValues.put(KEY_USER_ONLINE, userDao.isOnline() ? 1 : 0);
-            insertValues.put(KEY_USER_NEW, userDao.isNewFriend() ? 1 : 0);
-            values[i] = insertValues;
-            i++;
-        }
-        return context.getContentResolver().bulkInsert(USERS_URI, values);
-    }
-
-    public static int[] bulkUpdateOrRemove(Context context, List<UserDao> users) {
-        int added = 0;
-        int removed;
-        List<Long> oldUsers = UserDao.getAllOldFriendsId(context);
-        for (User user : users) {
-            System.out.println("updating " + user.getUserId());
-            UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), false);
-            added += userDao.saveOrUpdate(context);
-            oldUsers.remove(userDao.getUserId());
-        }
-        for (Long id : oldUsers) {
-            System.out.println("deleting " + id);
-            context.getContentResolver().delete(USERS_URI, KEY_USER_USERID + "=?", new String[]{String.valueOf(id)});
-        }
-        removed = oldUsers.size();
-        context.getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
-        return new int[]{removed, added};
-    }
-
-    public static List<Long> getAllOldFriendsId(Context context) {
-        List<Long> ids = new LinkedList<Long>();
-        Cursor cursor = context.getContentResolver().query(USERS_URI, new String[]{KEY_USER_USERID}, UserapiDatabaseHelper.KEY_USER_NEW + "=?", new String[]{String.valueOf(0)}, null);
-        if (cursor != null) {
-            while (cursor.moveToNext())
-                ids.add(cursor.getLong(0));
-            cursor.close();
-        }
-        return ids;
-    }
+//    public static int bulkSave(Context context, List<UserDao> userListDao) {
+//        ContentValues[] values = new ContentValues[userListDao.size()];
+//        int i = 0;
+//        for (UserDao userDao : userListDao) {
+//            ContentValues insertValues = new ContentValues();
+//            insertValues.put(KEY_USER_USERID, userDao.getUserId());
+//            insertValues.put(KEY_USER_NAME, userDao.getUserName());
+//            insertValues.put(KEY_USER_MALE, userDao.isMale() ? 1 : 0);
+//            insertValues.put(KEY_USER_ONLINE, userDao.isOnline() ? 1 : 0);
+//            insertValues.put(KEY_USER_NEW, userDao.isNewFriend() ? 1 : 0);
+//            values[i] = insertValues;
+//            i++;
+//        }
+//        return context.getContentResolver().bulkInsert(USERS_URI, values);
+//    }
 
     public static UserDao get(Context context, long rowId) {
         if (rowId == -1) return null;
@@ -101,8 +71,7 @@ public class UserDao extends org.googlecode.userapi.User {
 
     public static UserDao findByUserId(Context context, long id) {
         if (id == -1) return null;
-//        Cursor cursor = context.getContentResolver().query(USERS_URI, null, KEY_USER_USERID + "=?", new String[]{String.valueOf(id)}, null);
-        Cursor cursor = context.getContentResolver().query(USERS_URI, null, KEY_USER_USERID + "=?" + " AND " + KEY_USER_NEW + "=?", new String[]{String.valueOf(id), String.valueOf(0)}, null);
+        Cursor cursor = context.getContentResolver().query(USERS_URI, null, KEY_USER_USERID + "=?", new String[]{String.valueOf(id)}, null);
         UserDao userDao = null;
         if (cursor != null && cursor.moveToNext()) {
             userDao = new UserDao(cursor);
@@ -112,20 +81,18 @@ public class UserDao extends org.googlecode.userapi.User {
     }
 
     public int saveOrUpdate(Context context) {
-        UserDao channel = UserDao.findByUserId(context, userId);
+        UserDao userDao = UserDao.findByUserId(context, userId);
         ContentValues insertValues = new ContentValues();
         insertValues.put(KEY_USER_USERID, getUserId());
         insertValues.put(KEY_USER_NAME, getUserName());
         insertValues.put(KEY_USER_MALE, isMale() ? 1 : 0);
         insertValues.put(KEY_USER_ONLINE, isOnline() ? 1 : 0);
         insertValues.put(KEY_USER_NEW, isNewFriend() ? 1 : 0);
-        if (isNewFriend()) System.out.println("new!");
-        else System.out.println("old :(");
-        if (channel == null) {
+        if (userDao == null) {
             context.getContentResolver().insert(USERS_URI, insertValues);
             return 1;
         } else {
-            context.getContentResolver().update(ContentUris.withAppendedId(USERS_URI, channel.rowId), insertValues, null, null);
+            context.getContentResolver().update(ContentUris.withAppendedId(USERS_URI, userDao.rowId), insertValues, null, null);
             return 0;
         }
     }
