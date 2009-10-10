@@ -1,23 +1,30 @@
 package org.googlecode.vkontakte_android;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 
 public class FriendsListAdapter extends ResourceCursorAdapter {
     private Context context;
     private boolean loading = false;
+    private static final String TAG = "FriendsListAdapter";
 
     public FriendsListAdapter(Context context, int layout, Cursor cursor) {
         super(context, layout, cursor);
@@ -37,8 +44,24 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         if (userDao.isOnline()) statusText += "online";
         else statusText += "offline";
         status.setText(statusText);
-        //todo: load avatars
-        ImageView photo = (ImageView) view.findViewById(R.id.photo);
+        
+        //loading avatars
+        
+        //if (userDao.getUserPhotoUrl() != null) {
+        	try {
+        		Log.d(TAG, "setting photo");
+            	Uri uri = ContentUris.withAppendedId(UserapiProvider.USERS_URI, userDao.rowId);
+                InputStream is = context.getContentResolver().openInputStream(uri);
+    			Bitmap bm = BitmapFactory.decodeStream(is);
+    			ImageView photo = (ImageView) view.findViewById(R.id.photo);
+    			photo.setImageBitmap(bm);
+    		} catch (FileNotFoundException e) {
+    			e.printStackTrace();
+    		}	
+        //}
+        
+        
+        
         
 //        try {
 //            byte[] photoByteArray = userDao.getUserPhoto();

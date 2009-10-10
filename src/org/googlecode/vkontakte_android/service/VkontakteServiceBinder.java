@@ -157,8 +157,6 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 				photo = ApiCheckingKit.getApi().getFileFromUrl(photoUrl);
 			}
 			
-			
-			
 			CSettings.myId = pr.getId();
 			ProfileDao dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr.getSurname(), pr.getStatus().getText(),
 					pr.getSex(), pr.getBirthday(), pr.getPhone());

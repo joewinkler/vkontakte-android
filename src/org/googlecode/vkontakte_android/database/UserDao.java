@@ -4,6 +4,8 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
+
 import org.googlecode.userapi.User;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
@@ -17,7 +19,7 @@ public class UserDao extends org.googlecode.userapi.User {
     private static final String TAG = "org.googlecode.vkontakte_android.database.UserDao";
 
 
-    private long rowId;
+    public long rowId;
     //    private String userPhotoUrl;
     //    private String userPhotoUrlSmall;
     private long photo;
@@ -80,7 +82,7 @@ public class UserDao extends org.googlecode.userapi.User {
         return userDao;
     }
 
-    public int saveOrUpdate(Context context) {
+    public Uri saveOrUpdate(Context context) {
         UserDao userDao = UserDao.findByUserId(context, userId);
         ContentValues insertValues = new ContentValues();
         insertValues.put(KEY_USER_USERID, getUserId());
@@ -88,13 +90,17 @@ public class UserDao extends org.googlecode.userapi.User {
         insertValues.put(KEY_USER_MALE, isMale() ? 1 : 0);
         insertValues.put(KEY_USER_ONLINE, isOnline() ? 1 : 0);
         insertValues.put(KEY_USER_NEW, isNewFriend() ? 1 : 0);
+        String fname = UserapiProvider.APP_DIR+"profiles/id" + userId + ".smallava";
+        insertValues.put(KEY_USER_AVATAR_SMALL,  fname);
+        
         if (userDao == null) {
-            context.getContentResolver().insert(USERS_URI, insertValues);
-            return 1;
+            return context.getContentResolver().insert(USERS_URI, insertValues); 
         } else {
-            context.getContentResolver().update(ContentUris.withAppendedId(USERS_URI, userDao.rowId), insertValues, null, null);
-            return 0;
+        	Uri useruri = ContentUris.withAppendedId(USERS_URI, userDao.rowId);
+            context.getContentResolver().update(useruri, insertValues, null, null);
+            return useruri;
         }
+        
     }
 
     public void setUserId(long userId) {

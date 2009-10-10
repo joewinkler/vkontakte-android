@@ -21,7 +21,6 @@ public class UserapiProvider extends ContentProvider {
 
     public static final Uri USERS_URI = Uri.parse("content://org.googlecode.vkontakte_android/users");
     public static final Uri MESSAGES_URI = Uri.parse("content://org.googlecode.vkontakte_android/messages");
-    public static final Uri FILES_URI = Uri.parse("content://org.googlecode.vkontakte_android/files");
     public static final Uri WALL_URI = Uri.parse("content://org.googlecode.vkontakte_android/wall");
     public static final Uri PROFILES_URI = Uri.parse("content://org.googlecode.vkontakte_android/profiles");
     public static final Uri STATUSES_URI = Uri.parse("content://org.googlecode.vkontakte_android/statuses");
@@ -30,8 +29,6 @@ public class UserapiProvider extends ContentProvider {
     private static final int SINGLE_USER = 2;
     private static final int ALL_MESSAGES = 3;
     private static final int SINGLE_MESSAGE = 4;
-    private static final int ALL_FILES = 5;
-    private static final int SINGLE_FILE = 6;
     private static final int ALL_WALL = 7;
     private static final int SINGLE_WALL = 8;
     private static final int ALL_PROFILES = 9;
@@ -50,8 +47,6 @@ public class UserapiProvider extends ContentProvider {
         uriMatcher.addURI("org.googlecode.vkontakte_android", "users/#", SINGLE_USER);
         uriMatcher.addURI("org.googlecode.vkontakte_android", "messages", ALL_MESSAGES);
         uriMatcher.addURI("org.googlecode.vkontakte_android", "messages/#", SINGLE_MESSAGE);
-        uriMatcher.addURI("org.googlecode.vkontakte_android", "files", ALL_FILES);
-        uriMatcher.addURI("org.googlecode.vkontakte_android", "files/#", SINGLE_FILE);
         uriMatcher.addURI("org.googlecode.vkontakte_android", "wall", ALL_WALL);
         uriMatcher.addURI("org.googlecode.vkontakte_android", "wall/#", SINGLE_WALL);
         uriMatcher.addURI("org.googlecode.vkontakte_android", "profiles", ALL_PROFILES);
@@ -93,16 +88,7 @@ public class UserapiProvider extends ContentProvider {
                 mySort = KEY_MESSAGE_ROWID;
                 column = KEY_MESSAGE_ROWID;
                 break;
-            case ALL_FILES:
-                table = DATABASE_FILES_TABLE;
-                mySort = KEY_FILE_ROWID;
-                break;
-            case SINGLE_FILE:
-                table = DATABASE_FILES_TABLE;
-                mySort = KEY_FILE_ROWID;
-                column = KEY_FILE_ROWID;
-                break;
-            case ALL_WALL:
+          case ALL_WALL:
                 table = DATABASE_WALL_TABLE;
                 mySort = KEY_WALL_ROWID;
                 break;

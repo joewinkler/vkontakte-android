@@ -16,8 +16,8 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_USER_MALE = "male";
     public static final String KEY_USER_ONLINE = "online";
     public static final String KEY_USER_NEW = "newfriend";
-    public static final String KEY_USER_AVATAR = "_data";
-
+    public static final String KEY_USER_AVATAR_SMALL = "_data";
+  
     public static final String KEY_MESSAGE_ROWID = BaseColumns._ID;
     public static final String KEY_MESSAGE_MESSAGEID = "messageid";
     public static final String KEY_MESSAGE_DATE = "date";
@@ -25,10 +25,6 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_MESSAGE_SENDERID = "senderid";
     public static final String KEY_MESSAGE_RECEIVERID = "receiverid";
     public static final String KEY_MESSAGE_READ = "read";
-
-    public static final String KEY_FILE_ROWID = BaseColumns._ID;
-    public static final String KEY_FILE_URL = "url";
-    public static final String KEY_FILE_DATA = "data";
 
     public static final String KEY_WALL_ROWID = BaseColumns._ID;
     public static final String KEY_WALL_TEXT = "text";
@@ -63,7 +59,8 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             KEY_USER_NAME + " text , " +
             KEY_USER_MALE + " int, " +
             KEY_USER_ONLINE + " int, " +
-            KEY_USER_NEW + " int " +
+            KEY_USER_NEW + " int," +
+            KEY_USER_AVATAR_SMALL + " text" +
             ");";
 
     public static final String DATABASE_MESSAGES_TABLE = "messages";
@@ -76,13 +73,6 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             KEY_MESSAGE_RECEIVERID + " long, " +
             KEY_MESSAGE_READ + " int " +
             ");";
-
-    public static final String DATABASE_FILES_TABLE = "files";
-    private static final String DATABASE_FILES_CREATE = "create table " + DATABASE_FILES_TABLE + " ("
-            + KEY_FILE_ROWID + " integer primary key autoincrement, "
-            + KEY_FILE_URL + " text, "
-            + KEY_FILE_DATA + " blob "
-            + ");";
 
     public static final String DATABASE_WALL_TABLE = "wall";
     private static final String DATABASE_WALL_CREATE = "create table " + DATABASE_WALL_TABLE + " ("
@@ -123,7 +113,6 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DATABASE_USERS_CREATE);
-        db.execSQL(DATABASE_FILES_CREATE);
         db.execSQL(DATABASE_MESSAGES_CREATE);
         db.execSQL(DATABASE_PROFILE_CREATE);
         db.execSQL(DATABASE_STATUS_CREATE);
@@ -134,7 +123,6 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
         Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                 + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_USERS_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_FILES_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_MESSAGES_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_PROFILE_CREATE);
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_STATUS_CREATE);

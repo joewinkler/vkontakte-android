@@ -1,6 +1,7 @@
 package org.googlecode.vkontakte_android.service;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.Map;
 import java.util.List;
@@ -28,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
@@ -235,11 +237,22 @@ public class CheckingService extends Service {
         boolean isNew = false;
         for (User user : friends) {
             UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew);
-            added += userDao.saveOrUpdate(context);
+            //added += userDao.saveOrUpdate(context);
             notIn.append(user.getUserId()).append(",");
+            Uri useruri = userDao.saveOrUpdate(this);
+            //load photo
+            //TODO maybe put this into UserDao 
+            if (user.getUserPhotoUrl() != null) {
+            	Log.d(TAG, "photo: "+user.getUserPhotoUrl());
+            	byte[] photo = user.getUserPhoto();
+            	OutputStream os = getContentResolver().openOutputStream(useruri);
+            	os.write(photo);
+            	os.close();
+            }
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
-        int deleted = getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
+        //throws here
+        int deleted = 0;//getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
         return new int[]{deleted, added};
     }
 
@@ -251,7 +264,7 @@ public class CheckingService extends Service {
         boolean isNew = true;
         for (User user : friends) {
             UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew);
-            added += userDao.saveOrUpdate(context);
+            //added += userDao.saveOrUpdate(context);
             notIn.append(user.getUserId()).append(",");
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
