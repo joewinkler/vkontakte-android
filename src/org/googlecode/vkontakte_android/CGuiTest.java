@@ -116,9 +116,9 @@ public class CGuiTest extends TabActivity {
                 getResources().getDrawable(R.drawable.ic_menu_friendslist))
                 .setContent(new Intent(CGuiTest.this, FriendsListTabActivity.class)));
 
-        tabHost.addTab(tabHost.newTabSpec("Messages").setIndicator(
-                getResources().getString(R.string.messages)).setContent(
-                new Intent(CGuiTest.this, CMessagesTab.class)));
+//        tabHost.addTab(tabHost.newTabSpec("Messages").setIndicator(
+//                getResources().getString(R.string.messages)).setContent(
+//                new Intent(CGuiTest.this, CMessagesTab.class)));
 
         tabHost.addTab(tabHost.newTabSpec("Updates").setIndicator(
                 getResources().getString(R.string.updates)).setContent(
