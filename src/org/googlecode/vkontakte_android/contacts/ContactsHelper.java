@@ -31,8 +31,6 @@ public class ContactsHelper {
     }
 
     /**
-     * Ищет человека в локальной БД по id контакста
-     *
      * @param vkId из контакта
      * @return null или Uri человека в контактах
      */
