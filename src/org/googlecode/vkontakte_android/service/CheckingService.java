@@ -260,12 +260,12 @@ public class CheckingService extends Service {
     private int[] refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         List<User> friends = api.getMyNewFriends();
         Log.d(TAG, "got new users: " + friends.size());
-        StringBuilder notIn = new StringBuilder();
+        StringBuilder notIn = new StringBuilder(" ");
         int added = 0;
         boolean isNew = true;
         for (User user : friends) {
             UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew);
-            //added += userDao.saveOrUpdate(context);
+            userDao.saveOrUpdate(context);
             notIn.append(user.getUserId()).append(",");
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
