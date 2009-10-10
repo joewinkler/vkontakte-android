@@ -36,6 +36,11 @@ public class CGuiTest extends TabActivity {
     public IVkontakteService m_vkService;
     private VkontakteServiceConnection m_connection = new VkontakteServiceConnection();
 
+    public static final int MY_PAGE = 0;
+    public static final int MY_FRIENDS = 1;
+    public static final int MY_UPDATES = 2;
+
+
     /**
      * Called when the activity is first created.
      */
@@ -188,7 +193,16 @@ public class CGuiTest extends TabActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                refresh(contentToUpdate.ALL);
+                switch (getTabHost().getCurrentTab()) {
+                    case MY_FRIENDS:
+                        refresh(contentToUpdate.FRIENDS);
+                        break;
+                    case MY_UPDATES:
+                        refresh(contentToUpdate.STATUSES);
+                        break;
+                    default:
+                        refresh(contentToUpdate.ALL);
+                }
                 return true;
             case R.id.settings:
                 startActivity(new Intent(this, CSettings.class));
