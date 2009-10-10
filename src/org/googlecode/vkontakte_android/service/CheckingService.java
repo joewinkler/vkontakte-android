@@ -232,7 +232,7 @@ public class CheckingService extends Service {
     private int[] refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         List<User> friends = api.getMyFriends();
         Log.d(TAG, "got users: " + friends.size());
-        StringBuilder notIn = new StringBuilder();
+        StringBuilder notIn = new StringBuilder(" ");
         int added = 0;
         boolean isNew = false;
         for (User user : friends) {
@@ -252,7 +252,8 @@ public class CheckingService extends Service {
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
         //throws here
-        int deleted = 0;//getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
+        int deleted = 0;
+        getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
         return new int[]{deleted, added};
     }
 
