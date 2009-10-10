@@ -71,9 +71,9 @@ public class UserDao extends org.googlecode.userapi.User {
         return userDao;
     }
 
-    public static UserDao findByUserId(Context context, long id) {
-        if (id == -1) return null;
-        Cursor cursor = context.getContentResolver().query(USERS_URI, null, KEY_USER_USERID + "=?", new String[]{String.valueOf(id)}, null);
+    public static UserDao findByUserId(Context context, long userId) {
+        if (userId == -1) return null;
+        Cursor cursor = context.getContentResolver().query(USERS_URI, null, KEY_USER_USERID + "=?", new String[]{String.valueOf(userId)}, null);
         UserDao userDao = null;
         if (cursor != null && cursor.moveToNext()) {
             userDao = new UserDao(cursor);

@@ -186,12 +186,10 @@ public class CheckingService extends Service {
 
     private void updateFriends() throws IOException, JSONException {
         Log.d(TAG, "updating friends:");
-        int[] updated = refreshFriends(ApiCheckingKit.getApi(), getApplicationContext());
-        Log.d(TAG, "removed: " + updated[0] + "; added: " + updated[1]);
+        refreshFriends(ApiCheckingKit.getApi(), getApplicationContext());
 
         Log.d(TAG, "updating new friends:");
-        int[] updatedNew = refreshNewFriends(ApiCheckingKit.getApi(), getApplicationContext());
-        Log.d(TAG, "removed: " + updatedNew[0] + "; added: " + updatedNew[1]);
+        refreshNewFriends(ApiCheckingKit.getApi(), getApplicationContext());
     }
 
     private void updateMessages() {
@@ -229,48 +227,53 @@ public class CheckingService extends Service {
         } while (updated != 0);
     }
 
-    private int[] refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
+    private void refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         List<User> friends = api.getMyFriends();
         Log.d(TAG, "got users: " + friends.size());
         StringBuilder notIn = new StringBuilder(" ");
-        int added = 0;
         boolean isNew = false;
         for (User user : friends) {
             UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew);
-            //added += userDao.saveOrUpdate(context);
+            userDao.saveOrUpdate(context);
             notIn.append(user.getUserId()).append(",");
             Uri useruri = userDao.saveOrUpdate(this);
             //load photo
             //TODO maybe put this into UserDao 
             if (user.getUserPhotoUrl() != null) {
-            	Log.d(TAG, "photo: "+user.getUserPhotoUrl());
-            	byte[] photo = user.getUserPhoto();
-            	OutputStream os = getContentResolver().openOutputStream(useruri);
-            	os.write(photo);
-            	os.close();
+                Log.d(TAG, "photo: " + user.getUserPhotoUrl());
+                byte[] photo = user.getUserPhoto();
+                OutputStream os = getContentResolver().openOutputStream(useruri);
+                os.write(photo);
+                os.close();
             }
+            getContentResolver().notifyChange(useruri, null);
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
-        //throws here
-        int deleted = 0;
         getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
-        return new int[]{deleted, added};
     }
 
-    private int[] refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
+    private void refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         List<User> friends = api.getMyNewFriends();
         Log.d(TAG, "got new users: " + friends.size());
         StringBuilder notIn = new StringBuilder(" ");
-        int added = 0;
         boolean isNew = true;
         for (User user : friends) {
             UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew);
-            userDao.saveOrUpdate(context);
+            Uri useruri = userDao.saveOrUpdate(context);
             notIn.append(user.getUserId()).append(",");
+            //load photo
+            //TODO maybe put this into UserDao
+            if (user.getUserPhotoUrl() != null) {
+                Log.d(TAG, "photo: " + user.getUserPhotoUrl());
+                byte[] photo = user.getUserPhoto();
+                OutputStream os = getContentResolver().openOutputStream(useruri);
+                os.write(photo);
+                os.close();
+            }
+            getContentResolver().notifyChange(useruri, null);
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
-        int deleted = getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=1" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
-        return new int[]{deleted, added};
+        getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=1" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
     }
 
 //	private void processMessages(ApiCheckingKit kit, Map<UpdateType, Long> res) {
