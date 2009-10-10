@@ -5,7 +5,7 @@
     <string name="legal">legal information</string>
     <string name="copyright">© 2009 Ildar Karimov, Evgeny Balandin and others</string>
 
-    <string name="set_status">Установить статус</string>
+    <string name="set_status">Change Status</string>
     <string name="ok">Ok</string>
     <string name="send">Send</string>
     <string name="remove_status">Delete</string>
@@ -13,7 +13,7 @@
     <string name="from">From:</string>
     <string name="to">Whom:</string>
 
-    <string name="i">Me</string>
+    <string name="i">My Profile</string>
     <string name="friends">Friends</string>
     <string name="messages">Messages</string>
     <string name="updates">Updates</string>
