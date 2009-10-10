@@ -32,13 +32,16 @@ public class UserHelper {
         context.startActivity(intent);
     }
 
+    //todo: return null in case of FileNotFoundException
     static Bitmap getPhoto(Context context, long rowId) throws FileNotFoundException {
         Uri uri = ContentUris.withAppendedId(UserapiProvider.USERS_URI, rowId);
         InputStream is = context.getContentResolver().openInputStream(uri);
         return BitmapFactory.decodeStream(is);
     }
 
-    static Bitmap getPhotoByUserId(Context context, long userId) throws FileNotFoundException {
-        return getPhoto(context, UserDao.findByUserId(context, userId).getRowId());
+    public static Bitmap getPhotoByUserId(Context context, long userId) throws FileNotFoundException {
+        UserDao user = UserDao.findByUserId(context, userId);
+        if (user == null) return null;//not yet loaded
+        else return getPhoto(context, user.getRowId());
     }
 }
