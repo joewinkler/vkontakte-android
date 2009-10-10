@@ -12,12 +12,10 @@ import java.text.SimpleDateFormat;
 
 
 public class UpdatesListAdapter extends ResourceCursorAdapter {
-    private Context context;
     public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm ");//todo: get rid of extra space by using padding(?)
 
     public UpdatesListAdapter(Context context, int layout, Cursor cursor) {
         super(context, layout, cursor);
-        this.context = context;
     }
 
     @Override

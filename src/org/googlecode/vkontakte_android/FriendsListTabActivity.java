@@ -13,7 +13,7 @@ import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 
-public class FriendsListTabActivity extends ListActivity {
+public class FriendsListTabActivity extends ListActivity implements AdapterView.OnItemClickListener {
     private FriendsListAdapter adapter;
     private boolean showAll = true;
 
@@ -26,12 +26,7 @@ public class FriendsListTabActivity extends ListActivity {
         setListAdapter(adapter);
         registerForContextMenu(getListView());
 
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                viewProfile(l);
-            }
-        });
+        getListView().setOnItemClickListener(this);
 
 
         //todo: use tabcounter
@@ -44,12 +39,6 @@ public class FriendsListTabActivity extends ListActivity {
 //        } catch (JSONException e) {
 //            e.printStackTrace();
 //        }
-    }
-
-    public void viewProfile(long rowId) {
-        //attention, rowId, not userId
-        //todo: implement
-        Toast.makeText(this, "view profile not yet implemented", Toast.LENGTH_SHORT).show();
     }
 
     private void setCursor(boolean showAll) {
@@ -81,21 +70,24 @@ public class FriendsListTabActivity extends ListActivity {
 
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        long rowId = info.id;
         switch (item.getItemId()) {
             case R.id.view_profile:
-                viewProfile(info.id);
+                UserHelper.viewProfile(this, rowId);
                 return true;
             case R.id.remove_from_friends:
                 //todo
                 return true;
             case R.id.send_message:
-                UserDao user = UserDao.get(this, info.id);
-                Intent intent = new Intent(this, ComposeMessageActivity.class);
-                intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, user.getUserId());
-                startActivity(intent);
+                UserHelper.sendMessage(this, rowId);
                 return true;
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long rowId) {
+        UserHelper.viewProfile(this, rowId);
     }
 }
