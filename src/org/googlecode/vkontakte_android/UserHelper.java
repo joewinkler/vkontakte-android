@@ -1,10 +1,18 @@
 package org.googlecode.vkontakte_android;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.widget.Toast;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  * Created by Ildar Karimov
@@ -22,5 +30,15 @@ public class UserHelper {
         Intent intent = new Intent(context, ComposeMessageActivity.class);
         intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, user.getUserId());
         context.startActivity(intent);
+    }
+
+    static Bitmap getPhoto(Context context, long rowId) throws FileNotFoundException {
+        Uri uri = ContentUris.withAppendedId(UserapiProvider.USERS_URI, rowId);
+        InputStream is = context.getContentResolver().openInputStream(uri);
+        return BitmapFactory.decodeStream(is);
+    }
+
+    static Bitmap getPhotoByUserId(Context context, long userId) throws FileNotFoundException {
+        return getPhoto(context, UserDao.findByUserId(context, userId).getRowId());
     }
 }
