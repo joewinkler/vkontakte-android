@@ -16,7 +16,7 @@ import android.widget.Toast;
 //TODO toast => notifier
 class UpdatesNotifier {
 	
-	public static void showError(final Context ctx, final String error) {
+	public static void showError(final Context ctx, final int error) {
 		new Thread() {
             @Override
             public void run() { 

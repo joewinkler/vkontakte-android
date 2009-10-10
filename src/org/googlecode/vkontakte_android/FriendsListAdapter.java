@@ -32,8 +32,8 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         if (userDao.isNewFriend()) {
             view.findViewById(R.id.indicator).setVisibility(View.VISIBLE);
         } else view.findViewById(R.id.indicator).setVisibility(View.INVISIBLE);
-        if (userDao.isOnline()) statusText += "online";
-        else statusText += "offline";
+        if (userDao.isOnline()) statusText += context.getResources().getString(R.string.status_online);
+        else statusText += context.getResources().getString(R.string.status_offline);
         status.setText(statusText);
         
         //loading avatars

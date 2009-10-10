@@ -9,6 +9,7 @@ import org.googlecode.userapi.Message;
 import org.googlecode.userapi.ProfileInfo;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.CSettings;
+import org.googlecode.vkontakte_android.R;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.json.JSONException;
@@ -48,7 +49,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			UpdatesNotifier.showError(ctx, "Connection problems");
+			UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
 			//TODO what to do in this case?  
 			return false;
 		}
@@ -73,7 +74,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 					return false;
 				}
 			} catch (IOException ex) {
-				UpdatesNotifier.showError(ctx, "Connection problems");
+				UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
 				return false;
 			}
 		} else {
@@ -94,7 +95,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 			md.saveOrUpdate(m_context);
 		} catch (IOException e) {
 			UpdatesNotifier.showError(m_context,
-					"Cannot send the message. Check connection.");
+					R.string.err_msg_check_connection);
 			e.printStackTrace();
 			return false;
 		}
@@ -126,7 +127,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 			ApiCheckingKit.getApi().logout();
 			CSettings.clearPrivateInfo(m_context);
 		} catch (IOException e) {
-			UpdatesNotifier.showError(m_context, "Connection problems");
+			UpdatesNotifier.showError(m_context, R.string.err_msg_connection_problem);
 			e.printStackTrace();
 			return false;
 		}

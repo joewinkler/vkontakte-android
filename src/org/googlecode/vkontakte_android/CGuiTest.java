@@ -74,7 +74,7 @@ public class CGuiTest extends TabActivity {
                         initializeUserStuff();
                     } else {
                         Toast.makeText(getApplicationContext(),
-                                "login/pass incorrect", Toast.LENGTH_SHORT).show();
+                                R.string.login_err, Toast.LENGTH_SHORT).show();
                     }
                 } catch (RemoteException e) {
                     CGuiTest.fatalError("RemoteException");

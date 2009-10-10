@@ -22,7 +22,7 @@ public class CFriendFactory {
 		vfrom.setText(friendname);
  
 		TextView vmess = (TextView) v.findViewById(R.id.status);
-		vmess.setText(online ? "Online" : "Offline");
+		vmess.setText(online ? R.string.status_online : R.string.status_offline);
 
 //		ImageButton b = (ImageButton) v.findViewById(R.id.send_message);
 //		b.setImageDrawable(new BitmapDrawable(CImagesManager.getBitmap("send")));

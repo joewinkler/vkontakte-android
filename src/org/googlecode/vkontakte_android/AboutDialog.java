@@ -35,7 +35,7 @@ public class AboutDialog {
         try {
             PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);
             TextView build = (TextView) view.findViewById(R.id.build);
-            build.setText("Version " + pi.versionName + ", build: " + Integer.toString(pi.versionCode));
+            build.setText(context.getResources().getString(R.string.version)+" " + pi.versionName + context.getResources().getString(R.string.build)+" " + Integer.toString(pi.versionCode));
         } catch (PackageManager.NameNotFoundException e) {
 //             TODO Auto-generated catch block
             e.printStackTrace();

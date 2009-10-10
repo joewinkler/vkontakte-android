@@ -60,8 +60,8 @@ public class CMeTab extends Activity {
                 String status = editor.getText().toString();
                 try {
                     boolean result = CGuiTest.s_instance.m_vkService.sendStatus(status);
-                    if (result) Toast.makeText(getApplicationContext(), "update success", Toast.LENGTH_SHORT).show();
-                    else Toast.makeText(getApplicationContext(), "update failed", Toast.LENGTH_SHORT).show();
+                    if (result) Toast.makeText(getApplicationContext(), R.string.status_update_ok, Toast.LENGTH_SHORT).show();
+                    else Toast.makeText(getApplicationContext(), R.string.status_update_err, Toast.LENGTH_SHORT).show();
                     //todo: return old text if update fails
                 } catch (RemoteException e) {
                     e.printStackTrace();

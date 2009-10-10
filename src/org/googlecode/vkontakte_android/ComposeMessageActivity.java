@@ -43,19 +43,18 @@ public class ComposeMessageActivity extends ListActivity implements AbsListView.
         final TextView textView = (TextView) findViewById(R.id.mess_to_send);
         final long finalUserId = userId;
         findViewById(R.id.send_reply).setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View view) {
                 try {
                 	IVkontakteService v = CGuiTest.s_instance.m_vkService;
                 	v.sendMessage(textView.getText().toString(), finalUserId);
                     if (true) {
-                        Toast.makeText(getApplicationContext(), "message sent!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.message_sent), Toast.LENGTH_SHORT).show();
                         textView.setText("");
                         CGuiTest.s_instance.m_vkService.update(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal());
                         //todo: scroll
                     }
                 }  catch (RemoteException e) {
-					Toast.makeText(ComposeMessageActivity.this, "Fatal error. Cannot connect to the service", Toast.LENGTH_SHORT);
+					Toast.makeText(ComposeMessageActivity.this, R.string.err_msg_fatal_error, Toast.LENGTH_SHORT);
 					e.printStackTrace();
 				}
             }
