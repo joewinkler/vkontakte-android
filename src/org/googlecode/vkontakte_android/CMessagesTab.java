@@ -24,7 +24,8 @@ public class CMessagesTab extends ListActivity implements AbsListView.OnScrollLi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_list);
-        adapter = new MessagesListAdapter(this, R.layout.message_row, managedQuery(UserapiProvider.MESSAGES_URI, null, null, null, KEY_MESSAGE_DATE + " DESC"));
+        adapter = new MessagesListAdapter(this, R.layout.message_row, 
+        		managedQuery(UserapiProvider.MESSAGES_URI, null, null, null, KEY_MESSAGE_DATE + " DESC"));
         setListAdapter(adapter);
         getListView().setOnScrollListener(this);
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {

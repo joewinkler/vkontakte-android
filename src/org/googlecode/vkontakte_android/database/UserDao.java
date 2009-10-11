@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 import org.googlecode.userapi.User;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
@@ -20,12 +21,15 @@ public class UserDao extends org.googlecode.userapi.User {
 
 
     public long rowId;
-    //    private String userPhotoUrl;
-    //    private String userPhotoUrlSmall;
-    private long photo;
-    private long photoSmall;
-    private boolean newFriend;
-    //todo: save urls/full avatars
+    public long userId;
+    public String userName;
+    //private String userPhotoUrl;
+    public boolean male;
+    public boolean online;
+    //private long photo;
+    //private long photoSmall;
+    public boolean newFriend;
+    public boolean isFriend;
 
     public UserDao(Cursor cursor) {
         rowId = cursor.getLong(0);
@@ -34,14 +38,27 @@ public class UserDao extends org.googlecode.userapi.User {
         male = cursor.getInt(3) == 1;
         online = cursor.getInt(4) == 1;
         newFriend = cursor.getInt(5) == 1;
+        isFriend = cursor.getInt(6) == 1;
     }
 
-    public UserDao(long userId, String userName, boolean male, boolean online, boolean newFriend) {
+    public UserDao(long userId, String userName, boolean male, boolean online, 
+    		       boolean newFriend, boolean isFriend) {
         this.userId = userId;
-        this.userName = userName;
+        Log.d(TAG, "this.userId"+this.userId);
+        this.userName = userName;	
         this.male = male;
         this.online = online;
         this.newFriend = newFriend;
+        this.isFriend = isFriend;
+    }
+    
+    public UserDao(User user, boolean isNewFriend, boolean isFriend) {
+    	this.userId = user.getUserId();
+        this.userName = user.getUserName();	
+        this.male = user.isMale();
+        this.online = user.isOnline();
+        this.newFriend = isNewFriend;
+        this.isFriend = isFriend;
     }
 
 //    public static int bulkSave(Context context, List<UserDao> userListDao) {
@@ -81,15 +98,21 @@ public class UserDao extends org.googlecode.userapi.User {
         } else if (cursor != null) cursor.close();
         return userDao;
     }
+    
+    public static boolean isMyFriend(Context ctx, Long userid) {
+    	return ctx.getContentResolver().query(USERS_URI, null, KEY_USER_USERID + "=? AND "+KEY_USER_IS_FRIEND + "=?", 
+    		                                  new String[] {userid.toString(), "1"}, null).moveToNext(); 
+    }
 
     public Uri saveOrUpdate(Context context) {
         UserDao userDao = UserDao.findByUserId(context, userId);
         ContentValues insertValues = new ContentValues();
-        insertValues.put(KEY_USER_USERID, getUserId());
-        insertValues.put(KEY_USER_NAME, getUserName());
-        insertValues.put(KEY_USER_MALE, isMale() ? 1 : 0);
-        insertValues.put(KEY_USER_ONLINE, isOnline() ? 1 : 0);
-        insertValues.put(KEY_USER_NEW, isNewFriend() ? 1 : 0);
+        insertValues.put(KEY_USER_USERID, userId);
+        insertValues.put(KEY_USER_NAME, userName);
+        insertValues.put(KEY_USER_MALE, male ? 1 : 0);
+        insertValues.put(KEY_USER_ONLINE, online ? 1 : 0);
+        insertValues.put(KEY_USER_NEW, newFriend ? 1 : 0);
+        insertValues.put(KEY_USER_IS_FRIEND, isFriend ? 1 : 0);
         String fname = UserapiProvider.APP_DIR+"profiles/id" + userId + ".smallava";
         insertValues.put(KEY_USER_AVATAR_SMALL,  fname);
         
@@ -103,7 +126,7 @@ public class UserDao extends org.googlecode.userapi.User {
         
     }
 
-    public void setUserId(long userId) {
+   public void setUserId(long userId) {
         this.userId = userId;
     }
 
@@ -125,5 +148,13 @@ public class UserDao extends org.googlecode.userapi.User {
 
     public long getRowId() {
         return rowId;
+    }
+    
+    public boolean isFriend() {
+    	return isFriend;
+    }
+    
+    public void setIsFriend(boolean fr) {
+    	isFriend = fr;
     }
 }

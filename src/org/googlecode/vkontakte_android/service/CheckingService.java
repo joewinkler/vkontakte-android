@@ -85,14 +85,13 @@ public class CheckingService extends Service {
                             updateWall();
                             break;
                         case MESSAGES_ALL:
-                            updateInMessages(100);
-                            updateOutMessages(100);
+                            updateMessages();
                             break;
                         case MESSAGES_IN:
                             updateInMessages(100);
                             break;
                         case MESSAGES_OUT:
-                            updateOutMessages(1); //should be called when user sends messages
+                            updateOutMessages(100); //should be called when user sends messages
                             break;
                         case HISTORY:
                             updateHistory();
@@ -103,9 +102,9 @@ public class CheckingService extends Service {
                         default:
                             updateStatuses();
                             updateMessages();
-                            updateWall();
+                            //updateWall();
                             updateFriends();
-                            updateHistory();
+                            //updateHistory();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -150,7 +149,9 @@ public class CheckingService extends Service {
         MessageDao single = null;
         int countNew = 0;
         for (Message m : messages) {
-            MessageDao md = new MessageDao(m.getId(), m.getDate(), m.getText(), m.getSender().getUserId(), m.getReceiver().getUserId(), m.isRead());
+            //MessageDao md = new MessageDao(m.getId(), m.getDate(), m.getText(), m.getSender().getUserId(), m.getReceiver().getUserId(), m.isRead());
+        	MessageDao md = new MessageDao(m);
+        	Log.d(TAG, "saving message");
             countNew += md.saveOrUpdate(this);
             single = md;
         }
@@ -192,9 +193,9 @@ public class CheckingService extends Service {
         refreshNewFriends(ApiCheckingKit.getApi(), getApplicationContext());
     }
 
-    private void updateMessages() {
-        Log.d(TAG, "updating messages");
-        // todo: implement
+    private void updateMessages() throws IOException, JSONException {
+        updateInMessages(100);
+        updateOutMessages(100);
     }
 
     private void updateWall() {
@@ -233,7 +234,7 @@ public class CheckingService extends Service {
         StringBuilder notIn = new StringBuilder(" ");
         boolean isNew = false;
         for (User user : friends) {
-            UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew);
+            UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew, true);
             userDao.saveOrUpdate(context);
             notIn.append(user.getUserId()).append(",");
             Uri useruri = userDao.saveOrUpdate(this);
@@ -249,7 +250,9 @@ public class CheckingService extends Service {
             getContentResolver().notifyChange(useruri, null);
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
-        getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
+        getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND " 
+        		+ UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")" + " AND " +
+        		UserapiDatabaseHelper.KEY_USER_IS_FRIEND+"=1", null);
     }
 
     private void refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
@@ -258,7 +261,7 @@ public class CheckingService extends Service {
         StringBuilder notIn = new StringBuilder(" ");
         boolean isNew = true;
         for (User user : friends) {
-            UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew);
+            UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew, false);
             Uri useruri = userDao.saveOrUpdate(context);
             notIn.append(user.getUserId()).append(",");
             //load photo

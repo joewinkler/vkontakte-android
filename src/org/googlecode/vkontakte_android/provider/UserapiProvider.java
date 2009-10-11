@@ -300,6 +300,7 @@ public class UserapiProvider extends ContentProvider {
                 + uri.getPathSegments().get(1)
                 + (!TextUtils.isEmpty(where) ? " AND ("
                 + where + ')' : "");
+        
         int count = database.update(table, contentValues, where, whereArgs);
 //        getContext().getContentResolver().notifyChange(uri, null);
         return count;

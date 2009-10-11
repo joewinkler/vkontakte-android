@@ -16,6 +16,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_USER_MALE = "male";
     public static final String KEY_USER_ONLINE = "online";
     public static final String KEY_USER_NEW = "newfriend";
+    public static final String KEY_USER_IS_FRIEND = " isfriend";
     public static final String KEY_USER_AVATAR_SMALL = "_data";
   
     public static final String KEY_MESSAGE_ROWID = BaseColumns._ID;
@@ -60,6 +61,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             KEY_USER_MALE + " int, " +
             KEY_USER_ONLINE + " int, " +
             KEY_USER_NEW + " int," +
+            KEY_USER_IS_FRIEND + " int," +
             KEY_USER_AVATAR_SMALL + " text" +
             ");";
 

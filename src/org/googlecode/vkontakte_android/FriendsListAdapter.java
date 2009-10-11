@@ -27,12 +27,13 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         UserDao userDao = new UserDao(cursor);
         TextView name = (TextView) view.findViewById(R.id.name);
         TextView status = (TextView) view.findViewById(R.id.status);
-        name.setText(userDao.getUserName());
+        name.setText(userDao.userName);
         String statusText = "";
-        if (userDao.isNewFriend()) {
+        if (userDao.newFriend) {
             view.findViewById(R.id.indicator).setVisibility(View.VISIBLE);
         } else view.findViewById(R.id.indicator).setVisibility(View.INVISIBLE);
-        if (userDao.isOnline()) statusText += context.getResources().getString(R.string.status_online);
+
+        if (userDao.online) statusText += context.getResources().getString(R.string.status_online);
         else statusText += context.getResources().getString(R.string.status_offline);
         status.setText(statusText);
         

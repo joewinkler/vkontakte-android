@@ -92,7 +92,8 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 		try {
 			ApiCheckingKit.getApi().sendMessageToUser(message);
 			MessageDao md = new MessageDao(0, new Date(), text, 0, id, true);
-			md.saveOrUpdate(m_context);
+			//don't save it to DB, TODO refresh last out message instead
+			m_service.doCheck(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal());
 		} catch (IOException e) {
 			UpdatesNotifier.showError(m_context,
 					R.string.err_msg_check_connection);
