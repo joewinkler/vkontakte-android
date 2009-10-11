@@ -43,7 +43,8 @@ public class FriendsListTabActivity extends ListActivity implements AdapterView.
 
     private void setCursor(boolean showAll) {
         if (showAll) {
-            final Cursor allFriendsCursor = managedQuery(UserapiProvider.USERS_URI, null, KEY_USER_IS_FRIEND+"=?", new String[]{"1"},
+            final Cursor allFriendsCursor = managedQuery(UserapiProvider.USERS_URI, null, 
+            		KEY_USER_IS_FRIEND+"=?"+" OR "+KEY_USER_NEW+"=?", new String[]{"1","1"},
                     KEY_USER_NEW + " DESC, " + KEY_USER_ONLINE + " DESC"
             );
             adapter.changeCursor(allFriendsCursor);

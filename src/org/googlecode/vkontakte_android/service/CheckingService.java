@@ -234,11 +234,11 @@ public class CheckingService extends Service {
         StringBuilder notIn = new StringBuilder(" ");
         boolean isNew = false;
         for (User user : friends) {
-            UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew, true);
+            UserDao userDao = new UserDao(user, isNew, true);
             userDao.saveOrUpdate(context);
             notIn.append(user.getUserId()).append(",");
             Uri useruri = userDao.saveOrUpdate(this);
-            //load photo
+            //load photo 
             //TODO maybe put this into UserDao 
             if (user.getUserPhotoUrl() != null) {
                 Log.d(TAG, "photo: " + user.getUserPhotoUrl());
@@ -261,7 +261,7 @@ public class CheckingService extends Service {
         StringBuilder notIn = new StringBuilder(" ");
         boolean isNew = true;
         for (User user : friends) {
-            UserDao userDao = new UserDao(user.getUserId(), user.getUserName(), user.isMale(), user.isOnline(), isNew, false);
+            UserDao userDao = new UserDao(user, isNew, false);
             Uri useruri = userDao.saveOrUpdate(context);
             notIn.append(user.getUserId()).append(",");
             //load photo
