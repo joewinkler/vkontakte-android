@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,26 +35,17 @@ public class CMeTab extends Activity {
 
     private static final String TAG = "org.googlecode.vkontakte_android.CMeTab";
 
+    public static CMeTab s_instance; // :( not good
+     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        CMeTab.s_instance = this;
         setContentView(R.layout.main);
 
         TextView updates = (TextView) findViewById(updates_counter);
-//        VkontakteAPI api = CGuiTest.api;
-//        try {
-//            ChangesHistory history = api.getChangesHistory();
-//            updates.setText("messages: "+history.getMessagesCount()+", friends: "+history.getFriendsCount()+", photos: "+history.getPhotosCount());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
         Button b1 = (Button) findViewById(R.id.send_status);
         b1.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 EditText editor = (EditText) findViewById(R.id.editor);
@@ -72,7 +64,6 @@ public class CMeTab extends Activity {
         ImageButton b = (ImageButton) findViewById(R.id.ImageButton01);
         b.setImageDrawable(new BitmapDrawable(CImagesManager.getBitmap("ok")));
         b.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 try {
@@ -86,6 +77,7 @@ public class CMeTab extends Activity {
 
         });
 
+       
         TableLayout table = (TableLayout) findViewById(R.id.Wall);
 
 
@@ -99,13 +91,15 @@ public class CMeTab extends Activity {
         table.addView(v2);
         table.addView(v3);
         table.addView(v4);
+        
 
     }
 
     boolean loadProfile() throws RemoteException {
 
         if (!CGuiTest.s_instance.m_vkService.loadMyProfile()) {
-            return false;
+        	Log.e(TAG, "Cannot load profile");
+        	return false;
         }
         Cursor c = managedQuery(UserapiProvider.PROFILES_URI, null, KEY_PROFILE_USER + "=?",
                 new String[]{CSettings.myId.toString()}, null);
@@ -150,6 +144,19 @@ public class CMeTab extends Activity {
         sname.setOnLongClickListener(new EditingListener());
 
         return true;
+    }
+    
+    @Override
+    protected void onNewIntent(Intent intent) {
+    	if (intent.getStringExtra("action").equals("load")) {
+    		try {
+    			Log.d(TAG, "load");
+				loadProfile();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+    	}
+        super.onNewIntent(intent);
     }
 
     class EditingListener implements View.OnLongClickListener {

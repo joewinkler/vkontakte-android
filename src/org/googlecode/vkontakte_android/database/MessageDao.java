@@ -134,7 +134,7 @@ public class MessageDao extends Message {
         insertValues.put(KEY_MESSAGE_RECEIVERID, this.receiverId);
         insertValues.put(KEY_MESSAGE_READ, this.isRead() ? 0 : 1);
         
-        Log.d(TAG, "saving "+sender.userId+"("+sender.userName+") and "+ receiver.userId);
+        //Log.d(TAG, "saving "+sender.userId+"("+sender.userName+") and "+ receiver.userId);
         saveUserIfNeed(context, sender);
         saveUserIfNeed(context, receiver);
         

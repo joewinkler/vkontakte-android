@@ -111,7 +111,6 @@ public class CGuiTest extends TabActivity {
         CImagesManager.loadImages(getApplicationContext());
 
         final TabHost tabHost = getTabHost();
-
         tabHost.addTab(tabHost.newTabSpec("I").setIndicator(
                 getResources().getString(R.string.i)).setContent(
                 new Intent(CGuiTest.this, CMeTab.class)));
@@ -121,9 +120,9 @@ public class CGuiTest extends TabActivity {
                 getResources().getDrawable(R.drawable.ic_menu_friendslist))
                 .setContent(new Intent(CGuiTest.this, FriendsListTabActivity.class)));
 
-//        tabHost.addTab(tabHost.newTabSpec("Messages").setIndicator(
-//                getResources().getString(R.string.messages)).setContent(
-//                new Intent(CGuiTest.this, CMessagesTab.class)));
+        tabHost.addTab(tabHost.newTabSpec("Messages").setIndicator(
+                getResources().getString(R.string.messages)).setContent(
+                new Intent(CGuiTest.this, CMessagesTab.class)));
 
         tabHost.addTab(tabHost.newTabSpec("Updates").setIndicator(
                 getResources().getString(R.string.updates)).setContent(
@@ -166,6 +165,7 @@ public class CGuiTest extends TabActivity {
             }
         });
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
+        CMeTab.s_instance.loadProfile();
     }
 
     @Override
