@@ -36,9 +36,11 @@ public class CGuiTest extends TabActivity {
     public IVkontakteService m_vkService;
     private VkontakteServiceConnection m_connection = new VkontakteServiceConnection();
 
+    //todo: use map(?)
     public static final int MY_PAGE = 0;
     public static final int MY_FRIENDS = 1;
-    public static final int MY_UPDATES = 2;
+    public static final int MY_MESSAGES = 2;
+    public static final int MY_UPDATES = 3;
 
 
     /**
@@ -196,6 +198,9 @@ public class CGuiTest extends TabActivity {
                 switch (getTabHost().getCurrentTab()) {
                     case MY_FRIENDS:
                         refresh(contentToUpdate.FRIENDS);
+                        break;
+                    case MY_MESSAGES:
+                        refresh(contentToUpdate.MESSAGES_ALL);
                         break;
                     case MY_UPDATES:
                         refresh(contentToUpdate.STATUSES);
