@@ -1,6 +1,7 @@
 package org.googlecode.vkontakte_android;
 
 
+
 import android.app.TabActivity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -34,6 +36,7 @@ public class CGuiTest extends TabActivity {
     private static String TAG = "VK-Gui ";
     //public static VkontakteAPI api;
     public IVkontakteService m_vkService;
+    
     private VkontakteServiceConnection m_connection = new VkontakteServiceConnection();
 
     //todo: use map(?)
@@ -49,7 +52,7 @@ public class CGuiTest extends TabActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         s_instance = this;
         initializeActivity();
         bindService();
@@ -138,9 +141,11 @@ public class CGuiTest extends TabActivity {
         final TextView messagesCounter = TabHelper.injectTabCounter(getTabWidget(), 0, getApplicationContext());
 
         // todo: register/unregister onResume/onPause
+        // users content
         getContentResolver().registerContentObserver(UserapiProvider.USERS_URI, false, new ContentObserver(new Handler()) {
             @Override
             public void onChange(boolean b) {
+            	setProgressBarIndeterminateVisibility(false);
                 Cursor cursor = managedQuery(UserapiProvider.USERS_URI, null, UserapiDatabaseHelper.KEY_USER_NEW + "=1", null, null);
                 if (cursor.getCount() == 0)
                     friendsCounter.setVisibility(View.INVISIBLE);
@@ -151,9 +156,12 @@ public class CGuiTest extends TabActivity {
             }
         });
         getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
+
+        //messages content
         getContentResolver().registerContentObserver(UserapiProvider.MESSAGES_URI, false, new ContentObserver(new Handler()) {
             @Override
             public void onChange(boolean b) {
+            	setProgressBarIndeterminateVisibility(false);
                 Cursor cursor = managedQuery(UserapiProvider.MESSAGES_URI, null,
                         UserapiDatabaseHelper.KEY_MESSAGE_READ + "=?",
                         new String[]{"0"},
@@ -167,7 +175,22 @@ public class CGuiTest extends TabActivity {
             }
         });
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
+        
+        
+        //statuses content
+        getContentResolver().registerContentObserver(UserapiProvider.STATUSES_URI, false, new ContentObserver(new Handler()) {
+            @Override
+            public void onChange(boolean b) {
+            	setProgressBarIndeterminateVisibility(false);
+            }
+        });
+        getContentResolver().notifyChange(UserapiProvider.STATUSES_URI, null);
+        
+        
+        
+        
         CMeTab.s_instance.loadProfile();
+        
     }
 
     @Override
@@ -229,8 +252,6 @@ public class CGuiTest extends TabActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
     /**
      * Makes Service to refresh given content
      *
@@ -238,7 +259,9 @@ public class CGuiTest extends TabActivity {
      */
     private void refresh(CheckingService.contentToUpdate what) {
         Log.d(TAG, "request to refresh");
-        Toast.makeText(this, "Update started", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Update started", Toast.LENGTH_SHORT).show();
+        setProgressBarIndeterminateVisibility(true);
+        
         try {
             m_vkService.update(what.ordinal());
         } catch (RemoteException e) {

@@ -44,8 +44,7 @@ public class CMeTab extends Activity {
         setContentView(R.layout.main);
 
         TextView updates = (TextView) findViewById(updates_counter);
-        Button b1 = (Button) findViewById(R.id.send_status);
-        b1.setOnClickListener(new View.OnClickListener() {
+        ((Button) findViewById(R.id.send_status)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditText editor = (EditText) findViewById(R.id.editor);
@@ -92,7 +91,8 @@ public class CMeTab extends Activity {
         table.addView(v3);
         table.addView(v4);
         
-
+        
+        findViewById(R.id.me_avatar).requestFocus();
     }
 
     boolean loadProfile() throws RemoteException {

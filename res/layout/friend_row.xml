@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
-                android:layout_height="?android:attr/listPreferredItemHeight"
-                android:paddingRight="6dip">
+                android:layout_height="?android:attr/listPreferredItemHeight" android:padding="3dip">
 
     <ImageView android:id="@+id/indicator"
                android:layout_width="wrap_content"
@@ -18,8 +17,6 @@
             android:layout_height="fill_parent"
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginRight="6dip"
-            android:layout_marginLeft="6dip"
             android:src="@drawable/icon"/>
 
     <TextView android:id="@+id/status"
