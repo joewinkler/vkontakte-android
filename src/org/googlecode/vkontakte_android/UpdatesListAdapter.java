@@ -26,7 +26,7 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         TextView nameLine = (TextView) view.findViewById(R.id.name);
         nameLine.setText(status.getUserName());
         TextView statusLine = (TextView) view.findViewById(R.id.status);
-        statusLine.setText(status.getText());
+        statusLine.setText(reformatText(status.getText()));
         TextView timeLine = (TextView) view.findViewById(R.id.time);
         timeLine.setText(timeFormat.format(status.getDate()));
         try {
@@ -37,4 +37,9 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
             e.printStackTrace();
         }
     }
+
+    private String reformatText(String text) {
+        return text.replaceAll("&quot;", "\"");
+    }
+
 }
