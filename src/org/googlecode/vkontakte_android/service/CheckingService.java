@@ -144,35 +144,17 @@ public class CheckingService extends Service {
     // =============== updating methods
 
     private void updateInMessages(long count) throws IOException, JSONException {
+        //todo: use history or friends-like update with save
         VkontakteAPI api = ApiCheckingKit.getApi();
         List<Message> messages = api.getInbox(0, (int) count);
         MessageDao single = null;
         int countNew = 0;
         for (Message m : messages) {
-            //MessageDao md = new MessageDao(m.getId(), m.getDate(), m.getText(), m.getSender().getUserId(), m.getReceiver().getUserId(), m.isRead());
-        	MessageDao md = new MessageDao(m);
-        	Log.d(TAG, "saving message");
+            MessageDao md = new MessageDao(m);
+            Log.d(TAG, "saving message");
             countNew += md.saveOrUpdate(this);
             single = md;
         }
-
-//		Cursor cursor = this.getContentResolver().query(UserapiProvider.MESSAGES_URI, null,
-//                UserapiDatabaseHelper.KEY_MESSAGE_READ + "=?",
-//                new String[]{"0"},
-//                null);
-//		int countNew = 0;
-
-//		if (cursor!=null){
-//
-//			countNew=cursor.getCount();
-//			if (countNew==1){
-//				cursor.moveToNext();
-//				single=new MessageDao(cursor);
-//			}
-//			cursor.close();
-//		}
-
-//		UpdatesNotifier.notifyMessages(this, countNew, single);
         if (countNew > 0)
             UpdatesNotifier.notifyMessages(this, count, single);
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
@@ -180,8 +162,14 @@ public class CheckingService extends Service {
     }
 
     private void updateOutMessages(int count) throws IOException, JSONException {
+        //todo: use history or friends-like update with save
         VkontakteAPI api = ApiCheckingKit.getApi();
-        api.getOutbox(0, count);
+        List<Message> messages = api.getOutbox(0, count);
+        for (Message m : messages) {
+            MessageDao md = new MessageDao(m);
+            Log.d(TAG, "saving message");
+            md.saveOrUpdate(this);
+        }
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
     }
 
@@ -250,9 +238,9 @@ public class CheckingService extends Service {
             getContentResolver().notifyChange(useruri, null);
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
-        getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND " 
-        		+ UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")" + " AND " +
-        		UserapiDatabaseHelper.KEY_USER_IS_FRIEND+"=1", null);
+        getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND "
+                + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")" + " AND " +
+                UserapiDatabaseHelper.KEY_USER_IS_FRIEND + "=1", null);
     }
 
     private void refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {

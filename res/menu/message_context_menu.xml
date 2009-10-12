@@ -1,0 +1,6 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/view_thread" android:id="@+id/message_view"/>
+    <item android:title="@string/reply" android:id="@+id/message_reply"/>
+    <item android:title="@string/mark_as_spam" android:id="@+id/message_mark_as_spam"/>
+    <item android:title="@string/delete_message" android:id="@+id/message_delete"/>
+</menu>

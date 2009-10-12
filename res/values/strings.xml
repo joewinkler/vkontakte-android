@@ -48,4 +48,8 @@
     <string name="status_update_err">Update failed</string>
     <!--login message-->
     <string name="login_err">Login/pass incorrect</string>
+    <string name="view_thread">View messages thread</string>
+    <string name="reply">Reply</string>
+    <string name="mark_as_spam">Mark as spam</string>
+    <string name="delete_message">Delete message</string>
 </resources>

@@ -124,7 +124,7 @@ public class CGuiTest extends TabActivity {
 
         tabHost.addTab(tabHost.newTabSpec("Messages").setIndicator(
                 getResources().getString(R.string.messages)).setContent(
-                new Intent(CGuiTest.this, CMessagesTab.class)));
+                new Intent(CGuiTest.this, MessagesListTabActivity.class)));
 
         tabHost.addTab(tabHost.newTabSpec("Updates").setIndicator(
                 getResources().getString(R.string.updates)).setContent(
