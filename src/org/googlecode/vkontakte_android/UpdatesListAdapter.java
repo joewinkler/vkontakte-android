@@ -38,8 +38,8 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         }
     }
 
-    private String reformatText(String text) {
-        return text.replaceAll("&quot;", "\"");
+    public static String reformatText(String text) {
+        return text.replaceAll("&quot;", "\"").replaceAll("&#39;","'").replaceAll("&amp;","&");
     }
 
 }
