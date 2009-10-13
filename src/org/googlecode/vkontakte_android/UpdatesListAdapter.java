@@ -3,6 +3,8 @@ package org.googlecode.vkontakte_android;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
@@ -38,8 +40,7 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         }
     }
 
-    public static String reformatText(String text) {
-        return text.replaceAll("&quot;", "\"").replaceAll("&#39;","'").replaceAll("&amp;","&");
+    public static Spanned reformatText(String text) {
+        return Html.fromHtml(text);
     }
-
 }
