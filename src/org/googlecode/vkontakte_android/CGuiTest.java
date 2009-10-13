@@ -56,7 +56,8 @@ public class CGuiTest extends TabActivity {
         s_instance = this;
         initializeActivity();
         bindService();
-
+    	if (getIntent().hasExtra("tabToShow")){	getTabHost().setCurrentTabByTag(getIntent().getStringExtra("tabToShow"));}
+            	
     }
 
     private void login() throws RemoteException {
@@ -116,7 +117,7 @@ public class CGuiTest extends TabActivity {
         CImagesManager.loadImages(getApplicationContext());
 
         final TabHost tabHost = getTabHost();
-        tabHost.addTab(tabHost.newTabSpec("I").setIndicator(
+        tabHost.addTab(tabHost.newTabSpec("My Profile").setIndicator(
                 getResources().getString(R.string.i)).setContent(
                 new Intent(CGuiTest.this, CMeTab.class)));
 
@@ -145,13 +146,14 @@ public class CGuiTest extends TabActivity {
         getContentResolver().registerContentObserver(UserapiProvider.USERS_URI, false, new ContentObserver(new Handler()) {
             @Override
             public void onChange(boolean b) {
-            	setProgressBarIndeterminateVisibility(false);
+            	
                 Cursor cursor = managedQuery(UserapiProvider.USERS_URI, null, UserapiDatabaseHelper.KEY_USER_NEW + "=1", null, null);
                 if (cursor.getCount() == 0)
                     friendsCounter.setVisibility(View.INVISIBLE);
                 else {
                     friendsCounter.setText(String.valueOf(cursor.getCount()));
                     friendsCounter.setVisibility(View.VISIBLE);
+                setProgressBarIndeterminateVisibility(false);   
                 }
             }
         });
@@ -161,7 +163,6 @@ public class CGuiTest extends TabActivity {
         getContentResolver().registerContentObserver(UserapiProvider.MESSAGES_URI, false, new ContentObserver(new Handler()) {
             @Override
             public void onChange(boolean b) {
-            	setProgressBarIndeterminateVisibility(false);
                 Cursor cursor = managedQuery(UserapiProvider.MESSAGES_URI, null,
                         UserapiDatabaseHelper.KEY_MESSAGE_READ + "=?",
                         new String[]{"0"},
@@ -172,6 +173,7 @@ public class CGuiTest extends TabActivity {
                     messagesCounter.setText(String.valueOf(cursor.getCount()));
                     messagesCounter.setVisibility(View.VISIBLE);
                 }
+                setProgressBarIndeterminateVisibility(false);
             }
         });
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
@@ -186,11 +188,7 @@ public class CGuiTest extends TabActivity {
         });
         getContentResolver().notifyChange(UserapiProvider.STATUSES_URI, null);
         
-        
-        
-        
         CMeTab.s_instance.loadProfile();
-        
     }
 
     @Override
@@ -204,6 +202,7 @@ public class CGuiTest extends TabActivity {
 //    		Log.d(TAG, "onNewIntent:: " + tag);
 //    		getTabHost().setCurrentTabByTag(tag);
 //    	}
+    	
         super.onNewIntent(intent);
     }
 

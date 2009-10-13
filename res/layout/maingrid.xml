@@ -6,7 +6,7 @@ android:background="#FF11637B">
 <TableRow android:id="@+id/TableRow01" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingTop="4dip" android:paddingLeft="2dip">
 <EditText android:id="@+id/EditText01" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1" android:hint="What you are doing?">
 </EditText>
-<Button android:text="Update" android:id="@+id/Button01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="clip_vertical"></Button>
+<Button android:id="@+id/Button01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="clip_vertical" android:text="Share"></Button>
 </TableRow>
 
 
@@ -16,12 +16,11 @@ android:background="#FF11637B">
 xmlns:android="http://schemas.android.com/apk/res/android" 
 android:numColumns="3" 
 android:paddingTop="5dip" 
-android:horizontalSpacing="10dp"
-android:verticalSpacing="10dp" 
-android:background="#FFECEEF4" android:fadingEdge="none" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingBottom="5dip">
+android:background="#FFECEEF4" android:fadingEdge="none" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingBottom="5dip" android:horizontalSpacing="8dp" android:verticalSpacing="8dp">
 
 </GridView>
 
 
 
+<Gallery android:layout_height="wrap_content" android:id="@+id/OnlineFriendsGallery" android:layout_width="fill_parent" android:minHeight="20dip"></Gallery>
 </LinearLayout>
