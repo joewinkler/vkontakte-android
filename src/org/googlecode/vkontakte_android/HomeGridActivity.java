@@ -16,7 +16,8 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class HomeGridActivity  extends Activity implements OnItemClickListener{
 	
-	private ArrayList<String> cells= new ArrayList<String>() ;
+	private ArrayList<String> cell_titles= new ArrayList<String>() ;
+	private ArrayList<Integer> cell_images= new ArrayList<Integer>() ;
 
     protected GridView mainGrid = null; 
     
@@ -25,17 +26,25 @@ public class HomeGridActivity  extends Activity implements OnItemClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.maingrid);
         
-        cells.add("My Profile");
-        cells.add("Friends");
-        cells.add("Messages");
-        cells.add("Photos");
-        cells.add("Updates");
-        cells.add("Settings");
+        cell_titles.add("My Profile");
+        cell_titles.add("Friends");
+        cell_titles.add("Messages");
+        cell_titles.add("Photos");
+        cell_titles.add("Updates");
+        cell_titles.add("Settings");
+        
+        cell_images.add(R.drawable.my_profile);
+        cell_images.add(R.drawable.my_friends);
+        cell_images.add(R.drawable.my_messages);
+        cell_images.add(R.drawable.my_photos);
+        cell_images.add(R.drawable.my_updates);
+        cell_images.add(R.drawable.my_settings);
+        
         
         mainGrid = (GridView) findViewById(R.id.MainGrid);
         mainGrid.setNumColumns(3);
 
-        MainGridAdapter mga= new MainGridAdapter(this, cells);
+        HomeGridAdapter mga= new HomeGridAdapter(this, cell_titles,cell_images);
         mainGrid.setAdapter(mga);
         mainGrid.setOnItemClickListener(this);
         

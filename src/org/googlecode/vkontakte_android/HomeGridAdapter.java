@@ -8,17 +8,20 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class MainGridAdapter extends BaseAdapter {
+public class HomeGridAdapter extends BaseAdapter {
 
-	protected ArrayList<String> cells ;
+	protected ArrayList<String> cell_titles ;
+	protected ArrayList<Integer> cell_images ;
 	private Context context;
 
 	
-	public MainGridAdapter(Context context,ArrayList<String> _cells ) {
-		this.cells=_cells;
+	public HomeGridAdapter(Context context,ArrayList<String> _cell_titles, ArrayList<Integer> _cell_images ) {
+		this.cell_titles=_cell_titles;
+		this.cell_images=_cell_images;
 	    this.context = context;
 	}
 	
@@ -26,13 +29,13 @@ public class MainGridAdapter extends BaseAdapter {
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		return this.cells.size();
+		return this.cell_titles.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
 		// TODO Auto-generated method stub
-		if (position<getCount())return this.cells.get(position);
+		if (position<getCount())return this.cell_titles.get(position);
 		return "not cell";
 	}
 
@@ -46,11 +49,14 @@ public class MainGridAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		
 		LinearLayout ly= (LinearLayout) ((Activity)context).getLayoutInflater().inflate(R.layout.maingrid_cell, null);
+		
 		TextView tv = (TextView) ly.getChildAt(1);
 		tv.setText((String) getItem(position));
-		
+
+		ImageView iv = (ImageView) ly.getChildAt(0);	
+		iv.setImageResource(cell_images.get(position));
 		Drawable dr =context.getResources().getDrawable(R.drawable.maingridcell_border);
-		//dr.setAlpha(0);
+		
 		
 		ly.setBackgroundDrawable(dr);
 		
