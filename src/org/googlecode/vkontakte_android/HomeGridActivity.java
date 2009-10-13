@@ -31,14 +31,20 @@ public class HomeGridActivity  extends Activity implements OnItemClickListener{
         cell_titles.add("Messages");
         cell_titles.add("Photos");
         cell_titles.add("Updates");
+        cell_titles.add("Requests");
+        cell_titles.add("Search");
         cell_titles.add("Settings");
+        cell_titles.add("Help");
         
         cell_images.add(R.drawable.my_profile);
         cell_images.add(R.drawable.my_friends);
         cell_images.add(R.drawable.my_messages);
         cell_images.add(R.drawable.my_photos);
         cell_images.add(R.drawable.my_updates);
+        cell_images.add(R.drawable.my_requests);
+        cell_images.add(R.drawable.my_search);
         cell_images.add(R.drawable.my_settings);
+        cell_images.add(R.drawable.my_help);
         
         
         mainGrid = (GridView) findViewById(R.id.MainGrid);
