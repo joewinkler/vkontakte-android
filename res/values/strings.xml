@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="exit">Exit</string>
+    <string name="logout">Logout</string>
     <string name="hello">Hello World, CVkontakteGui!</string>
     <string name="app_name">VKontakte</string>
     <string name="legal">legal information</string>
