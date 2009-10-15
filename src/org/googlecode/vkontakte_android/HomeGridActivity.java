@@ -124,7 +124,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
 	            return true;
 	            case R.id.ExitMenuItem:
 	            	try {m_vkService.stop();} catch (RemoteException e) {e.printStackTrace();}
-	            	unbindService(m_vkServiceConnection);
 	            	finish();
 	            	return true;
 	        }
