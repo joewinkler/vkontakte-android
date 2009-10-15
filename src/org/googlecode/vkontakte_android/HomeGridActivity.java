@@ -1,7 +1,5 @@
 package org.googlecode.vkontakte_android;
 
-import java.util.ArrayList;
-
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.service.IVkontakteService;
 
@@ -26,9 +24,6 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class HomeGridActivity extends Activity implements OnItemClickListener {
 
-	private ArrayList<String> cell_titles = new ArrayList<String>();
-	private ArrayList<Integer> cell_images = new ArrayList<Integer>();
-
 	private GridView homeGrid = null;
 	private static String TAG = "VK:HomeGrid";
 	
@@ -42,29 +37,11 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
 
 		setContentView(R.layout.maingrid);
         
-		cell_titles.add("My Profile");
-		cell_titles.add("Friends");
-		cell_titles.add("Messages");
-		cell_titles.add("Photos");
-		cell_titles.add("Updates");
-		cell_titles.add("Requests");
-		cell_titles.add("Search");
-		cell_titles.add("Settings");
-		cell_titles.add("Help");
-
-		cell_images.add(R.drawable.my_profile);
-		cell_images.add(R.drawable.my_friends);
-		cell_images.add(R.drawable.my_messages);
-		cell_images.add(R.drawable.my_photos);
-		cell_images.add(R.drawable.my_updates);
-		cell_images.add(R.drawable.my_requests);
-		cell_images.add(R.drawable.my_search);
-		cell_images.add(R.drawable.my_settings);
-		cell_images.add(R.drawable.my_help);
+		
 
 		homeGrid = (GridView) findViewById(R.id.MainGrid);
 		homeGrid.setNumColumns(3);
-		homeGrid.setAdapter(new HomeGridAdapter(this, cell_titles, cell_images));
+		homeGrid.setAdapter(new HomeGridAdapter(this));
 		homeGrid.setOnItemClickListener(this);
 		this.setTitle(getResources().getString(R.string.app_name) + " > " + "Home");
 		
@@ -73,15 +50,31 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         
 	}
 
+	private void backToHome(){
+		this.setTitle(getResources().getString(R.string.app_name) + " > "+ "Home");
+		setProgressBarIndeterminateVisibility(false);
+	}
+	
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		setProgressBarIndeterminateVisibility(true);
-		this.setTitle(getResources().getString(R.string.app_name) + " > " + cell_titles.get(arg2));
-		if (cell_titles.get(arg2) == "Settings") {
+		this.setTitle(getResources().getString(R.string.app_name) + " > " + (String)arg1.getTag());
+		
+		if (arg1.getTag().equals("Settings") ) {
 			startActivity(new Intent(this, CSettings.class));
-		} else {
+		}
+		// Not implemented
+		else if(  arg1.getTag().equals("Help")
+				||arg1.getTag().equals("Search") 
+				||arg1.getTag().equals("Requests")
+				||arg1.getTag().equals("Photos") ){
+			Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
+		    backToHome();
+			return;
+		}
+		else{
 			Intent i = new Intent(this, CGuiTest.class);
-			i.putExtra("tabToShow", cell_titles.get(arg2));
+			i.putExtra("tabToShow", (String)arg1.getTag());
 			startActivity(i);
 		}
 	}
@@ -89,16 +82,16 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d(TAG, "Resumed");
-		this.setTitle(getResources().getString(R.string.app_name) + " > "+ "Home");
-		setProgressBarIndeterminateVisibility(false);
+		Log.d(TAG, "Activity Resumed");
+		backToHome();
 		bindService();
+		
 	}
 	
 	@Override
 	public void onStop(){
 		super.onStop();
-		Log.d(TAG, "Stopped");
+		Log.d(TAG, "Activity Stopped");
     	//try {m_vkService.stop();} catch (RemoteException e) {e.printStackTrace();}
 		Log.d(TAG, "Unbinding the service");
     	unbindService(m_vkServiceConnection);
