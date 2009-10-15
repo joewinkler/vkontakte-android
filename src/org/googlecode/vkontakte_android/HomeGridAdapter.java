@@ -73,14 +73,14 @@ public class HomeGridAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		
-		LinearLayout ly= (LinearLayout) ((Activity)context).getLayoutInflater().inflate(R.layout.maingrid_cell, null);
+		LinearLayout ly= (LinearLayout) ((Activity)context).getLayoutInflater().inflate(R.layout.homegrid_cell, null);
 		
 		TextView tv = (TextView) ly.getChildAt(1);
 		tv.setText((String) getItem(position));
 
 		ImageView iv = (ImageView) ly.getChildAt(0);	
 		iv.setImageResource(cell_images.get(position));
-		Drawable dr =context.getResources().getDrawable(R.drawable.maingridcell_border);
+		Drawable dr =context.getResources().getDrawable(R.drawable.homegridcell_border);
 		
 		
 		ly.setBackgroundDrawable(dr);

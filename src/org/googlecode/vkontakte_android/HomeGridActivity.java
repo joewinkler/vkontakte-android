@@ -35,7 +35,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
-		setContentView(R.layout.maingrid);
+		setContentView(R.layout.homegrid);
         
 		
 
