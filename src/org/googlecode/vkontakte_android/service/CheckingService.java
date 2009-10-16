@@ -150,13 +150,17 @@ public class CheckingService extends Service {
         MessageDao single = null;
         int countNew = 0;
         for (Message m : messages) {
-            MessageDao md = new MessageDao(m);
-            Log.d(TAG, "saving message");
+            
+        	MessageDao md = new MessageDao(m);
+        	if (single==null) {
+        		single = md;
+        	}
+        	Log.d(TAG, "saving message");
             countNew += md.saveOrUpdate(this);
-            single = md;
+            
         }
         if (countNew > 0)
-            UpdatesNotifier.notifyMessages(this, count, single);
+            UpdatesNotifier.notifyMessages(this, countNew, single);
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
         //TODO get real counter from provider
     }
@@ -167,7 +171,7 @@ public class CheckingService extends Service {
         List<Message> messages = api.getOutbox(0, count);
         for (Message m : messages) {
             MessageDao md = new MessageDao(m);
-            Log.d(TAG, "saving message");
+            Log.d(TAG, "saving outcoming message");
             md.saveOrUpdate(this);
         }
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);

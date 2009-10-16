@@ -37,18 +37,19 @@ class UpdatesNotifier {
             	NotificationManager mNotificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
             	String tickerText = "VKontakte updates";
             	Notification notification = new Notification(R.drawable.icon, tickerText, System.currentTimeMillis());
-            	String contentTitle = "Updates";
-            	String contentText  = "New messages: "+num;
+            	String contentTitle = "";
+            	String contentText  = "";
             	Intent notificationIntent = null;
             	if (num==1) 
             	{  
-            		contentText = mess.getText();
-            		//String sender = mess.getSender().getUserName();
+            		contentTitle = "New message from "+mess.getSender(ctx).userName;
+            		contentText = mess.text;
             		notificationIntent = new Intent(ctx, ComposeMessageActivity.class)
-                            .putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, mess.getSenderId());
+                            .putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, mess.senderId);
             	}
             	else 
             	{
+                  contentTitle = num+" new messages.";	
             	  notificationIntent = new Intent(ctx, CGuiTest.class).putExtra("tabToShow", "Messages").setFlags(
                           Intent.FLAG_ACTIVITY_SINGLE_TOP);
                	}
