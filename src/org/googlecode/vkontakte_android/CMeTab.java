@@ -12,23 +12,16 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
-import android.widget.SimpleAdapter.ViewBinder;
 import static org.googlecode.vkontakte_android.R.id.updates_counter;
-import org.googlecode.userapi.VkontakteAPI;
-import org.googlecode.userapi.ChangesHistory;
-import org.googlecode.userapi.VkontakteAPI.photosTypes;
 import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import org.json.JSONException;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.PROFILES_URI;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 
 public class CMeTab extends Activity {
@@ -101,7 +94,7 @@ public class CMeTab extends Activity {
         	Log.e(TAG, "Cannot load profile");
         	return false;
         }
-        Cursor c = managedQuery(UserapiProvider.PROFILES_URI, null, KEY_PROFILE_USER + "=?",
+        Cursor c = managedQuery(UserapiProvider.PROFILES_URI, null, KEY_PROFILE_USERID + "=?",
                 new String[]{CSettings.myId.toString()}, null);
 
         ProfileDao pd = null;

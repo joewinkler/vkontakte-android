@@ -16,7 +16,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_USER_MALE = "male";
     public static final String KEY_USER_ONLINE = "online";
     public static final String KEY_USER_NEW = "newfriend";
-    public static final String KEY_USER_IS_FRIEND = " isfriend";
+    public static final String KEY_USER_IS_FRIEND = "isfriend";
     public static final String KEY_USER_AVATAR_SMALL = "_data";
   
     public static final String KEY_MESSAGE_ROWID = BaseColumns._ID;
@@ -34,7 +34,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_WALL_DATA = "data";
     
     public static final String KEY_PROFILE_ROWID = BaseColumns._ID;
-    public static final String KEY_PROFILE_USER = "userid";
+    public static final String KEY_PROFILE_USERID = "userid";
     public static final String KEY_PROFILE_FIRSTNAME = "firstname";
     public static final String KEY_PROFILE_SURNAME = "surname";
     public static final String KEY_PROFILE_STATUS = "status";
@@ -87,7 +87,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_PROFILE_TABLE = "profiles";
     private static final String DATABASE_PROFILE_CREATE = "create table " + DATABASE_PROFILE_TABLE + " ("
             + KEY_PROFILE_ROWID + " integer primary key autoincrement, "
-            + KEY_PROFILE_USER + " long,"
+            + KEY_PROFILE_USERID + " long,"
             + KEY_PROFILE_FIRSTNAME + " text, "
             + KEY_PROFILE_SURNAME + " text, "
             + KEY_PROFILE_STATUS + " text, "
@@ -107,7 +107,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             + KEY_STATUS_TEXT + " text"
             + ");";
 
-    
+
     public UserapiDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }

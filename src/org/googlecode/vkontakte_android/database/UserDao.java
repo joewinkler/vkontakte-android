@@ -6,15 +6,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
-
 import org.googlecode.userapi.User;
-import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
-
-import java.util.LinkedList;
-import java.util.List;
 
 public class UserDao extends org.googlecode.userapi.User {
     private static final String TAG = "org.googlecode.vkontakte_android.database.UserDao";
@@ -32,29 +27,29 @@ public class UserDao extends org.googlecode.userapi.User {
     public boolean isFriend;
 
     public UserDao(Cursor cursor) {
-        rowId = cursor.getLong(0);
-        userId = cursor.getLong(1);
-        userName = cursor.getString(2);
-        male = cursor.getInt(3) == 1;
-        online = cursor.getInt(4) == 1;
-        newFriend = cursor.getInt(5) == 1;
-        isFriend = cursor.getInt(6) == 1;
+        rowId = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_USER_ROWID));
+        userId = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_USER_USERID));
+        userName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_NAME));
+        male = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_MALE)) == 1;
+        online = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_ONLINE)) == 1;
+        newFriend = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_NEW)) == 1;
+        isFriend = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_IS_FRIEND)) == 1;
     }
 
-    public UserDao(long userId, String userName, boolean male, boolean online, 
+    public UserDao(long userId, String userName, boolean male, boolean online,
     		       boolean newFriend, boolean isFriend) {
         this.userId = userId;
         Log.d(TAG, "this.userId"+this.userId);
-        this.userName = userName;	
+        this.userName = userName;
         this.male = male;
         this.online = online;
         this.newFriend = newFriend;
         this.isFriend = isFriend;
     }
-    
+
     public UserDao(User user, boolean isNewFriend, boolean isFriend) {
     	this.userId = user.getUserId();
-        this.userName = user.getUserName();	
+        this.userName = user.getUserName();
         this.male = user.isMale();
         this.online = user.isOnline();
         this.newFriend = isNewFriend;
@@ -98,10 +93,10 @@ public class UserDao extends org.googlecode.userapi.User {
         } else if (cursor != null) cursor.close();
         return userDao;
     }
-    
+
     public static boolean isMyFriend(Context ctx, Long userid) {
-    	return ctx.getContentResolver().query(USERS_URI, null, KEY_USER_USERID + "=? AND "+KEY_USER_IS_FRIEND + "=?", 
-    		                                  new String[] {userid.toString(), "1"}, null).moveToNext(); 
+    	return ctx.getContentResolver().query(USERS_URI, null, KEY_USER_USERID + "=? AND "+KEY_USER_IS_FRIEND + "=?",
+    		                                  new String[] {userid.toString(), "1"}, null).moveToNext();
     }
 
     public Uri saveOrUpdate(Context context) {
@@ -115,15 +110,15 @@ public class UserDao extends org.googlecode.userapi.User {
         insertValues.put(KEY_USER_IS_FRIEND, isFriend ? 1 : 0);
         String fname = UserapiProvider.APP_DIR+"profiles/id" + userId + ".smallava";
         insertValues.put(KEY_USER_AVATAR_SMALL,  fname);
-        
+
         if (userDao == null) {
-            return context.getContentResolver().insert(USERS_URI, insertValues); 
+            return context.getContentResolver().insert(USERS_URI, insertValues);
         } else {
         	Uri useruri = ContentUris.withAppendedId(USERS_URI, userDao.rowId);
             context.getContentResolver().update(useruri, insertValues, null, null);
             return useruri;
         }
-        
+
     }
 
    public void setUserId(long userId) {
@@ -149,11 +144,11 @@ public class UserDao extends org.googlecode.userapi.User {
     public long getRowId() {
         return rowId;
     }
-    
+
     public boolean isFriend() {
     	return isFriend;
     }
-    
+
     public void setIsFriend(boolean fr) {
     	isFriend = fr;
     }

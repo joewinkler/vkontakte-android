@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/main_profile_view"
+              android:layout_width="fill_parent" android:layout_height="fill_parent"
+              android:orientation="vertical"
+              android:visibility="invisible"
+              android:background="#ffffff">
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="wrap_content">
+        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                   android:minWidth="100dip" android:minHeight="150dip" android:id="@+id/photo"/>
+        <LinearLayout android:layout_height="wrap_content"
+                      android:orientation="vertical" android:gravity="center"
+                      android:layout_width="fill_parent">
+            <LinearLayout android:layout_height="wrap_content"
+                          android:layout_width="fill_parent">
+
+                <TextView android:layout_height="wrap_content"
+                          android:layout_width="wrap_content"
+                          android:id="@+id/firstname"
+                          android:text="Firstname"/>
+
+                <TextView android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:id="@+id/surname"
+                          android:text="Lastname"
+                          android:paddingLeft="10dp"/>
+
+            </LinearLayout>
+            <TextView android:id="@+id/TextView01" android:layout_height="wrap_content"
+                      android:layout_width="fill_parent" android:text="status..."></TextView>
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

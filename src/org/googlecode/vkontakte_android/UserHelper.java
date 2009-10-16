@@ -6,10 +6,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.widget.Toast;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_SENDERID;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_PROFILE_USERID;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -19,22 +21,21 @@ import java.io.InputStream;
  * Date: Oct 10, 2009
  */
 public class UserHelper {
-    public static void viewProfile(Context context, long rowId) {
-        //attention, rowId, not userId
-        //todo: implement
-        Toast.makeText(context, "view profile not yet implemented", Toast.LENGTH_SHORT).show();
+    public static void viewProfile(Context context, long userId) {
+        Intent intent = new Intent(context, ProfileViewActivity.class);
+        intent.putExtra(KEY_PROFILE_USERID, userId);
+        context.startActivity(intent);
     }
 
-    static void sendMessage(Context context, long rowId) {
-        UserDao user = UserDao.get(context, rowId);
+    public static void sendMessage(Context context, long userId) {
         Intent intent = new Intent(context, ComposeMessageActivity.class);
-        intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, user.getUserId());
+        intent.putExtra(KEY_MESSAGE_SENDERID, userId);
         context.startActivity(intent);
     }
 
     //todo: return null in case of FileNotFoundException
-    static Bitmap getPhoto(Context context, long rowId) throws FileNotFoundException {
-        Uri uri = ContentUris.withAppendedId(UserapiProvider.USERS_URI, rowId);
+    public static Bitmap getPhoto(Context context, long rowId) throws FileNotFoundException {
+        Uri uri = ContentUris.withAppendedId(USERS_URI, rowId);
         InputStream is = context.getContentResolver().openInputStream(uri);
         return BitmapFactory.decodeStream(is);
     }

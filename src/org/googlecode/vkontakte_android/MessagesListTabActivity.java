@@ -33,7 +33,8 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 MessageDao messageDao = new MessageDao(adapter.getCursor());
                 Intent intent = new Intent(getApplicationContext(), ComposeMessageActivity.class);
-                intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, messageDao.getSenderId());
+                boolean isOutgoing = messageDao.getSenderId() == CSettings.myId;
+                intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, isOutgoing ? messageDao.getReceiverId() : messageDao.getSenderId());
                 startActivity(intent);
             }
         });

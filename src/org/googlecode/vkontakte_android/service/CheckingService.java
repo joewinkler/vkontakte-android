@@ -216,7 +216,8 @@ public class CheckingService extends Service {
         } while (updated != 0);
     }
 
-    private void refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
+    //todo: use 'partial' lock for instead of synchronized(?)
+    private synchronized void refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         List<User> friends = api.getMyFriends();
         Log.d(TAG, "got users: " + friends.size());
         StringBuilder notIn = new StringBuilder(" ");
@@ -243,7 +244,8 @@ public class CheckingService extends Service {
                 UserapiDatabaseHelper.KEY_USER_IS_FRIEND + "=1", null);
     }
 
-    private void refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
+    //todo: use 'partial' lock for instead of synchronized(?)
+    private synchronized void refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         List<User> friends = api.getMyNewFriends();
         Log.d(TAG, "got new users: " + friends.size());
         StringBuilder notIn = new StringBuilder(" ");

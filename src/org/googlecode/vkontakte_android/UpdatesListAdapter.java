@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.text.Html;
-import android.text.Spanned;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
@@ -28,7 +27,7 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         TextView nameLine = (TextView) view.findViewById(R.id.name);
         nameLine.setText(status.getUserName());
         TextView statusLine = (TextView) view.findViewById(R.id.status);
-        statusLine.setText(reformatText(status.getText()));
+        statusLine.setText(Html.fromHtml(status.getText()));
         TextView timeLine = (TextView) view.findViewById(R.id.time);
         timeLine.setText(timeFormat.format(status.getDate()));
         try {
@@ -38,9 +37,5 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    public static Spanned reformatText(String text) {
-        return Html.fromHtml(text);
     }
 }

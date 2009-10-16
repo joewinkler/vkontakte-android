@@ -5,9 +5,7 @@ import static org.googlecode.vkontakte_android.provider.UserapiProvider.*;
 
 
 import java.util.Date;
-import java.util.List;
 
-import org.googlecode.userapi.Status;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 
@@ -56,7 +54,7 @@ public class ProfileDao {
     public Uri saveOrUpdate(Context context) {
         ProfileDao profile = ProfileDao.findByUserId(context, id) ;
         ContentValues insertValues = new ContentValues();
-        insertValues.put(KEY_PROFILE_USER, this.id);
+        insertValues.put(KEY_PROFILE_USERID, this.id);
         insertValues.put(KEY_PROFILE_FIRSTNAME, this.firstname);
         insertValues.put(KEY_PROFILE_SURNAME, this.surname);
         insertValues.put(KEY_PROFILE_STATUS, this.status);
@@ -79,7 +77,7 @@ public class ProfileDao {
 
 	private static ProfileDao findByUserId(Context context, long id) {
 		if (id == -1) return null;
-		Cursor c = context.getContentResolver().query(PROFILES_URI, null, UserapiDatabaseHelper.KEY_PROFILE_USER+"=?", new String[]{String.valueOf(id)}, null);
+		Cursor c = context.getContentResolver().query(PROFILES_URI, null, UserapiDatabaseHelper.KEY_PROFILE_USERID +"=?", new String[]{String.valueOf(id)}, null);
 		ProfileDao profile = null;
 		
 		if (c != null) {

@@ -43,8 +43,8 @@ public class FriendsListTabActivity extends ListActivity implements AdapterView.
 
     private void setCursor(boolean showAll) {
         if (showAll) {
-            final Cursor allFriendsCursor = managedQuery(UserapiProvider.USERS_URI, null, 
-            		KEY_USER_IS_FRIEND+"=?"+" OR "+KEY_USER_NEW+"=?", new String[]{"1","1"},
+            final Cursor allFriendsCursor = managedQuery(UserapiProvider.USERS_URI, null,
+                    KEY_USER_IS_FRIEND + "=?" + " OR " + KEY_USER_NEW + "=?", new String[]{"1", "1"},
                     KEY_USER_NEW + " DESC, " + KEY_USER_ONLINE + " DESC"
             );
             adapter.changeCursor(allFriendsCursor);
@@ -72,15 +72,17 @@ public class FriendsListTabActivity extends ListActivity implements AdapterView.
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         long rowId = info.id;
+        UserDao user = UserDao.get(this, rowId);
+        long userId = user.userId;
         switch (item.getItemId()) {
             case R.id.view_profile:
-                UserHelper.viewProfile(this, rowId);
+                UserHelper.viewProfile(this, userId);
                 return true;
             case R.id.remove_from_friends:
                 //todo
                 return true;
             case R.id.send_message:
-                UserHelper.sendMessage(this, rowId);
+                UserHelper.sendMessage(this, userId);
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -89,6 +91,7 @@ public class FriendsListTabActivity extends ListActivity implements AdapterView.
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long rowId) {
-        UserHelper.viewProfile(this, rowId);
+        UserDao user = UserDao.get(this, rowId);
+        UserHelper.viewProfile(this, user.userId);
     }
 }

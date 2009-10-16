@@ -35,6 +35,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name="ProfileViewActivity"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
         <activity android:name="UpdatesListTabActivity"
                   android:label="@string/app_name">
             <intent-filter>
@@ -49,11 +55,13 @@
         </activity>
         <provider android:name=".provider.UserapiProvider" android:authorities="org.googlecode.vkontakte_android"/>
         <service android:enabled="true" android:name=".service.CheckingService"/>
-    <activity android:name=".HomeGridActivity"><intent-filter><action android:name="android.intent.action.MAIN"></action>
-<category android:name="android.intent.category.LAUNCHER"></category>
-</intent-filter>
-</activity>
-</application>
+        <activity android:name=".HomeGridActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+    </application>
 
 
     <uses-sdk android:minSdkVersion="3"/>
