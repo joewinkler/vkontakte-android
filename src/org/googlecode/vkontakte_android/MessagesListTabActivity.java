@@ -3,6 +3,7 @@ package org.googlecode.vkontakte_android;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
@@ -60,21 +61,34 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
         getListView().setOnScrollListener(this);
     }
 
-
+    @SuppressWarnings("unchecked") 
     private void loadMore() {
         Log.d(TAG, "loading more messages: " + adapter.getCount() + "-" + (adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD));
-        try {
-            //todo: use asynctask!
             setProgressBarIndeterminateVisibility(true);
-            CGuiTest.s_instance.m_vkService.loadPrivateMessages(
-                    CheckingService.contentToUpdate.MESSAGES_IN.ordinal(),
-                    adapter.getCount(), adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
-            setProgressBarIndeterminateVisibility(false);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        	new AsyncTask() {
+
+				@Override
+				protected void onPostExecute(Object result) {
+					setProgressBarIndeterminateVisibility(false);
+				}
+
+				@Override
+				protected Object doInBackground(Object... params) {
+					try {
+						CGuiTest.s_instance.m_vkService.loadPrivateMessages(
+						        CheckingService.contentToUpdate.MESSAGES_IN.ordinal(),
+						        adapter.getCount(), adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+					return null;
+				}
+        		
+        	}.execute();
     }
 
+    
+    
     public void onScrollStateChanged(AbsListView v, int state) {
         if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
                 && getListView().getLastVisiblePosition() == adapter.getCount() - 1) {

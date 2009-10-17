@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -60,6 +61,7 @@ public class CGuiTest extends TabActivity {
             	
     }
 
+    
     private void login() throws RemoteException {
         // TODO handle JSONException in api methods
 
@@ -74,23 +76,40 @@ public class CGuiTest extends TabActivity {
         ((EditText) ld.findViewById(R.id.pass)).setText("qwerty");
         ld.show();
         ld.setOnLoginClick(new View.OnClickListener() {
-            public void onClick(View view) {
-
+        	
+            @SuppressWarnings("unchecked")
+			public void onClick(View view) {
+            	ld.showProgress();	
                 String login = ld.getLogin();
                 String pass = ld.getPass();
                 Log.i(TAG, login + ":" + pass);
-                try {
-                    if (m_vkService.login(login, pass)) {
-                        ld.dismiss();
-                        initializeUserStuff();
-                    } else {
-                        Toast.makeText(getApplicationContext(),
-                                R.string.login_err, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (RemoteException e) {
-                    CGuiTest.fatalError("RemoteException");
-                    e.printStackTrace();
-                }
+                
+                new AsyncTask<String, Void, Boolean>() {
+    				@Override
+    				protected void onPostExecute(Boolean result) {
+    					ld.stopProgress();
+    					if (result) {
+    						ld.dismiss();
+                            initializeUserStuff();
+    					} else {
+    						 Toast.makeText(getApplicationContext(),
+    	                                R.string.login_err, Toast.LENGTH_SHORT).show();	
+    					}
+    				}
+
+    				@Override
+    				protected Boolean doInBackground(String... params) {
+    					try {
+							return m_vkService.login(params[0], params[1]);
+						} catch (RemoteException e) {
+							CGuiTest.fatalError("RemoteException");
+		                    ld.stopProgress();
+		                    e.printStackTrace();
+		                    return false;
+						}
+    				}
+            		
+            	}.execute(login, pass);
             }
         });
 
@@ -136,7 +155,7 @@ public class CGuiTest extends TabActivity {
     }
 
 
-    private void initializeUserStuff() throws RemoteException {
+    private void initializeUserStuff()  {
         // todo: possibly move to tabs activities itself
         final TextView friendsCounter = TabHelper.injectTabCounter(getTabWidget(), 1, getApplicationContext());
         final TextView messagesCounter = TabHelper.injectTabCounter(getTabWidget(), 0, getApplicationContext());
@@ -188,7 +207,11 @@ public class CGuiTest extends TabActivity {
         });
         getContentResolver().notifyChange(UserapiProvider.STATUSES_URI, null);
         
-        CMeTab.s_instance.loadProfile();
+        try {
+			CMeTab.s_instance.loadProfile();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
     }
 
     @Override
