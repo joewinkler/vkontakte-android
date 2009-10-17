@@ -39,7 +39,10 @@ import android.widget.Toast;
 
 public class CheckingService extends Service {
 
-    private static String TAG = "VK-Service";
+    private static final String TAG = "VK-Service";
+    public static final int MESSAGE_NUM_LOAD = 10;
+    
+    
     private Timer m_timer = new Timer();
     private static SharedPreferences s_prefs;
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
@@ -81,17 +84,17 @@ public class CheckingService extends Service {
                         case FRIENDS:
                             updateFriends();
                             break;
-                        case WALL:
+                        case WALL:  
                             updateWall();
                             break;
                         case MESSAGES_ALL:
                             updateMessages();
                             break;
                         case MESSAGES_IN:
-                            updateInMessages(100);
+                            updateInMessages(0, MESSAGE_NUM_LOAD);
                             break;
                         case MESSAGES_OUT:
-                            updateOutMessages(100); //should be called when user sends messages
+                            updateOutMessages(0, MESSAGE_NUM_LOAD); //should be called when user sends messages
                             break;
                         case HISTORY:
                             updateHistory();
@@ -143,10 +146,10 @@ public class CheckingService extends Service {
 
     // =============== updating methods
 
-    private void updateInMessages(long count) throws IOException, JSONException {
+    protected void updateInMessages(long first, long last) throws IOException, JSONException {
         //todo: use history or friends-like update with save
         VkontakteAPI api = ApiCheckingKit.getApi();
-        List<Message> messages = api.getInbox(0, (int) count);
+        List<Message> messages = api.getInbox((int)first, (int)last);
         MessageDao single = null;
         int countNew = 0;
         for (Message m : messages) {
@@ -165,10 +168,10 @@ public class CheckingService extends Service {
         //TODO get real counter from provider
     }
 
-    private void updateOutMessages(int count) throws IOException, JSONException {
+    protected void updateOutMessages(long first, long last) throws IOException, JSONException {
         //todo: use history or friends-like update with save
         VkontakteAPI api = ApiCheckingKit.getApi();
-        List<Message> messages = api.getOutbox(0, count);
+        List<Message> messages = api.getOutbox((int)first, (int)last);
         for (Message m : messages) {
             MessageDao md = new MessageDao(m);
             Log.d(TAG, "saving outcoming message");
@@ -186,8 +189,8 @@ public class CheckingService extends Service {
     }
 
     private void updateMessages() throws IOException, JSONException {
-        updateInMessages(100);
-        updateOutMessages(100);
+        updateInMessages(0, MESSAGE_NUM_LOAD);
+        updateOutMessages(0, MESSAGE_NUM_LOAD);
     }
 
     private void updateWall() {
@@ -199,7 +202,7 @@ public class CheckingService extends Service {
         Log.d(TAG, "updating history");
         ApiCheckingKit kit = ApiCheckingKit.getInstance();
         VkontakteAPI api = ApiCheckingKit.getApi();
-        updateInMessages(api.getChangesHistory().getFriendsCount());
+        updateInMessages(0, api.getChangesHistory().getFriendsCount());
     }
 
     private void updateStatuses() throws IOException, JSONException {

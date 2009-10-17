@@ -37,8 +37,9 @@ public class ComposeMessageActivity extends ListActivity implements AbsListView.
         }
 
         setContentView(R.layout.messages);
-        adapter = new MessagesListAdapter(this, R.layout.message_row, managedQuery(UserapiProvider.MESSAGES_URI, null, KEY_MESSAGE_SENDERID + "=?" + " OR " + KEY_MESSAGE_RECEIVERID + "=?", new String[]{String.valueOf(userId), String.valueOf(userId)}, null));
+        adapter = new MessagesListAdapter(this, R.layout.message_row, managedQuery(UserapiProvider.MESSAGES_URI, null, KEY_MESSAGE_SENDERID + "=?" + " OR " + KEY_MESSAGE_RECEIVERID + "=?", new String[]{String.valueOf(userId), String.valueOf(userId)}, UserapiDatabaseHelper.KEY_MESSAGE_DATE+" ASC"));
         setListAdapter(adapter);
+        getListView().setStackFromBottom(true);
         getListView().setOnScrollListener(this);
         final TextView textView = (TextView) findViewById(R.id.mess_to_send);
         final long finalUserId = userId;

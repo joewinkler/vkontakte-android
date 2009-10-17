@@ -12,6 +12,7 @@ import org.googlecode.vkontakte_android.CSettings;
 import org.googlecode.vkontakte_android.R;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.ProfileDao;
+import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
 import org.json.JSONException;
 
 import android.content.Context;
@@ -141,11 +142,30 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public boolean loadPrivateMessages(long userid, int num)
-            throws RemoteException {
-        // TODO Auto-generated method stub
-        return false;
-    }
+	public boolean loadPrivateMessages(int type, int first, int last)
+			throws RemoteException {
+		try {
+			switch (contentToUpdate.values()[type]) {
+			case MESSAGES_IN:
+				m_service.updateInMessages(first, last);
+				return true;
+			case MESSAGES_OUT:
+				m_service.updateOutMessages(first, last);
+				return true;
+			default:  
+				m_service.updateInMessages(first, last/2);
+				m_service.updateOutMessages(first, last/2);
+				return true;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+	}
 
     @Override
     public boolean loadProfile(long userid) throws RemoteException {

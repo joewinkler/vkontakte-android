@@ -4,7 +4,10 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.RemoteException;
+import android.util.Log;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,11 +19,14 @@ import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.vkontakte_android.service.CheckingService;
 
 
 public class MessagesListTabActivity extends ListActivity implements AbsListView.OnScrollListener {
     private MessagesListAdapter adapter;
 
+    private static final String TAG = "MessagesListTabActivity";
+        
     enum MessagesCursorType {ALL, INCOMING, OUTCOMING};
     
     @Override
@@ -28,6 +34,8 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_list);
                 
+        
+        
         adapter = new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.ALL));
         setListAdapter(adapter);
         registerForContextMenu(getListView());
@@ -39,20 +47,44 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
                 boolean isOutgoing = messageDao.getSenderId() == CSettings.myId;
                 intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, isOutgoing ? messageDao.getReceiverId() : messageDao.getSenderId());
                 startActivity(intent);
-            }
+            }   
         });
+        
+        getListView().setOnKeyListener(new View.OnKeyListener() {
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (keyCode == KeyEvent.KEYCODE_0 && event.getAction()==KeyEvent.ACTION_DOWN 
+						&& getListView().getLastVisiblePosition() == adapter.getCount() - 1) {
+					Log.d(TAG, ""+keyCode);
+					loadMore();
+				}
+				
+				return false;
+			}
+        	
+        });
+        
         getListView().setOnScrollListener(this);
     }
 
 
-    public void onScroll(AbsListView v, int i, int j, int k) {
-    }
+    private void loadMore() {
+    		Log.d(TAG, "loading more messages: "+adapter.getCount()+"-"+(adapter.getCount()+CheckingService.MESSAGE_NUM_LOAD));
+			try {
+				CGuiTest.s_instance.m_vkService.loadPrivateMessages(
+						CheckingService.contentToUpdate.MESSAGES_IN.ordinal(),
+						adapter.getCount(), adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} 
+	}
 
     public void onScrollStateChanged(AbsListView v, int state) {
-        if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && getListView().getLastVisiblePosition() == adapter.getCount() - 1) {
-            //todo: download more messages?
-        }
-    }
+		if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
+				&& getListView().getLastVisiblePosition() == adapter.getCount() - 1) {
+			loadMore();
+		} 
+	} 
 
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
@@ -106,6 +138,12 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
 					null, KEY_MESSAGE_DATE + " DESC");
 
 		}
+	} 
+
+
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem,
+			int visibleItemCount, int totalItemCount) {
 	}
     
 }
