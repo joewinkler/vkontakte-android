@@ -53,12 +53,10 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
         getListView().setOnKeyListener(new View.OnKeyListener() {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (keyCode == KeyEvent.KEYCODE_0 && event.getAction()==KeyEvent.ACTION_DOWN 
-						&& getListView().getLastVisiblePosition() == adapter.getCount() - 1) {
-					Log.d(TAG, ""+keyCode);
+ 				if (keyCode == KeyEvent.KEYCODE_0 && event.getAction()==KeyEvent.ACTION_DOWN 
+						&& getListView().getSelectedItemPosition() == adapter.getCount() - 1) {
 					loadMore();
 				}
-				
 				return false;
 			}
         	
