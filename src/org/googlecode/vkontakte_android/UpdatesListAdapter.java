@@ -32,8 +32,10 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         timeLine.setText(timeFormat.format(status.getDate()));
         try {
             Bitmap bm = UserHelper.getPhotoByUserId(context, status.getUserId());
-            ImageView photo = (ImageView) view.findViewById(R.id.photo);
-            photo.setImageBitmap(bm);
+            if (bm!=null) {
+            	ImageView photo = (ImageView) view.findViewById(R.id.photo);
+                photo.setImageBitmap(bm);	
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
