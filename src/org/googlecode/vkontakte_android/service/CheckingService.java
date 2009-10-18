@@ -1,9 +1,11 @@
 package org.googlecode.vkontakte_android.service;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
+import android.os.ParcelFileDescriptor;
 import org.googlecode.userapi.Status;
 import org.googlecode.vkontakte_android.CSettings;
 import org.googlecode.vkontakte_android.database.StatusDao;
@@ -240,7 +242,6 @@ public class CheckingService extends Service {
                     counter = 0;
                 }
             }
-
         }
         if (firstUpdate) {
             UserDao.bulkSave(context, users);
@@ -257,11 +258,23 @@ public class CheckingService extends Service {
         //load photo
         //TODO maybe put this into UserDao
         String oldPhotoUrl = userDao.getUserPhotoUrl();
-        System.out.println("oldPhotoUrl = " + oldPhotoUrl);
         String newPhotoUrl = user.getUserPhotoUrl();
-        System.out.println("newPhotoUrl = " + newPhotoUrl);
-        //photo exists and updated
-        if (newPhotoUrl != null && !newPhotoUrl.equalsIgnoreCase(oldPhotoUrl)) {
+
+        boolean fileExists = true;
+        ParcelFileDescriptor fd = null;
+        try {
+            fd = getContentResolver().openFileDescriptor(useruri, "r");
+            System.out.println("fd ok");
+        } catch (FileNotFoundException e) {
+            System.out.println("no file!");
+            fileExists = false;
+        } finally {
+            if (fd != null)
+                fd.close();
+        }
+
+        //photo exists and (updated or file was not downloaded)
+        if (newPhotoUrl != null && (!newPhotoUrl.equalsIgnoreCase(oldPhotoUrl) || !fileExists)) {
             Log.d(TAG, "photo: " + user.getUserPhotoUrl());
             byte[] photo = user.getUserPhoto();
             OutputStream os = getContentResolver().openOutputStream(useruri);

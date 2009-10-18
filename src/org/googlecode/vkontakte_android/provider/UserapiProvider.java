@@ -1,8 +1,5 @@
 package org.googlecode.vkontakte_android.provider;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-
 import android.content.*;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,6 +9,9 @@ import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Log;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class UserapiProvider extends ContentProvider {
 
@@ -88,7 +88,7 @@ public class UserapiProvider extends ContentProvider {
                 mySort = KEY_MESSAGE_ROWID;
                 column = KEY_MESSAGE_ROWID;
                 break;
-          case ALL_WALL:
+            case ALL_WALL:
                 table = DATABASE_WALL_TABLE;
                 mySort = KEY_WALL_ROWID;
                 break;
@@ -300,7 +300,7 @@ public class UserapiProvider extends ContentProvider {
                 + uri.getPathSegments().get(1)
                 + (!TextUtils.isEmpty(where) ? " AND ("
                 + where + ')' : "");
-        
+
         int count = database.update(table, contentValues, where, whereArgs);
 //        getContext().getContentResolver().notifyChange(uri, null);
         return count;
@@ -349,13 +349,7 @@ public class UserapiProvider extends ContentProvider {
 
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
-        try {
-            return this.openFileHelper(uri, mode);
-        }
-        catch (FileNotFoundException e) {
-            Log.i(TAG, "File not found: " + uri.toString());
-            throw new FileNotFoundException();
-        }
+        return this.openFileHelper(uri, mode);
     }
 
     private void createFolders() {
