@@ -12,7 +12,7 @@ android:background="#FF11637B">
 
 
 
-<GridView android:id="@+id/MainGrid" 
+<GridView android:id="@+id/HomeGrid" 
 xmlns:android="http://schemas.android.com/apk/res/android" 
 android:numColumns="3" 
 android:paddingTop="5dip" 

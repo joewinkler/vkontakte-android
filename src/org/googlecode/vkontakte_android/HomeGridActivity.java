@@ -24,11 +24,11 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class HomeGridActivity extends Activity implements OnItemClickListener {
 
-    private GridView homeGrid = null;
-    private static String TAG = "VK:HomeGrid";
+    private GridView mHomeGrid = null;
+    private final static String TAG = "HomeGridActivity";
 
-    public IVkontakteService m_vkService;
-    private VkontakteServiceConnection m_vkServiceConnection = new VkontakteServiceConnection();
+    public IVkontakteService mVKService;
+    private VkontakteServiceConnection mVKServiceConnection = new VkontakteServiceConnection();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,10 +38,10 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         setContentView(R.layout.homegrid);
 
 
-        homeGrid = (GridView) findViewById(R.id.MainGrid);
-        homeGrid.setNumColumns(3);
-        homeGrid.setAdapter(new HomeGridAdapter(this));
-        homeGrid.setOnItemClickListener(this);
+        mHomeGrid = (GridView) findViewById(R.id.HomeGrid);
+        mHomeGrid.setNumColumns(3);
+        mHomeGrid.setAdapter(new HomeGridAdapter(this));
+        mHomeGrid.setOnItemClickListener(this);
         this.setTitle(getResources().getString(R.string.app_name) + " > " + "Home");
 
         // Binding service
@@ -81,7 +81,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         // Not implemented
         else if (arg1.getTag().equals("Help")
                 || arg1.getTag().equals("Search")
-                || arg1.getTag().equals("Requests")
                 || arg1.getTag().equals("Photos")) {
             Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
             backToHome();
@@ -108,7 +107,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         Log.d(TAG, "Activity Stopped");
         //try {m_vkService.stop();} catch (RemoteException e) {e.printStackTrace();}
         Log.d(TAG, "Unbinding the service");
-        unbindService(m_vkServiceConnection);
+        unbindService(mVKServiceConnection);
     }
 
     @Override
@@ -123,7 +122,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         switch (item.getItemId()) {
             case R.id.LogoutMenuItem:
                 try {
-                    m_vkService.logout();
+                    mVKService.logout();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -138,7 +137,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
                 return true;
             case R.id.ExitMenuItem:
                 try {
-                    m_vkService.stop();
+                    mVKService.stop();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -151,7 +150,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
     private void login() throws RemoteException {
         // TODO handle JSONException in api methods
 
-        if (m_vkService.loginAuth()) {
+        if (mVKService.loginAuth()) {
             Log.d(TAG, "Already authorized");
             //initializeUserStuff();
             return;
@@ -168,7 +167,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
                 Log.i(TAG, login + ":" + pass);
                 try {
                     Log.d(TAG, "Service logging in");
-                    if (m_vkService.login(login, pass)) {
+                    if (mVKService.login(login, pass)) {
                         ld.dismiss();
                         //initializeUserStuff();
                     } else {
@@ -199,13 +198,13 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
      */
     private void bindService() {
         Intent i = new Intent(this, CheckingService.class);
-        bindService(i, m_vkServiceConnection, Context.BIND_AUTO_CREATE);
+        bindService(i, mVKServiceConnection, Context.BIND_AUTO_CREATE);
         Log.d(TAG, "Binding the service");
     }
 
     class VkontakteServiceConnection implements ServiceConnection {
         public void onServiceConnected(ComponentName className, IBinder boundService) {
-            m_vkService = IVkontakteService.Stub.asInterface((IBinder) boundService);
+            mVKService = IVkontakteService.Stub.asInterface((IBinder) boundService);
             Log.d(TAG, "Service has been connected");
             // Try to login by saved prefs or show Login Dialog
             try {
