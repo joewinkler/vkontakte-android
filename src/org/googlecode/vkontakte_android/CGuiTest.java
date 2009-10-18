@@ -57,6 +57,7 @@ public class CGuiTest extends TabActivity {
         s_instance = this;
         initializeActivity();
         bindService();
+        // For calls from HomeGrid
     	if (getIntent().hasExtra("tabToShow")){	getTabHost().setCurrentTabByTag(getIntent().getStringExtra("tabToShow"));}
             	
     }
@@ -78,7 +79,7 @@ public class CGuiTest extends TabActivity {
         ld.show();
         ld.setOnLoginClick(new View.OnClickListener() {
         	
-            @SuppressWarnings("unchecked")
+            
 			public void onClick(View view) {
             	ld.showProgress();	
                 String login = ld.getLogin();
@@ -173,8 +174,8 @@ public class CGuiTest extends TabActivity {
                 else {
                     friendsCounter.setText(String.valueOf(cursor.getCount()));
                     friendsCounter.setVisibility(View.VISIBLE);
-                setProgressBarIndeterminateVisibility(false);   
                 }
+                setProgressBarIndeterminateVisibility(false);
             }
         });
         getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
@@ -298,6 +299,15 @@ public class CGuiTest extends TabActivity {
         Toast.makeText(CGuiTest.s_instance, text, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onStop()
+    {
+    	super.onStop();
+    	unbindService(m_connection);
+    }
+    
+    
+    
     // =========  RPC stuff ====================
 
     /**
