@@ -1,28 +1,35 @@
 package org.googlecode.vkontakte_android;
 
 import android.app.ListActivity;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.*;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
-
-import android.widget.Toast;
 import org.googlecode.vkontakte_android.database.UserDao;
-import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
-import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
+import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
 
 public class FriendsListTabActivity extends ListActivity implements AdapterView.OnItemClickListener {
     private FriendsListAdapter adapter;
-    private boolean showAll = true;
+
+    enum MessagesCursorType {
+        ALL, NEW, ONLINE
+    }
+
+    public static final String SHOW_ONLY_NEW = "SHOW_ONLY_NEW";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.friend_list);
-        adapter = new FriendsListAdapter(this, R.layout.friend_row, null);
-        setCursor(showAll);
+        boolean onlyNew = false;
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) onlyNew = extras.getBoolean(SHOW_ONLY_NEW);
+        Cursor cursor = onlyNew ? makeCursor(MessagesCursorType.NEW) : makeCursor(MessagesCursorType.ALL);
+        adapter = new FriendsListAdapter(this, R.layout.friend_row, cursor);
         setListAdapter(adapter);
         registerForContextMenu(getListView());
 
@@ -41,18 +48,23 @@ public class FriendsListTabActivity extends ListActivity implements AdapterView.
 //        }
     }
 
-    private void setCursor(boolean showAll) {
-        if (showAll) {
-            final Cursor allFriendsCursor = managedQuery(UserapiProvider.USERS_URI, null,
-                    KEY_USER_IS_FRIEND + "=?" + " OR " + KEY_USER_NEW + "=?", new String[]{"1", "1"},
-                    KEY_USER_NEW + " DESC, " + KEY_USER_ONLINE + " DESC"
-            );
-            adapter.changeCursor(allFriendsCursor);
-        } else {
-            final Cursor onlineFriendsCursor = managedQuery(UserapiProvider.USERS_URI, null, KEY_USER_ONLINE + "=1", null,
-                    KEY_USER_NEW + " DESC, " + KEY_USER_ONLINE + " DESC"
-            );
-            adapter.changeCursor(onlineFriendsCursor);
+    private Cursor makeCursor(MessagesCursorType type) {
+        switch (type) {
+            case NEW:
+                return managedQuery(USERS_URI, null, KEY_USER_NEW + "=1", null,
+                        KEY_USER_NEW + " DESC, " + KEY_USER_ONLINE + " DESC"
+                );
+            case ONLINE:
+                return managedQuery(USERS_URI, null, KEY_USER_ONLINE + "=1", null,
+                        KEY_USER_NEW + " DESC, " + KEY_USER_ONLINE + " DESC"
+                );
+            case ALL:
+                return managedQuery(USERS_URI, null,
+                        KEY_USER_IS_FRIEND + "=?", new String[]{"1"},
+                        KEY_USER_NEW + " DESC, " + KEY_USER_ONLINE + " DESC"
+                );
+            default:
+                return managedQuery(USERS_URI, null, null, null, null);
         }
     }
 
