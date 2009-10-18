@@ -14,6 +14,7 @@ import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -34,15 +35,31 @@ public class UserHelper {
     }
 
     //todo: return null in case of FileNotFoundException
-    public static Bitmap getPhoto(Context context, long rowId) throws FileNotFoundException {
+    public static Bitmap getPhoto(Context context, long rowId) {
         Uri uri = ContentUris.withAppendedId(USERS_URI, rowId);
-        InputStream is = context.getContentResolver().openInputStream(uri);
-        return BitmapFactory.decodeStream(is);
+        InputStream is = null;
+        Bitmap bitmap = null;
+        try {
+            is = context.getContentResolver().openInputStream(uri);
+            bitmap = BitmapFactory.decodeStream(is);
+        } catch (FileNotFoundException e) {
+            //todo: log?
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    //todo: log
+                }
+            }
+        }
+        return bitmap;
     }
 
-    public static Bitmap getPhotoByUserId(Context context, long userId) throws FileNotFoundException {
+    public static Bitmap getPhotoByUserId(Context context, long userId) {
         UserDao user = UserDao.findByUserId(context, userId);
-        if (user == null) return null;//not yet loaded
+        if (user == null) return null;//todo: not yet loaded
         else return getPhoto(context, user.getRowId());
     }
 }

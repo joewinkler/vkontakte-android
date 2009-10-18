@@ -13,13 +13,11 @@ import java.io.FileNotFoundException;
 
 
 public class FriendsListAdapter extends ResourceCursorAdapter {
-    private Context context;
     private boolean loading = false;
-    private static final String TAG = "FriendsListAdapter";
+    private static final String TAG = "org.googlecode.vkontakte_android.FriendsListAdapter";
 
     public FriendsListAdapter(Context context, int layout, Cursor cursor) {
         super(context, layout, cursor);
-        this.context = context;
     }
 
     @Override
@@ -36,19 +34,18 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         if (userDao.online) statusText += context.getResources().getString(R.string.status_online);
         else statusText += context.getResources().getString(R.string.status_offline);
         status.setText(statusText);
-        
-        //loading avatars
-        
-        //if (userDao.getUserPhotoUrl() != null) {
-        	try {
-        		Log.d(TAG, "setting photo");
-                Bitmap bm = UserHelper.getPhoto(context, userDao.rowId);
-    			ImageView photo = (ImageView) view.findViewById(R.id.photo);
-    			photo.setImageBitmap(bm);
-    		} catch (FileNotFoundException e) {
-    			e.printStackTrace();
-    		}	
-        //}
-    }
 
+        if (userDao.getUserPhotoUrl() != null) {
+            Log.d(TAG, "setting photo");
+            Bitmap bm = UserHelper.getPhoto(context, userDao.rowId);
+            if (bm == null) {
+                //todo: seems that photo was not downloaded - we should download it
+            } else {
+                ImageView photo = (ImageView) view.findViewById(R.id.photo);
+                photo.setImageBitmap(bm);
+            }
+        } else {
+            //todo: use default avatar
+        }
+    }
 }
