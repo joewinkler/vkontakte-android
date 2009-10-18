@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
@@ -99,7 +100,12 @@ public class ProfileViewActivity extends Activity {
                 UserHelper.viewProfile(this, rowId);
                 return true;
             case R.id.remove_from_friends:
-                //todo
+                //todo!
+                Toast.makeText(this, "not implemented yet", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.add_to_friends:
+                //todo!
+                Toast.makeText(this, "not implemented yet", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.send_message:
                 UserHelper.sendMessage(this, rowId);
