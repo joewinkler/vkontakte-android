@@ -73,9 +73,10 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
 
         if (arg1.getTag().equals("Settings")) {
             startActivity(new Intent(this, CSettings.class));
-        } else
-        if (arg1.getTag().equals("Requests")) {
+        } else if (arg1.getTag().equals("Requests")) {
             showRequests();
+        } else if (arg1.getTag().equals("Help")) {
+            AboutDialog.makeDialog(this).show();
         }
         // Not implemented
         else if (arg1.getTag().equals("Help")
