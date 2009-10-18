@@ -9,16 +9,17 @@ import android.util.Log;
 public class UserapiDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "UserapiDatabaseHelper";
-	
-	public static final String KEY_USER_ROWID = BaseColumns._ID;
+
+    public static final String KEY_USER_ROWID = BaseColumns._ID;
     public static final String KEY_USER_USERID = "userid";
     public static final String KEY_USER_NAME = "name";
     public static final String KEY_USER_MALE = "male";
     public static final String KEY_USER_ONLINE = "online";
     public static final String KEY_USER_NEW = "newfriend";
     public static final String KEY_USER_IS_FRIEND = "isfriend";
+    public static final String KEY_USER_AVATAR_URL = "photo_small_url";
     public static final String KEY_USER_AVATAR_SMALL = "_data";
-  
+
     public static final String KEY_MESSAGE_ROWID = BaseColumns._ID;
     public static final String KEY_MESSAGE_MESSAGEID = "messageid";
     public static final String KEY_MESSAGE_DATE = "date";
@@ -32,7 +33,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_WALL_SENDERID = "senderid";
     public static final String KEY_WALL_PIC = "pic";
     public static final String KEY_WALL_DATA = "data";
-    
+
     public static final String KEY_PROFILE_ROWID = BaseColumns._ID;
     public static final String KEY_PROFILE_USERID = "userid";
     public static final String KEY_PROFILE_FIRSTNAME = "firstname";
@@ -40,16 +41,16 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_PROFILE_STATUS = "status";
     public static final String KEY_PROFILE_SEX = "sex";
     public static final String KEY_PROFILE_BIRTHDAY = "birthday";
-    public static final String KEY_PROFILE_PHONE = "phone";    
+    public static final String KEY_PROFILE_PHONE = "phone";
     public static final String KEY_PROFILE_PHOTO = "_data";
-    
+
     public static final String KEY_STATUS_ROWID = BaseColumns._ID;
     public static final String KEY_STATUS_STATUSID = "statusid";
     public static final String KEY_STATUS_USERID = "userid";
     public static final String KEY_STATUS_USERNAME = "username";
-    public static final String KEY_STATUS_DATE = "date";    
-    public static final String KEY_STATUS_TEXT = "text";    
-    
+    public static final String KEY_STATUS_DATE = "date";
+    public static final String KEY_STATUS_TEXT = "text";
+
     public static final String DATABASE_NAME = "userapi";
     private static final int DATABASE_VERSION = 1;
 
@@ -62,6 +63,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             KEY_USER_ONLINE + " int, " +
             KEY_USER_NEW + " int," +
             KEY_USER_IS_FRIEND + " int," +
+            KEY_USER_AVATAR_URL + " text," +
             KEY_USER_AVATAR_SMALL + " text" +
             ");";
 
@@ -96,7 +98,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             + KEY_PROFILE_PHONE + " text,"
             + KEY_PROFILE_PHOTO + " text"
             + ");";
- 
+
     public static final String DATABASE_STATUS_TABLE = "statuses";
     private static final String DATABASE_STATUS_CREATE = "create table " + DATABASE_STATUS_TABLE + " ("
             + KEY_STATUS_ROWID + " integer primary key autoincrement, "

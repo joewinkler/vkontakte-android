@@ -2,19 +2,11 @@ package org.googlecode.vkontakte_android.service;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Date;
-import java.util.Map;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Collections;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import org.googlecode.userapi.Status;
-import org.googlecode.vkontakte_android.CGuiTest;
 import org.googlecode.vkontakte_android.CSettings;
 import org.googlecode.vkontakte_android.database.StatusDao;
-import org.googlecode.vkontakte_android.service.ApiCheckingKit.UpdateType;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
@@ -22,7 +14,6 @@ import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.userapi.Message;
 import org.googlecode.userapi.User;
 import org.googlecode.userapi.VkontakteAPI;
-import org.googlecode.userapi.VkontakteAPI.privateMessagesTypes;
 import org.json.JSONException;
 import android.app.Service;
 import android.content.Context;
@@ -31,18 +22,15 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 public class CheckingService extends Service {
 
     private static final String TAG = "VK-Service";
     public static final int MESSAGE_NUM_LOAD = 10;
-    
-    
+
+
     private Timer m_timer = new Timer();
     private static SharedPreferences s_prefs;
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
@@ -84,7 +72,7 @@ public class CheckingService extends Service {
                         case FRIENDS:
                             updateFriends();
                             break;
-                        case WALL:  
+                        case WALL:
                             updateWall();
                             break;
                         case MESSAGES_ALL:
@@ -149,18 +137,18 @@ public class CheckingService extends Service {
     protected void updateInMessages(long first, long last) throws IOException, JSONException {
         //todo: use history or friends-like update with save
         VkontakteAPI api = ApiCheckingKit.getApi();
-        List<Message> messages = api.getInbox((int)first, (int)last);
+        List<Message> messages = api.getInbox((int) first, (int) last);
         MessageDao single = null;
         int countNew = 0;
         for (Message m : messages) {
-            
-        	MessageDao md = new MessageDao(m);
-        	if (single==null) {
-        		single = md;
-        	}
-        	Log.d(TAG, "saving message");
+
+            MessageDao md = new MessageDao(m);
+            if (single == null) {
+                single = md;
+            }
+            Log.d(TAG, "saving message");
             countNew += md.saveOrUpdate(this);
-            
+
         }
         if (countNew > 0)
             UpdatesNotifier.notifyMessages(this, countNew, single);
@@ -171,7 +159,7 @@ public class CheckingService extends Service {
     protected void updateOutMessages(long first, long last) throws IOException, JSONException {
         //todo: use history or friends-like update with save
         VkontakteAPI api = ApiCheckingKit.getApi();
-        List<Message> messages = api.getOutbox((int)first, (int)last);
+        List<Message> messages = api.getOutbox((int) first, (int) last);
         for (Message m : messages) {
             MessageDao md = new MessageDao(m);
             Log.d(TAG, "saving outcoming message");
@@ -225,30 +213,61 @@ public class CheckingService extends Service {
 
     //todo: use 'partial' lock for instead of synchronized(?)
     private synchronized void refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
+        boolean firstUpdate = false;
+        Cursor cursor = getContentResolver().query(UserapiProvider.USERS_URI, null, null, null, null);//todo: request only rowId
+        if (cursor != null && cursor.getCount() == 0) {
+            firstUpdate = true;
+            cursor.close();
+        }
         List<User> friends = api.getMyFriends();
         Log.d(TAG, "got users: " + friends.size());
         StringBuilder notIn = new StringBuilder(" ");
+        int counter = 0;
         boolean isNew = false;
+        List<UserDao> users = new ArrayList<UserDao>(friends.size());
         for (User user : friends) {
             UserDao userDao = new UserDao(user, isNew, true);
-            userDao.saveOrUpdate(context);
-            notIn.append(user.getUserId()).append(",");
-            Uri useruri = userDao.saveOrUpdate(this);
-            //load photo 
-            //TODO maybe put this into UserDao 
-            if (user.getUserPhotoUrl() != null) {
-                Log.d(TAG, "photo: " + user.getUserPhotoUrl());
-                byte[] photo = user.getUserPhoto();
-                OutputStream os = getContentResolver().openOutputStream(useruri);
-                os.write(photo);
-                os.close();
+            if (firstUpdate) {
+                userDao.setUserPhotoUrl(null);//special hack for photo update
+                users.add(userDao);
+            } else {
+                userDao.saveOrUpdate(context);
+                notIn.append(user.getUserId()).append(",");
+                Uri useruri = userDao.saveOrUpdate(this);
+                updatePhoto(user, userDao, useruri);
+                if (counter++ == 10) {
+                    getContentResolver().notifyChange(useruri, null);
+                    counter = 0;
+                }
             }
-            getContentResolver().notifyChange(useruri, null);
+
         }
-        notIn.deleteCharAt(notIn.length() - 1);//remove last ','
-        getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND "
-                + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")" + " AND " +
-                UserapiDatabaseHelper.KEY_USER_IS_FRIEND + "=1", null);
+        if (firstUpdate) {
+            UserDao.bulkSave(context, users);
+            //todo: start photo download
+        } else {
+            notIn.deleteCharAt(notIn.length() - 1);//remove last ','
+            getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND "
+                    + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")" + " AND " +
+                    UserapiDatabaseHelper.KEY_USER_IS_FRIEND + "=1", null);
+        }
+    }
+
+    private void updatePhoto(User user, UserDao userDao, Uri useruri) throws IOException {
+        //load photo
+        //TODO maybe put this into UserDao
+        String oldPhotoUrl = userDao.getUserPhotoUrl();
+        System.out.println("oldPhotoUrl = " + oldPhotoUrl);
+        String newPhotoUrl = user.getUserPhotoUrl();
+        System.out.println("newPhotoUrl = " + newPhotoUrl);
+        //photo exists and updated
+        if (newPhotoUrl != null && !newPhotoUrl.equalsIgnoreCase(oldPhotoUrl)) {
+            Log.d(TAG, "photo: " + user.getUserPhotoUrl());
+            byte[] photo = user.getUserPhoto();
+            OutputStream os = getContentResolver().openOutputStream(useruri);
+            os.write(photo);
+            os.close();
+        }
     }
 
     //todo: use 'partial' lock for instead of synchronized(?)
@@ -261,15 +280,7 @@ public class CheckingService extends Service {
             UserDao userDao = new UserDao(user, isNew, false);
             Uri useruri = userDao.saveOrUpdate(context);
             notIn.append(user.getUserId()).append(",");
-            //load photo
-            //TODO maybe put this into UserDao
-            if (user.getUserPhotoUrl() != null) {
-                Log.d(TAG, "photo: " + user.getUserPhotoUrl());
-                byte[] photo = user.getUserPhoto();
-                OutputStream os = getContentResolver().openOutputStream(useruri);
-                os.write(photo);
-                os.close();
-            }
+            updatePhoto(user, userDao, useruri);
             getContentResolver().notifyChange(useruri, null);
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','

@@ -11,18 +11,18 @@ import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
 
-public class UserDao extends org.googlecode.userapi.User {
+import java.util.List;
+
+public class UserDao {
     private static final String TAG = "org.googlecode.vkontakte_android.database.UserDao";
 
 
     public long rowId;
     public long userId;
     public String userName;
-    //private String userPhotoUrl;
+    private String userPhotoUrl;
     public boolean male;
     public boolean online;
-    //private long photo;
-    //private long photoSmall;
     public boolean newFriend;
     public boolean isFriend;
 
@@ -34,43 +34,47 @@ public class UserDao extends org.googlecode.userapi.User {
         online = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_ONLINE)) == 1;
         newFriend = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_NEW)) == 1;
         isFriend = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_IS_FRIEND)) == 1;
+        userPhotoUrl = cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_AVATAR_URL));
     }
 
-    public UserDao(long userId, String userName, boolean male, boolean online,
-    		       boolean newFriend, boolean isFriend) {
-        this.userId = userId;
-        Log.d(TAG, "this.userId"+this.userId);
-        this.userName = userName;
-        this.male = male;
-        this.online = online;
-        this.newFriend = newFriend;
-        this.isFriend = isFriend;
-    }
+//    public UserDao(long userId, String userName, boolean male, boolean online,
+//    		       boolean newFriend, boolean isFriend) {
+//        this.userId = userId;
+//        Log.d(TAG, "this.userId"+this.userId);
+//        this.userName = userName;
+//        this.male = male;
+//        this.online = online;
+//        this.newFriend = newFriend;
+//        this.isFriend = isFriend;
+//    }
 
     public UserDao(User user, boolean isNewFriend, boolean isFriend) {
-    	this.userId = user.getUserId();
+        this.userId = user.getUserId();
         this.userName = user.getUserName();
         this.male = user.isMale();
         this.online = user.isOnline();
         this.newFriend = isNewFriend;
         this.isFriend = isFriend;
+        this.userPhotoUrl = user.getUserPhotoUrl();
     }
 
-//    public static int bulkSave(Context context, List<UserDao> userListDao) {
-//        ContentValues[] values = new ContentValues[userListDao.size()];
-//        int i = 0;
-//        for (UserDao userDao : userListDao) {
-//            ContentValues insertValues = new ContentValues();
-//            insertValues.put(KEY_USER_USERID, userDao.getUserId());
-//            insertValues.put(KEY_USER_NAME, userDao.getUserName());
-//            insertValues.put(KEY_USER_MALE, userDao.isMale() ? 1 : 0);
-//            insertValues.put(KEY_USER_ONLINE, userDao.isOnline() ? 1 : 0);
-//            insertValues.put(KEY_USER_NEW, userDao.isNewFriend() ? 1 : 0);
-//            values[i] = insertValues;
-//            i++;
-//        }
-//        return context.getContentResolver().bulkInsert(USERS_URI, values);
-//    }
+    public static int bulkSave(Context context, List<UserDao> userListDao) {
+        ContentValues[] values = new ContentValues[userListDao.size()];
+        int i = 0;
+        for (UserDao userDao : userListDao) {
+            ContentValues insertValues = new ContentValues();
+            insertValues.put(KEY_USER_USERID, userDao.getUserId());
+            insertValues.put(KEY_USER_NAME, userDao.getUserName());
+            insertValues.put(KEY_USER_MALE, userDao.isMale() ? 1 : 0);
+            insertValues.put(KEY_USER_ONLINE, userDao.isOnline() ? 1 : 0);
+            insertValues.put(KEY_USER_NEW, userDao.isNewFriend() ? 1 : 0);
+            insertValues.put(KEY_USER_IS_FRIEND, userDao.isFriend() ? 1 : 0);
+            insertValues.put(KEY_USER_AVATAR_URL, userDao.getUserPhotoUrl());
+            values[i] = insertValues;
+            i++;
+        }
+        return context.getContentResolver().bulkInsert(USERS_URI, values);
+    }
 
     public static UserDao get(Context context, long rowId) {
         if (rowId == -1) return null;
@@ -95,8 +99,8 @@ public class UserDao extends org.googlecode.userapi.User {
     }
 
     public static boolean isMyFriend(Context ctx, Long userid) {
-    	return ctx.getContentResolver().query(USERS_URI, null, KEY_USER_USERID + "=? AND "+KEY_USER_IS_FRIEND + "=?",
-    		                                  new String[] {userid.toString(), "1"}, null).moveToNext();
+        return ctx.getContentResolver().query(USERS_URI, null, KEY_USER_USERID + "=? AND " + KEY_USER_IS_FRIEND + "=?",
+                new String[]{userid.toString(), "1"}, null).moveToNext();
     }
 
     public Uri saveOrUpdate(Context context) {
@@ -108,20 +112,21 @@ public class UserDao extends org.googlecode.userapi.User {
         insertValues.put(KEY_USER_ONLINE, online ? 1 : 0);
         insertValues.put(KEY_USER_NEW, newFriend ? 1 : 0);
         insertValues.put(KEY_USER_IS_FRIEND, isFriend ? 1 : 0);
-        String fname = UserapiProvider.APP_DIR+"profiles/id" + userId + ".smallava";
-        insertValues.put(KEY_USER_AVATAR_SMALL,  fname);
+        insertValues.put(KEY_USER_AVATAR_URL, userPhotoUrl);
+        String fname = UserapiProvider.APP_DIR + "profiles/id" + userId + ".smallava";
+        insertValues.put(KEY_USER_AVATAR_SMALL, fname);
 
         if (userDao == null) {
             return context.getContentResolver().insert(USERS_URI, insertValues);
         } else {
-        	Uri useruri = ContentUris.withAppendedId(USERS_URI, userDao.rowId);
+            Uri useruri = ContentUris.withAppendedId(USERS_URI, userDao.rowId);
             context.getContentResolver().update(useruri, insertValues, null, null);
             return useruri;
         }
 
     }
 
-   public void setUserId(long userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
@@ -146,10 +151,34 @@ public class UserDao extends org.googlecode.userapi.User {
     }
 
     public boolean isFriend() {
-    	return isFriend;
+        return isFriend;
     }
 
     public void setIsFriend(boolean fr) {
-    	isFriend = fr;
+        isFriend = fr;
+    }
+
+    public String getUserPhotoUrl() {
+        return userPhotoUrl;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public boolean isMale() {
+        return male;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setUserPhotoUrl(String  userPhotoUrl) {
+        this.userPhotoUrl = userPhotoUrl;
     }
 }
