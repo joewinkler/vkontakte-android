@@ -358,4 +358,8 @@ public class UserapiProvider extends ContentProvider {
         f = new File(APP_DIR + "photos");
         f.mkdir();
     }
+    
+    public static boolean isExists(String path) {
+    	return (path==null || !new File(path).exists()) ? false : true; 
+    }
 }

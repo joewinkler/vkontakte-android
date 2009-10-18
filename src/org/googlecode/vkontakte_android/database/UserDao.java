@@ -11,6 +11,8 @@ import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 public class UserDao {
@@ -25,6 +27,7 @@ public class UserDao {
     public boolean online;
     public boolean newFriend;
     public boolean isFriend;
+    public String _data;
 
     public UserDao(Cursor cursor) {
         rowId = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_USER_ROWID));
@@ -70,6 +73,8 @@ public class UserDao {
             insertValues.put(KEY_USER_NEW, userDao.isNewFriend() ? 1 : 0);
             insertValues.put(KEY_USER_IS_FRIEND, userDao.isFriend() ? 1 : 0);
             insertValues.put(KEY_USER_AVATAR_URL, userDao.getUserPhotoUrl());
+            userDao._data = userDao.getPath();
+            insertValues.put(KEY_USER_AVATAR_SMALL, userDao._data);
             values[i] = insertValues;
             i++;
         }
@@ -113,8 +118,8 @@ public class UserDao {
         insertValues.put(KEY_USER_NEW, newFriend ? 1 : 0);
         insertValues.put(KEY_USER_IS_FRIEND, isFriend ? 1 : 0);
         insertValues.put(KEY_USER_AVATAR_URL, userPhotoUrl);
-        String fname = UserapiProvider.APP_DIR + "profiles/id" + userId + ".smallava";
-        insertValues.put(KEY_USER_AVATAR_SMALL, fname);
+        _data = getPath();
+        insertValues.put(KEY_USER_AVATAR_SMALL, _data);
 
         if (userDao == null) {
             return context.getContentResolver().insert(USERS_URI, insertValues);
@@ -180,5 +185,22 @@ public class UserDao {
 
     public void setUserPhotoUrl(String  userPhotoUrl) {
         this.userPhotoUrl = userPhotoUrl;
+    }
+    
+    public void updatePhoto(Context ctx, User proto, Uri uri) throws IOException {
+        String oldPhotoUrl = userPhotoUrl;
+        String newPhotoUrl = proto.getUserPhotoUrl();
+        //photo exists and (updated or file was not downloaded)
+        if ((newPhotoUrl != null && !newPhotoUrl.equalsIgnoreCase(oldPhotoUrl) || !UserapiProvider.isExists(getPath()))) {
+            Log.d(TAG, "saving photo: " + newPhotoUrl);
+            byte[] photo = proto.getUserPhoto();
+            OutputStream os = ctx.getContentResolver().openOutputStream(uri);
+            os.write(photo);
+            os.close();
+        }
+    }
+    
+    private String getPath() {
+    	return UserapiProvider.APP_DIR + "profiles/id" + userId + ".smallava";
     }
 }

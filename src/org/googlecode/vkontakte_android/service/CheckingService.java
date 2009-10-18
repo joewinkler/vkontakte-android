@@ -229,23 +229,25 @@ public class CheckingService extends Service {
         List<UserDao> users = new ArrayList<UserDao>(friends.size());
         for (User user : friends) {
             UserDao userDao = new UserDao(user, isNew, true);
-            if (firstUpdate) {
+            if (false && firstUpdate) {
                 userDao.setUserPhotoUrl(null);//special hack for photo update
                 users.add(userDao);
             } else {
                 userDao.saveOrUpdate(context);
                 notIn.append(user.getUserId()).append(",");
                 Uri useruri = userDao.saveOrUpdate(this);
-                updatePhoto(user, userDao, useruri);
+                userDao.updatePhoto(this, user, useruri);
+                //updatePhoto(user, userDao, useruri);
                 if (counter++ == 10) {
                     getContentResolver().notifyChange(useruri, null);
                     counter = 0;
                 }
             }
         }
+        
         if (firstUpdate) {
             UserDao.bulkSave(context, users);
-            //todo: start photo download
+            //todo: make async
         } else {
             notIn.deleteCharAt(notIn.length() - 1);//remove last ','
             getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND "
@@ -260,22 +262,9 @@ public class CheckingService extends Service {
         String oldPhotoUrl = userDao.getUserPhotoUrl();
         String newPhotoUrl = user.getUserPhotoUrl();
 
-        boolean fileExists = true;
-        ParcelFileDescriptor fd = null;
-        try {
-            fd = getContentResolver().openFileDescriptor(useruri, "r");
-            System.out.println("fd ok");
-        } catch (FileNotFoundException e) {
-            System.out.println("no file!");
-            fileExists = false;
-        } finally {
-            if (fd != null)
-                fd.close();
-        }
-
         //photo exists and (updated or file was not downloaded)
-        if (newPhotoUrl != null && (!newPhotoUrl.equalsIgnoreCase(oldPhotoUrl) || !fileExists)) {
-            Log.d(TAG, "photo: " + user.getUserPhotoUrl());
+        if ((newPhotoUrl != null && !newPhotoUrl.equalsIgnoreCase(oldPhotoUrl) || !UserapiProvider.isExists(userDao._data))) {
+            Log.d(TAG, "saving savphoto: " + user.getUserPhotoUrl());
             byte[] photo = user.getUserPhoto();
             OutputStream os = getContentResolver().openOutputStream(useruri);
             os.write(photo);
@@ -293,7 +282,8 @@ public class CheckingService extends Service {
             UserDao userDao = new UserDao(user, isNew, false);
             Uri useruri = userDao.saveOrUpdate(context);
             notIn.append(user.getUserId()).append(",");
-            updatePhoto(user, userDao, useruri);
+            userDao.updatePhoto(this, user, useruri);
+            //updatePhoto(user, userDao, useruri);
             getContentResolver().notifyChange(useruri, null);
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','

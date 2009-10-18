@@ -43,7 +43,7 @@ public class UserHelper {
             is = context.getContentResolver().openInputStream(uri);
             bitmap = BitmapFactory.decodeStream(is);
         } catch (FileNotFoundException e) {
-            //todo: log?
+            e.printStackTrace();
         } finally {
             if (is != null) {
                 try {
@@ -59,7 +59,7 @@ public class UserHelper {
 
     public static Bitmap getPhotoByUserId(Context context, long userId) {
         UserDao user = UserDao.findByUserId(context, userId);
-        if (user == null) return null;//todo: not yet loaded
+        if (user == null || UserapiProvider.isExists(user._data)) return null;//todo: not yet loaded
         else return getPhoto(context, user.getRowId());
     }
 }
