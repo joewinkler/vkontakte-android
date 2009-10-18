@@ -46,23 +46,22 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
     }
 
     private String getNameById(Context context, Long userid) {
-        String username = "";
+    	
+    	String username = userid.toString(); 
+    	if (userid.equals(CSettings.myId)) {
+    		return "me";
+    	}
+    	
         Cursor sc = context.getContentResolver().query(
                 UserapiProvider.USERS_URI, null, KEY_USER_USERID + "=?",
                 new String[]{userid.toString()}, null);
         if (sc.moveToNext()) {
-            UserDao ud = new UserDao(sc);
-            if (ud.userName == null) {
-                if (ud.userId == CSettings.myId) {
-                    username = "me";
-                } else {
-                    username = userid.toString();
-                }
-            } else {
-                username = ud.userName;
-            }
+            UserDao ud = new UserDao(sc); 
+            if (ud.userName != null) {
+            	username = ud.userName;	
+            } 
         } else {
-            Log.e(TAG, "No such user in DB");
+            Log.e(TAG, "No such user in DB ");
             username = userid.toString();
         }
         sc.close();

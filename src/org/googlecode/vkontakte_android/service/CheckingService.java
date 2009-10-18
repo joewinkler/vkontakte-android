@@ -237,7 +237,6 @@ public class CheckingService extends Service {
                 notIn.append(user.getUserId()).append(",");
                 Uri useruri = userDao.saveOrUpdate(this);
                 userDao.updatePhoto(this, user, useruri);
-                //updatePhoto(user, userDao, useruri);
                 if (counter++ == 10) {
                     getContentResolver().notifyChange(useruri, null);
                     counter = 0;
@@ -256,22 +255,6 @@ public class CheckingService extends Service {
         }
     }
 
-    private void updatePhoto(User user, UserDao userDao, Uri useruri) throws IOException {
-        //load photo
-        //TODO maybe put this into UserDao
-        String oldPhotoUrl = userDao.getUserPhotoUrl();
-        String newPhotoUrl = user.getUserPhotoUrl();
-
-        //photo exists and (updated or file was not downloaded)
-        if ((newPhotoUrl != null && !newPhotoUrl.equalsIgnoreCase(oldPhotoUrl) || !UserapiProvider.isExists(userDao._data))) {
-            Log.d(TAG, "saving savphoto: " + user.getUserPhotoUrl());
-            byte[] photo = user.getUserPhoto();
-            OutputStream os = getContentResolver().openOutputStream(useruri);
-            os.write(photo);
-            os.close();
-        }
-    }
-
     //todo: use 'partial' lock for instead of synchronized(?)
     private synchronized void refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         List<User> friends = api.getMyNewFriends();
@@ -283,7 +266,6 @@ public class CheckingService extends Service {
             Uri useruri = userDao.saveOrUpdate(context);
             notIn.append(user.getUserId()).append(",");
             userDao.updatePhoto(this, user, useruri);
-            //updatePhoto(user, userDao, useruri);
             getContentResolver().notifyChange(useruri, null);
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
