@@ -60,4 +60,5 @@
     <string name="reply">Reply</string>
     <string name="mark_as_spam">Mark as spam</string>
     <string name="delete_message">Delete message</string>
+    <string name="please_login">Please enter your login/pass</string>
 </resources>
