@@ -74,8 +74,8 @@ public class CGuiTest extends TabActivity {
 
         final LoginDialog ld = new LoginDialog(this);
         ld.setTitle(R.string.please_login);
-        ((EditText) ld.findViewById(R.id.login)).setText("fake4test@gmail.com");
-        ((EditText) ld.findViewById(R.id.pass)).setText("qwerty");
+//        ((EditText) ld.findViewById(R.id.login)).setText("fake4test@gmail.com");
+//        ((EditText) ld.findViewById(R.id.pass)).setText("qwerty");
         ld.show();
         ld.setOnLoginClick(new View.OnClickListener() {
         	
