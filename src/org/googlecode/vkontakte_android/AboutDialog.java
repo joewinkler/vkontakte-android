@@ -15,7 +15,7 @@ public class AboutDialog {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.about, null);
         AlertDialog dialog = new AlertDialog.Builder(context)
-                .setIcon(R.drawable.icon)
+                .setIcon(R.drawable.vkontakte_logo_48)
                 .setTitle(context.getResources().getString(R.string.app_name))
                 .setView(view)
                 .setNegativeButton(R.string.legal,

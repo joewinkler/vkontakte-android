@@ -1,0 +1,15 @@
+v0.1 alpha - first public release:
+* 2 design drafts(grid and tabbed)
+* some english and russian localization
+* statuses: updates with photos, ability to change own (known userapi issue: status not added, but changed instead and so not visible in updates)
+* friends: all friends, friends requests with counter in old tabbed design (accept/ignore and add/remove is not implemented yet)
+* messages: read and reply, threaded view, notifications in status bar (known issues: no mark as read/delete; html is not escaped; own name is incorrect)
+* settings: implemented but not yet used anywhere and possibly incorrect
+* my page: photo and name download, status update and some 'lorem ipsum' texts
+* profile page: almost nothing but white page with user name (layout ideas wanted!)
+
+some more known issues:
+not all refreshes are asynchronous
+auto-update is not yet implemented
+status update from new UI doesn't work
+login might fail on mobile network(seems to be issue with userapi)
