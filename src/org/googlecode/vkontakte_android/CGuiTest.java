@@ -1,7 +1,6 @@
 package org.googlecode.vkontakte_android;
 
 
-
 import android.app.TabActivity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -37,7 +36,7 @@ public class CGuiTest extends TabActivity {
     private static String TAG = "VK-Gui ";
     //public static VkontakteAPI api;
     public IVkontakteService m_vkService;
-    
+
     private VkontakteServiceConnection m_connection = new VkontakteServiceConnection();
 
     //todo: use map(?)
@@ -58,11 +57,13 @@ public class CGuiTest extends TabActivity {
         initializeActivity();
         bindService();
         // For calls from HomeGrid
-    	if (getIntent().hasExtra("tabToShow")){	getTabHost().setCurrentTabByTag(getIntent().getStringExtra("tabToShow"));}
-            	
+        if (getIntent().hasExtra("tabToShow")) {
+            getTabHost().setCurrentTabByTag(getIntent().getStringExtra("tabToShow"));
+        }
+
     }
 
-    
+
     private void login() throws RemoteException {
         // TODO handle JSONException in api methods
 
@@ -78,40 +79,40 @@ public class CGuiTest extends TabActivity {
 //        ((EditText) ld.findViewById(R.id.pass)).setText("qwerty");
         ld.show();
         ld.setOnLoginClick(new View.OnClickListener() {
-        	
-            
-			public void onClick(View view) {
-            	ld.showProgress();	
+
+
+            public void onClick(View view) {
+                ld.showProgress();
                 String login = ld.getLogin();
                 String pass = ld.getPass();
                 Log.i(TAG, login + ":" + pass);
-                
-                new AsyncTask<String, Void, Boolean>() {
-    				@Override
-    				protected void onPostExecute(Boolean result) {
-    					ld.stopProgress();
-    					if (result) {
-    						ld.dismiss();
-                            initializeUserStuff();
-    					} else {
-    						 Toast.makeText(getApplicationContext(),
-    	                                R.string.login_err, Toast.LENGTH_SHORT).show();	
-    					}
-    				}
 
-    				@Override
-    				protected Boolean doInBackground(String... params) {
-    					try {
-							return m_vkService.login(params[0], params[1]);
-						} catch (RemoteException e) {
-							CGuiTest.fatalError("RemoteException");
-		                    ld.stopProgress();
-		                    e.printStackTrace();
-		                    return false;
-						}
-    				}
-            		
-            	}.execute(login, pass);
+                new AsyncTask<String, Void, Boolean>() {
+                    @Override
+                    protected void onPostExecute(Boolean result) {
+                        ld.stopProgress();
+                        if (result) {
+                            ld.dismiss();
+                            initializeUserStuff();
+                        } else {
+                            Toast.makeText(getApplicationContext(),
+                                    R.string.login_err, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    protected Boolean doInBackground(String... params) {
+                        try {
+                            return m_vkService.login(params[0], params[1]);
+                        } catch (RemoteException e) {
+                            CGuiTest.fatalError("RemoteException");
+                            ld.stopProgress();
+                            e.printStackTrace();
+                            return false;
+                        }
+                    }
+
+                }.execute(login, pass);
             }
         });
 
@@ -157,7 +158,7 @@ public class CGuiTest extends TabActivity {
     }
 
 
-    private void initializeUserStuff()  {
+    private void initializeUserStuff() {
         // todo: possibly move to tabs activities itself
         final TextView friendsCounter = TabHelper.injectTabCounter(getTabWidget(), 1, getApplicationContext());
         final TextView messagesCounter = TabHelper.injectTabCounter(getTabWidget(), 0, getApplicationContext());
@@ -167,7 +168,7 @@ public class CGuiTest extends TabActivity {
         getContentResolver().registerContentObserver(UserapiProvider.USERS_URI, false, new ContentObserver(new Handler()) {
             @Override
             public void onChange(boolean b) {
-            	
+
                 Cursor cursor = managedQuery(UserapiProvider.USERS_URI, null, UserapiDatabaseHelper.KEY_USER_NEW + "=1", null, null);
                 if (cursor.getCount() == 0)
                     friendsCounter.setVisibility(View.INVISIBLE);
@@ -198,22 +199,22 @@ public class CGuiTest extends TabActivity {
             }
         });
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
-        
-        
+
+
         //statuses content
         getContentResolver().registerContentObserver(UserapiProvider.STATUSES_URI, false, new ContentObserver(new Handler()) {
             @Override
             public void onChange(boolean b) {
-            	setProgressBarIndeterminateVisibility(false);
+                setProgressBarIndeterminateVisibility(false);
             }
         });
         getContentResolver().notifyChange(UserapiProvider.STATUSES_URI, null);
-        
+
         try {
-			CMeTab.s_instance.loadProfile();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
+            CMeTab.s_instance.loadProfile();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -227,7 +228,7 @@ public class CGuiTest extends TabActivity {
 //    		Log.d(TAG, "onNewIntent:: " + tag);
 //    		getTabHost().setCurrentTabByTag(tag);
 //    	}
-    	
+
         super.onNewIntent(intent);
     }
 
@@ -276,6 +277,7 @@ public class CGuiTest extends TabActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
     /**
      * Makes Service to refresh given content
      *
@@ -285,7 +287,7 @@ public class CGuiTest extends TabActivity {
         Log.d(TAG, "request to refresh");
         //Toast.makeText(this, "Update started", Toast.LENGTH_SHORT).show();
         setProgressBarIndeterminateVisibility(true);
-        
+
         try {
             m_vkService.update(what.ordinal());
         } catch (RemoteException e) {
@@ -300,14 +302,12 @@ public class CGuiTest extends TabActivity {
     }
 
     @Override
-    public void onStop()
-    {
-    	super.onStop();
-    	unbindService(m_connection);
+    public void onDestroy() {
+        super.onDestroy();
+        unbindService(m_connection);
     }
-    
-    
-    
+
+
     // =========  RPC stuff ====================
 
     /**
