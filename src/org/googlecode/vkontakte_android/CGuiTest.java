@@ -301,13 +301,20 @@ public class CGuiTest extends TabActivity {
         Toast.makeText(CGuiTest.s_instance, text, Toast.LENGTH_SHORT).show();
     }
 
+    
+
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onStop(){
+    	super.onStop();
         unbindService(m_connection);
     }
-
-
+    
+    @Override
+    public void onResume(){
+    	super.onResume();
+    	bindService();
+    }
+    
     // =========  RPC stuff ====================
 
     /**
