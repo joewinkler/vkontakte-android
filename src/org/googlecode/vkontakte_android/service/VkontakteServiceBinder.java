@@ -16,7 +16,9 @@ import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
 import org.json.JSONException;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
@@ -94,7 +96,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             ApiCheckingKit.getApi().sendMessageToUser(message);
             MessageDao md = new MessageDao(0, new Date(), text, 0, id, true);
             //don't save it to DB, TODO refresh last out message instead
-            m_service.doCheck(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal());
+            m_service.doCheck(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal(), new Bundle());
         } catch (IOException e) {
             UpdatesNotifier.showError(m_context,
                     R.string.err_msg_check_connection);
@@ -119,7 +121,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
     @Override
     public void update(int what) throws RemoteException {
-        m_service.doCheck(what);
+    	m_service.doCheck(what,new Bundle());
     }
 
     @Override

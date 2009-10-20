@@ -118,7 +118,7 @@ public class CMeTab extends Activity {
 
 
         float ratio = (float) bm.getWidth() / (float) bm.getHeight();
-        Log.d(TAG, "size" + bm.getHeight() + " " + bm.getWidth() + " " + ratio);
+        Log.d(TAG, "size" + bm.getHeight() + " " + bm.getWidth()  );
         Bitmap bface = Bitmap.createScaledBitmap(bm, 100, (int) (100 / ratio), false);
 
         ImageButton face = (ImageButton) findViewById(R.id.me_avatar);

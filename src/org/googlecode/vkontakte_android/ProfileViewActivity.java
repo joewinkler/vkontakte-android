@@ -11,6 +11,7 @@ import android.view.*;
 import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageView;
 import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
@@ -63,6 +64,7 @@ public class ProfileViewActivity extends Activity {
         findViewById(R.id.main_profile_view).setVisibility(View.VISIBLE);
         ((TextView) findViewById(R.id.firstname)).setText(profile.firstname);
         ((TextView) findViewById(R.id.surname)).setText(profile.surname);
+        ((ImageView) findViewById(R.id.photo)).setImageBitmap(UserHelper.getPhotoByUserId(this, profile.id));
 //        System.out.println(profile.status);
     }
 

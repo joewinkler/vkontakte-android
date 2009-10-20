@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
+import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import org.googlecode.userapi.Status;
 import org.googlecode.vkontakte_android.CSettings;
@@ -40,7 +41,7 @@ public class CheckingService extends Service {
 
 
     public enum contentToUpdate {
-        FRIENDS, MESSAGES_ALL, MESSAGES_IN, MESSAGES_OUT, WALL, HISTORY, STATUSES, ALL
+        FRIENDS, MESSAGES_ALL, MESSAGES_IN, MESSAGES_OUT, WALL, HISTORY, STATUSES, ALL, PROFILE
     }
 
     @Override
@@ -54,7 +55,7 @@ public class CheckingService extends Service {
 
     @Override
     public void onStart(final Intent intent, int startId) {
-        doCheck(intent.getIntExtra("action", 1));
+        doCheck(intent.getIntExtra("action", 1), intent.getExtras());
     }
 
     /**
@@ -62,7 +63,7 @@ public class CheckingService extends Service {
      *
      * @param toUpdate - ordinal of contentToUpdate
      */
-    void doCheck(final int toUpdate) {
+    void doCheck(final int toUpdate, final Bundle updateParams) {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -92,6 +93,10 @@ public class CheckingService extends Service {
                         case STATUSES:
                             updateStatuses();
                             break;
+                        case PROFILE:
+                        	//updateProfile();
+                        	break;
+                        
                         default:
                             updateStatuses();
                             updateMessages();
@@ -254,6 +259,7 @@ public class CheckingService extends Service {
                     UserapiDatabaseHelper.KEY_USER_IS_FRIEND + "=1", null);
         }
     }
+   
 
     //todo: use 'partial' lock for instead of synchronized(?)
     private synchronized void refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
