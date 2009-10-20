@@ -74,15 +74,15 @@ public class CMeTab extends Activity {
 
 
         //test
-        View v1 = CWallMessageFactory.getMessageView(this, "Friendname", "message message message message message message message message message message message message message ");
-        View v2 = CWallMessageFactory.getMessageView(this, "Friendname", "message message message message message message message message message message message message message ");
-        View v3 = CWallMessageFactory.getMessageView(this, "Friendname", "message message message message message message message message message message message message message");
-        View v4 = CWallMessageFactory.getMessageView(this, "Friendname", "message message message message message message message message message message message message message");
+        //View v1 = CWallMessageFactory.getMessageView(this, "Friendname", "message message message message message message message message message message message message message ");
+        //View v2 = CWallMessageFactory.getMessageView(this, "Friendname", "message message message message message message message message message message message message message ");
+        //View v3 = CWallMessageFactory.getMessageView(this, "Friendname", "message message message message message message message message message message message message message");
+        //View v4 = CWallMessageFactory.getMessageView(this, "Friendname", "message message message message message message message message message message message message message");
 
-        table.addView(v1);
-        table.addView(v2);
-        table.addView(v3);
-        table.addView(v4);
+        //table.addView(v1);
+        //table.addView(v2);
+        //table.addView(v3);
+        //table.addView(v4);
         
         
         findViewById(R.id.me_avatar).requestFocus();

@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -157,27 +158,43 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         }
 
         final LoginDialog ld = new LoginDialog(this);
+        ld.setTitle(R.string.please_login);
         ld.show();
-        ld.setCancelable(false);
         ld.setOnLoginClick(new View.OnClickListener() {
-            public void onClick(View view) {
 
+
+            public void onClick(View view) {
+                ld.showProgress();
                 String login = ld.getLogin();
                 String pass = ld.getPass();
                 Log.i(TAG, login + ":" + pass);
-                try {
-                    Log.d(TAG, "Service logging in");
-                    if (mVKService.login(login, pass)) {
-                        ld.dismiss();
-                        //initializeUserStuff();
-                    } else {
-                        Toast.makeText(getApplicationContext(),
-                                R.string.login_err, Toast.LENGTH_SHORT).show();
+
+                new AsyncTask<String, Void, Boolean>() {
+                    @Override
+                    protected void onPostExecute(Boolean result) {
+                        ld.stopProgress();
+                        if (result) {
+                            ld.dismiss();
+                            //initializeUserStuff();
+                        } else {
+                            Toast.makeText(getApplicationContext(),
+                                    R.string.login_err, Toast.LENGTH_SHORT).show();
+                        }
                     }
-                } catch (RemoteException e) {
-                    CGuiTest.fatalError("RemoteException");
-                    e.printStackTrace();
-                }
+
+                    @Override
+                    protected Boolean doInBackground(String... params) {
+                        try {
+                            return mVKService.login(params[0], params[1]);
+                        } catch (RemoteException e) {
+                            CGuiTest.fatalError("RemoteException");
+                            ld.stopProgress();
+                            e.printStackTrace();
+                            return false;
+                        }
+                    }
+
+                }.execute(login, pass);
             }
         });
 
@@ -185,6 +202,11 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
 
             @Override
             public void onClick(View v) {
+                try {
+                    mVKService.stop();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
                 ld.dismiss();
                 finish();
             }
