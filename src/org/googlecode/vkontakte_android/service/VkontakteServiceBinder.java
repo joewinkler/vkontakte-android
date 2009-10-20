@@ -170,7 +170,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 	}
 
     @Override
-    public boolean loadProfile(long userid) throws RemoteException {
+    public boolean loadProfile(long userid, boolean setMe) throws RemoteException {
         ProfileInfo pr = null;
         try {
             pr = ApiCheckingKit.getApi().getProfileOrThrow(userid);
@@ -181,7 +181,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 photo = ApiCheckingKit.getApi().getFileFromUrl(photoUrl);
             }
 
-            CSettings.myId = pr.getId();
+            if (setMe)CSettings.myId = pr.getId();
             ProfileDao dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr.getSurname(), (pr.getStatus() == null) ? null : pr.getStatus().getText(),
                     pr.getSex(), pr.getBirthday(), pr.getPhone());
             Uri uri = dao.saveOrUpdate(m_context);
@@ -204,7 +204,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     @Override
     public boolean loadMyProfile() throws RemoteException {
         Log.d(TAG, "" + ApiCheckingKit.getApi().myId);
-        return loadProfile(ApiCheckingKit.getApi().myId);
+        return loadProfile(ApiCheckingKit.getApi().myId,true);
     }
 
 }

@@ -51,7 +51,7 @@ public class ProfileViewActivity extends Activity {
     private void downloadProfile(long userId) {
         System.out.println("userId = " + userId);
         try {
-            if (!CGuiTest.s_instance.m_vkService.loadProfile(userId)) {
+            if (!CGuiTest.s_instance.m_vkService.loadProfile(userId,false)) {
                 Log.e(TAG, "Cannot load profile");
             }
         } catch (RemoteException e) {
