@@ -56,11 +56,11 @@
     <string name="status_update_err">Update failed</string>
     <!--login message-->
     <string name="login_err">Login/pass incorrect</string>
-    <string name="view_thread">View messages thread</string>
+    <string name="view_and_reply">View mesage thread/reply</string>
     <string name="reply">Reply</string>
-    <string name="mark_as_spam">Mark as spam</string>
     <string name="delete_message">Delete message</string>
     <string name="please_login">Please enter your login/pass</string>
     <string name="email">E-mail</string>
     <string name="password">Password</string>
+    <string name="mark_as_read">Mark as read</string>
 </resources>

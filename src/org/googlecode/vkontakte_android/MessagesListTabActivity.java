@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
@@ -57,41 +58,41 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
             }
 
         });
-
         getListView().setOnScrollListener(this);
     }
 
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("unchecked")
     private void loadMore() {
         Log.d(TAG, "loading more messages: " + adapter.getCount() + "-" + (adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD));
-            setProgressBarIndeterminateVisibility(true);
-        	new AsyncTask() {
+        new AsyncTask() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                setProgressBarIndeterminateVisibility(true);
+            }
 
-				@Override
-				protected void onPostExecute(Object result) {
-					setProgressBarIndeterminateVisibility(false);
-				}
+            @Override
+            protected void onPostExecute(Object result) {
+                setProgressBarIndeterminateVisibility(false);
+            }
 
-				@Override
-				protected Object doInBackground(Object... params) {
-					try {
-						CGuiTest.s_instance.m_vkService.loadPrivateMessages(
-						        CheckingService.contentToUpdate.MESSAGES_IN.ordinal(),
-						        adapter.getCount(), adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
-					return null;
-				}
-        		
-        	}.execute();
+            @Override
+            protected Object doInBackground(Object... params) {
+                try {
+                    CGuiTest.s_instance.m_vkService.loadPrivateMessages(
+                            CheckingService.contentToUpdate.MESSAGES_IN.ordinal(),
+                            adapter.getCount(), adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute();
     }
 
-    
-    
+    @Override
     public void onScrollStateChanged(AbsListView v, int state) {
-        if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
-                && getListView().getLastVisiblePosition() == adapter.getCount() - 1) {
+        if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && getListView().getLastVisiblePosition() == adapter.getCount() - 1) {
             loadMore();
         }
     }
@@ -99,19 +100,23 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         long rowId = info.id;
+        MessageDao messageDao = MessageDao.get(this, rowId);
         switch (item.getItemId()) {
-            case R.id.message_view:
+            case R.id.message_view_and_reply:
+                Intent intent = new Intent(this, ComposeMessageActivity.class);
+                boolean isOutgoing = messageDao.getSenderId() == CSettings.myId;
+                intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, isOutgoing ? messageDao.getReceiverId() : messageDao.getSenderId());
+                startActivity(intent);
                 return true;
-
-            case R.id.message_reply:
-                return true;
-
-            case R.id.message_mark_as_spam:
-                return true;
-
             case R.id.message_delete:
+//                VkontakteAPI api = null;
+//                boolean result = api.deleteMessage(messageDao.getSenderId(), messageDao.getId())
+//                todo: handle result - if true delete from db; if false shouw error to user
                 return true;
-
+            case R.id.message_mark_as_read:
+//                VkontakteAPI api = null;
+//                api.markAsRead(messageDao.getId());
+                return true;
             default:
                 return super.onContextItemSelected(item);
         }
@@ -123,7 +128,6 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
         menuInflater.inflate(R.menu.message_context_menu, menu);
     }
 
-
     private Cursor getChatCursor(Long userid) {
         return managedQuery(UserapiProvider.MESSAGES_URI, null,
                 UserapiDatabaseHelper.KEY_MESSAGE_RECEIVERID + "=? OR " +
@@ -134,7 +138,6 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
 
     private Cursor getCursor(MessagesCursorType type) {
         switch (type) {
-
             case INCOMING:
                 return managedQuery(UserapiProvider.MESSAGES_URI, null,
                         UserapiDatabaseHelper.KEY_MESSAGE_RECEIVERID + "="
@@ -150,9 +153,7 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
         }
     }
 
-
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
     }
-
 }
