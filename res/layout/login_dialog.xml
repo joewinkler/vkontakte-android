@@ -12,4 +12,6 @@
             android:text="Login" android:layout_weight="50"/><Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="50" android:text="Cancel" android:id="@+id/cancel"></Button>
 </LinearLayout>
 <ProgressBar android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true" android:visibility="gone" android:id="@+id/progress_bar"></ProgressBar>
+
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#ff0000" android:text="Error" android:visibility="gone" android:id="@+id/login_error"></TextView>
 </LinearLayout>
