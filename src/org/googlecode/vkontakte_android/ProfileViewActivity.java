@@ -36,6 +36,8 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
         
         final TabHost tabHost = (TabHost) findViewById(R.id.ProfileTabHost);
         
+        tabHost.setup();
+        
         tabHost.addTab(tabHost.newTabSpec("tab1")
                 .setIndicator("tab1")
                 .setContent(this));
