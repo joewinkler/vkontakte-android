@@ -34,7 +34,6 @@ public class CGuiTest extends TabActivity {
     public static CGuiTest s_instance; //TODO refactor
 
     private static String TAG = "VK-Gui ";
-    //public static VkontakteAPI api;
     public IVkontakteService m_vkService;
 
     private VkontakteServiceConnection m_connection = new VkontakteServiceConnection();
@@ -75,13 +74,16 @@ public class CGuiTest extends TabActivity {
 
         final LoginDialog ld = new LoginDialog(this);
         ld.setTitle(R.string.please_login);
-//        ((EditText) ld.findViewById(R.id.login)).setText("fake4test@gmail.com");
-//        ((EditText) ld.findViewById(R.id.pass)).setText("qwerty");
+        ((EditText) ld.findViewById(R.id.login)).setText("fake4test@gmail.com");
+        ((EditText) ld.findViewById(R.id.pass)).setText("qwerty");
         ld.show();
         ld.setOnLoginClick(new View.OnClickListener() {
 
 
             public void onClick(View view) {
+            	if (! ld.checkCorrectInput(ld.getLogin(), ld.getPass())) {
+                	return;
+            	} 
                 ld.showProgress();
                 String login = ld.getLogin();
                 String pass = ld.getPass();
@@ -95,8 +97,7 @@ public class CGuiTest extends TabActivity {
                             ld.dismiss();
                             initializeUserStuff();
                         } else {
-                            Toast.makeText(getApplicationContext(),
-                                    R.string.login_err, Toast.LENGTH_SHORT).show();
+                            ld.showErrorMessage("Cannot login");
                         }
                     }
 

@@ -62,22 +62,39 @@ public class LoginDialog extends Dialog {
     }
 
 	public boolean checkCorrectInput(String login, String pass) {
-		//Everybody stand back! I know regular expressions! 
-	    Pattern pattern = Pattern.compile(
-		"^\\w{1}+[\\w\\d\\.-]*@[\\w\\d]+[\\.\\w\\d-]*\\.[\\w&&[^\\-]]{2,7}$");
-	        
-	    Matcher matcher = pattern.matcher(login);
-	    if (matcher.matches()) {
+		hideErrorMessage();
+	    if (isEmailValid(login)) {
         	Log.d(TAG, "Email format checked");	
-        	if (!TextUtils.isEmpty(pass)) {
-        		return true;
-        	}
-        	showErrorMessage("Password shouldn't be empty");
-        	return false;
+        } else if (isLoginValid(login)) {
+        	Log.d(TAG, "Login format checked");
         } else {
-        	showErrorMessage("Wrong email format");
-        	Log.d(TAG, "Email wrong format");
+        	showErrorMessage("Wrong email/login format");
         	return false;
         }
+	    
+    	if (!TextUtils.isEmpty(pass)) {
+    		return true;
+    	} else {
+    		showErrorMessage("Password shouldn't be empty");
+    		return false;
+    	}
+    	
+
 	}
+	
+	public static boolean isEmailValid(String s) {
+		//Everybody stand back! I know regular expressions! 
+	    Pattern pattern = Pattern.compile(
+		"^[a-zA-Z]{1}[\\w\\.-]*@[a-zA-Z]{1}[\\.\\w-]*\\.[a-zA-Z]{2,7}$");
+	    Matcher matcher = pattern.matcher(s);
+	    return matcher.matches() ? true:false;
+	}
+	
+	public static boolean isLoginValid(String s) {
+		Pattern pattern = Pattern.compile(
+		"^\\w+$");
+	    Matcher matcher = pattern.matcher(s);
+	    return matcher.matches() ? true:false;
+	}
+	
 }
