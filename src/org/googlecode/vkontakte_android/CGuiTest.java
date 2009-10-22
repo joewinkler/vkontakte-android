@@ -301,7 +301,7 @@ public class CGuiTest extends TabActivity {
     public static void fatalError(String text) {
         Toast.makeText(CGuiTest.s_instance, text, Toast.LENGTH_SHORT).show();
     }
-
+ 
     
 
     @Override

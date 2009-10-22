@@ -26,7 +26,7 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
     enum MessagesCursorType {
         ALL, INCOMING, OUTCOMING
     }
-
+ 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

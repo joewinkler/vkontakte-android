@@ -31,7 +31,9 @@ import android.util.Log;
 public class CheckingService extends Service {
 
     private static final String TAG = "VK-Service";
+    
     public static final int MESSAGE_NUM_LOAD = 10;
+    public static final int STATUS_NUM_LOAD = 6;
 
 
     private Timer m_timer = new Timer();
@@ -91,14 +93,14 @@ public class CheckingService extends Service {
                             updateHistory();
                             break;
                         case STATUSES:
-                            updateStatuses();
+                            updateStatuses(0, STATUS_NUM_LOAD);
                             break;
                         case PROFILE:
                         	//updateProfile();
                         	break;
                         
                         default:
-                            updateStatuses();
+                            updateStatuses(0, STATUS_NUM_LOAD);
                             updateMessages();
                             //updateWall();
                             updateFriends();
@@ -200,24 +202,18 @@ public class CheckingService extends Service {
         updateInMessages(0, api.getChangesHistory().getFriendsCount());
     }
 
-    private void updateStatuses() throws IOException, JSONException {
-        Log.d(TAG, "updating statuses");
+    protected void updateStatuses(int start, int end) throws IOException, JSONException {
+        Log.d(TAG, "updating statuses "+start+" to "+end);
         VkontakteAPI api = ApiCheckingKit.getApi();
-        int updated;
-        int start = 0;
-        int fetchSize = 100;
-        do {
-            List<Status> statuses = api.getTimeline(start, fetchSize);
-            List<StatusDao> statusDaos = new LinkedList<StatusDao>();
-            for (Status status : statuses) {
-                StatusDao statusDao = new StatusDao(status.getStatusId(), status.getUserId(), status.getUserName(), status.getDate(), status.getText());
-                statusDaos.add(statusDao);
-            }
-            updated = StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);
-            start += fetchSize;
-        } while (updated != 0);
+        List<Status> statuses = api.getTimeline(start, end);
+        List<StatusDao> statusDaos = new LinkedList<StatusDao>();
+        for (Status status : statuses) {
+            StatusDao statusDao = new StatusDao(status.getStatusId(), status.getUserId(), status.getUserName(), status.getDate(), status.getText());
+            statusDaos.add(statusDao);
+        }
+        StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);
     }
-
+ 
     //todo: use 'partial' lock for instead of synchronized(?)
     private synchronized void refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         boolean firstUpdate = false;

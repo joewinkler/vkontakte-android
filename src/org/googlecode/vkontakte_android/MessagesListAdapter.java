@@ -2,6 +2,7 @@ package org.googlecode.vkontakte_android;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.ResourceCursorAdapter;
@@ -38,8 +39,9 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
         TextView name = (TextView) view.findViewById(R.id.name);
         name.setText(header);
         TextView message = (TextView) view.findViewById(R.id.message);
-//        message.setText(Html.fromHtml(messageDao.text));
-        message.setText(messageDao.text);
+        
+        //warning! setting spanned text causes StackOverflow
+        message.setText(Html.fromHtml(messageDao.text).toString());
         View indicator = view.findViewById(R.id.unread_indicator);
         if (!messageDao.read) indicator.setVisibility(View.VISIBLE);
         else indicator.setVisibility(View.INVISIBLE);

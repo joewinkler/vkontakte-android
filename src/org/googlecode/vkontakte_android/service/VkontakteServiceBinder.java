@@ -207,4 +207,19 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         return loadProfile(ApiCheckingKit.getApi().myId,true);
     }
 
+	@Override
+	public boolean loadStatuses(int start, int end) throws RemoteException {
+		try {
+			m_service.updateStatuses(start, end);
+			return true;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 }

@@ -11,6 +11,7 @@ interface IVkontakteService {
   
   
   boolean loadPrivateMessages(int type, int first, int last);
+  boolean loadStatuses(int start, int end);
   
   //load user's profile to the cache and return if successful
   boolean loadProfile(long userid,boolean setMe);
