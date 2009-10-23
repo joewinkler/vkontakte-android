@@ -69,7 +69,7 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
             protected void onPreExecute() {
                 super.onPreExecute();
                 setProgressBarIndeterminateVisibility(true);
-            }
+            } 
 
             @Override
             protected void onPostExecute(Object result) {

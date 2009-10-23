@@ -302,19 +302,14 @@ public class CGuiTest extends TabActivity {
         Toast.makeText(CGuiTest.s_instance, text, Toast.LENGTH_SHORT).show();
     }
  
-    
+    @Override
+	protected void onDestroy() {
+		Log.d(TAG, "unbinding servide");
+    	unbindService(m_connection);
+		super.onDestroy();
+	}
 
-    @Override
-    public void onStop(){
-    	super.onStop();
-        unbindService(m_connection);
-    }
-    
-    @Override
-    public void onResume(){
-    	super.onResume();
-    	bindService();
-    }
+     
     
     // =========  RPC stuff ====================
 
@@ -328,7 +323,8 @@ public class CGuiTest extends TabActivity {
         Log.d(TAG, "Binding the service");
     }
 
-    class VkontakteServiceConnection implements ServiceConnection {
+
+	class VkontakteServiceConnection implements ServiceConnection {
         public void onServiceConnected(ComponentName className,
                                        IBinder boundService) {
             m_vkService = IVkontakteService.Stub.asInterface((IBinder) boundService);
