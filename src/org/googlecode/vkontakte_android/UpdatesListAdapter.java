@@ -3,18 +3,15 @@ package org.googlecode.vkontakte_android;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.text.Html;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import org.googlecode.vkontakte_android.database.StatusDao;
 
-import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
-import java.util.List;
+
 
 
 public class UpdatesListAdapter extends ResourceCursorAdapter {
@@ -35,15 +32,15 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         timeLine.setText(timeFormat.format(status.getDate()));
         Bitmap bm = UserHelper.getPhotoByUserId(context, status.getUserId());
         if (bm != null) {
-            ImageView photo = (ImageView) view.findViewById(R.id.photo);
-            int maxSize = 100;//todo!
+        	ImageView photo = (ImageView) view.findViewById(R.id.photo);
+            int maxSize = 90;//todo!
             int srcWidth = bm.getWidth();
             int srcHeight = bm.getHeight();
             int dstWidth = maxSize;
             int dstHeight = srcHeight * maxSize / srcWidth;
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm, dstWidth, dstHeight, false);
-            Bitmap cropped = Bitmap.createBitmap(scaledBitmap, 0, 0, Math.min(maxSize, dstWidth), Math.min(maxSize, dstHeight));
-            photo.setImageBitmap(cropped);
+            //Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,dstWidth,dstHeight,true);
+            Bitmap croppedBitmap = Bitmap.createBitmap(bm, 0, 0, Math.min(maxSize, dstWidth), Math.min(maxSize, dstHeight));
+            photo.setImageBitmap(croppedBitmap);
         }
     }
 }

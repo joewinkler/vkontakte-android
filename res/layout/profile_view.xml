@@ -1,18 +1,21 @@
-<TabHost android:id="@+id/ProfileTabHost" android:layout_width="wrap_content" android:layout_height="wrap_content" xmlns:android="http://schemas.android.com/apk/res/android">
+<TabHost android:id="@+id/ProfileTabHost" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" >
   <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
-        <TabWidget
-            android:id="@android:id/tabs"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+
         <FrameLayout
             android:id="@android:id/tabcontent"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="fill_parent" android:layout_weight="1">
             
     	</FrameLayout>
+    	        <TabWidget
+            android:id="@android:id/tabs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:gravity="bottom" />
+    	
+        
     </LinearLayout>
 
 </TabHost>
