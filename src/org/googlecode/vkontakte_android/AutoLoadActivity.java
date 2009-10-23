@@ -21,6 +21,11 @@ public class AutoLoadActivity extends ListActivity  {
         
 	}
 	
+	/**
+	 * Call it only after child performs setContentView() 
+	 * @param l
+	 * @param ad
+	 */
 	public void setupLoader(Loader l, ListAdapter ad) {
 		m_loader = l;
 		m_adapter = ad;
@@ -45,9 +50,14 @@ public class AutoLoadActivity extends ListActivity  {
     }
 	
     private void loadMore() {
-		setProgressBarIndeterminateVisibility(true);
     	new AsyncTask<Object, Object, Boolean>() {
 
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                setProgressBarIndeterminateVisibility(true);
+            } 
+    		
 			@Override
 			protected void onPostExecute(Boolean result) {
 				setProgressBarIndeterminateVisibility(false);

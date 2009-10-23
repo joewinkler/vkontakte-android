@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.*;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
+
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
@@ -18,9 +20,7 @@ import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService;
 
 
-public class MessagesListTabActivity extends ListActivity implements AbsListView.OnScrollListener {
-    private MessagesListAdapter adapter;
-
+public class MessagesListTabActivity extends AutoLoadActivity implements AbsListView.OnScrollListener {
     private static final String TAG = "org.googlecode.vkontakte_android.MessagesListTabActivity";
 
     enum MessagesCursorType {
@@ -30,16 +30,30 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.message_list);
 
-        adapter = new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.ALL));
-        setListAdapter(adapter);
+        setupLoader(new AutoLoadActivity.Loader(){
+
+			@Override
+			public Boolean load() {
+				try {
+                    return CGuiTest.s_instance.m_vkService.loadPrivateMessages(
+                            CheckingService.contentToUpdate.MESSAGES_IN.ordinal(),
+                            m_adapter.getCount(), m_adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                return false;
+			}
+        	
+        }, new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.ALL)));
+        
         registerForContextMenu(getListView());
+        
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                MessageDao messageDao = new MessageDao(adapter.getCursor());
+                MessageDao messageDao = new MessageDao(((CursorAdapter) m_adapter).getCursor());
                 Intent intent = new Intent(getApplicationContext(), ComposeMessageActivity.class);
                 boolean isOutgoing = messageDao.getSenderId() == CSettings.myId;
                 intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, isOutgoing ? messageDao.getReceiverId() : messageDao.getSenderId());
@@ -47,54 +61,7 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
             }
         });
 
-        getListView().setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && event.getAction() == KeyEvent.ACTION_DOWN
-                        && getListView().getSelectedItemPosition() == adapter.getCount() - 1) {
-                    loadMore();
-                }
-                return false;
-            }
-
-        });
         getListView().setOnScrollListener(this);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void loadMore() {
-        Log.d(TAG, "loading more messages: " + adapter.getCount() + "-" + (adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD));
-        new AsyncTask() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                setProgressBarIndeterminateVisibility(true);
-            } 
-
-            @Override
-            protected void onPostExecute(Object result) {
-                setProgressBarIndeterminateVisibility(false);
-            }
-
-            @Override
-            protected Object doInBackground(Object... params) {
-                try {
-                    CGuiTest.s_instance.m_vkService.loadPrivateMessages(
-                            CheckingService.contentToUpdate.MESSAGES_IN.ordinal(),
-                            adapter.getCount(), adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        }.execute();
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView v, int state) {
-        if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && getListView().getLastVisiblePosition() == adapter.getCount() - 1) {
-            loadMore();
-        }
     }
 
     public boolean onContextItemSelected(MenuItem item) {
@@ -108,7 +75,7 @@ public class MessagesListTabActivity extends ListActivity implements AbsListView
                 intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, isOutgoing ? messageDao.getReceiverId() : messageDao.getSenderId());
                 startActivity(intent);
                 return true;
-            case R.id.message_delete:
+            case R.id.message_delete: 
 //                VkontakteAPI api = null;
 //                boolean result = api.deleteMessage(messageDao.getSenderId(), messageDao.getId())
 //                todo: handle result - if true delete from db; if false shouw error to user
