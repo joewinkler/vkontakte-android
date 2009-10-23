@@ -164,7 +164,10 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
 
 
             public void onClick(View view) {
-                ld.showProgress();
+               	if (! ld.checkCorrectInput(ld.getLogin(), ld.getPass())) {
+                	return;
+            	} 
+            	ld.showProgress();
                 String login = ld.getLogin();
                 String pass = ld.getPass();
                 Log.i(TAG, login + ":" + pass);
@@ -177,8 +180,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
                             ld.dismiss();
                             //initializeUserStuff();
                         } else {
-                            Toast.makeText(getApplicationContext(),
-                                    R.string.login_err, Toast.LENGTH_SHORT).show();
+                        	ld.showErrorMessage("Cannot login");
                         }
                     }
 
