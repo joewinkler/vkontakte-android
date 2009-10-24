@@ -4,7 +4,7 @@
 android:background="#FF11637B">
 
 <TableRow android:id="@+id/StatusTableRow" android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingTop="4dip" android:paddingLeft="2dip">
-<EditText android:id="@+id/StatusEditText" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1" android:hint="What you are doing?" android:inputType="none">
+<EditText android:id="@+id/StatusEditText" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1" android:hint="@string/what_are_you_doing" android:inputType="none">
 </EditText>
 <Button android:id="@+id/StatusSubmitButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="clip_vertical" android:text="Share"></Button>
 </TableRow>

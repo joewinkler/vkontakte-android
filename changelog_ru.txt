@@ -1,10 +1,10 @@
 v0.2.0 alpha:
-  *  SIP is not shown on main screen
-  *  Improved login dialog
-  *  Photos are cropped in the updates tab
-  *  Lazy loading for statuses and messages
-  *  'Mark as read' and 'delete' implemented im messages 
-  *  Fixed F/C due to the incorrect service binding
+  *  Клавиатура больше не показывается автоматически на главном экране
+  *  Улучшем диалог логина
+  *  Фотографии теперь отмасштабированы и  обрезаны (как в веб-версии)
+  *  Автоматическая загрузка сообщения и статусов при скроллинге
+  *  'Пометить как прочитанное' и 'удалить' в сообщениях теперь работают   
+  *  Исправлена F/C ошибка из-за неправильного биндинга сервиса   
 
 v0.1.1 alpha:
   *  URL encode bugfix

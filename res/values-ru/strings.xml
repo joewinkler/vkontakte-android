@@ -3,7 +3,7 @@
     <string name="hello">Hello World, CVkontakteGui!</string>
     <string name="app_name">VKontakte</string>
     <string name="legal">Информация о лицензии</string>
-    <string name="copyright">© 2009 Ильдар Каримов, Евгений Баландин и другие</string>
+    <string name="copyright">© 2009 Ильдар Каримов, Евгений Баландин, Сергей Подтынный и другие</string>
 
     <string name="set_status">Редактировать статус</string>
     <string name="ok">Ok</string>
@@ -48,4 +48,7 @@
     <string name="status_update_err">Ошибка при обновлении</string>
     <!--login message-->
     <string name="login_err">Неправильные логин/пароль</string>
+
+    <string name="what_are_you_doing">Что вы сейчас делаете?</string>
+    <string name="mark_as_read">Пометить как прочитанное</string>
 </resources>
