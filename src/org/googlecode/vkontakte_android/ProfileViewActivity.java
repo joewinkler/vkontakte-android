@@ -1,10 +1,9 @@
 package org.googlecode.vkontakte_android;
 
 import android.app.Activity;
-import android.database.ContentObserver;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.*;
@@ -26,7 +25,7 @@ import static org.googlecode.vkontakte_android.provider.UserapiProvider.PROFILES
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.STATUSES_URI;
 
 public class ProfileViewActivity  extends Activity implements TabHost.TabContentFactory{
-    private ContentObserver observer;
+
     private static final String TAG = "org.googlecode.vkontakte_android.ProfileViewActivity";
     private long profileId;
     @Override
@@ -56,71 +55,59 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
     }
     
     
-    private void initUpdatesTab(){
-        
-       
-     
-    }
+    private void initUpdatesTab(){}
     
-    private void initWallTab(){
-    	
-    }
+    private void initWallTab(){}
     
-
     private void initInfoTab()
     {
-    	 Bundle extras = getIntent().getExtras();
-         long userId = CSettings.myId;
-         if (extras != null)
-             userId = extras.getLong(UserapiDatabaseHelper.KEY_PROFILE_USERID, userId);
-         profileId = userId;
-         observer = new ContentObserver(new Handler()) {
-             @Override
-             public void onChange(boolean b) {
-                 Cursor cursor = managedQuery(PROFILES_URI, null, UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?", new String[]{String.valueOf(profileId)}, null);
-                 if (cursor.getCount() == 0)
-                     setProgressBarIndeterminateVisibility(true);
-                 else {
-                     cursor.moveToFirst();
-                     ProfileDao profile = new ProfileDao(cursor);
-                     loadAndShowProfile(profile);
-                 }
-             }
-         };
-         downloadProfile(userId);
+         long profileId = CSettings.myId;
+         if (getIntent().getExtras() != null)
+             profileId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_PROFILE_USERID, profileId);
+
+         new AsyncTask<Long, Object, ProfileDao>() {
+ 			@Override
+ 			protected void onPreExecute() {
+ 				super.onPreExecute();
+ 				setProgressBarIndeterminateVisibility(true);
+ 			}
+ 			@Override
+ 			protected void onPostExecute(ProfileDao result) {
+ 				setProgressBarIndeterminateVisibility(false);
+ 				if (!result.equals(null))showProfileInfo(result);
+ 			}
+ 			@Override
+ 			protected ProfileDao doInBackground(Long... id) {
+
+ 				try {
+ 		            if (!CGuiTest.s_instance.m_vkService.loadProfile(id[0],false)) {
+ 		                Log.e(TAG, "Cannot load profile");
+ 		                return null;
+ 		            }else
+ 		            {
+ 		            	Cursor cursor = managedQuery(PROFILES_URI, null, UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?", new String[]{String.valueOf(id[0])}, null);
+ 		            	cursor.moveToFirst();
+ 		            	return new ProfileDao(cursor);
+ 		            }
+ 		            
+ 		        } catch (RemoteException e) {
+ 		            e.printStackTrace();  
+ 		        }
+
+ 				return null;
+ 			}
+ 		}.execute(new Long[]{profileId});
+         
     }
     
-    private void downloadProfile(long userId) {
-        Log.d(TAG,"userId = " + userId);
-        try {
-            if (!CGuiTest.s_instance.m_vkService.loadProfile(userId,false)) {
-                Log.e(TAG, "Cannot load profile");
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();  
-        }
+    private void showProfileInfo(ProfileDao profile) {
+        ((TextView) findViewById(R.id.InfoFirstName)).setText(profile.firstname);
+        ((TextView) findViewById(R.id.InfoLastName)).setText(profile.surname);
+        ((ImageView)findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, profile.id));
+        ((TextView) findViewById(R.id.InfoStatusText)).setText(profile.status);
     }
 
-    private void loadAndShowProfile(ProfileDao profile) {
-       // findViewById(R.id.main_profile_view).setVisibility(View.VISIBLE);
-        ((TextView) findViewById(R.id.firstname)).setText(profile.firstname);
-        ((TextView) findViewById(R.id.surname)).setText(profile.surname);
-        ((ImageView) findViewById(R.id.photo)).setImageBitmap(UserHelper.getPhotoByUserId(this, profile.id));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getContentResolver().registerContentObserver(PROFILES_URI, false, observer);
-        getContentResolver().notifyChange(PROFILES_URI, null);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        getContentResolver().unregisterContentObserver(observer);
-    }
-
+ 
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater menuInflater = getMenuInflater();
