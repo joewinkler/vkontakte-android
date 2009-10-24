@@ -214,6 +214,18 @@ public class CheckingService extends Service {
         StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);
     }
  
+    protected void updateStatuses(int start, int end, long id) throws IOException, JSONException {
+        Log.d(TAG, "updating statuses for user:"+id+"/"+start+" to "+end);
+        VkontakteAPI api = ApiCheckingKit.getApi();
+        List<Status> statuses = api.getStatusHistory(id, start, end, 0);
+        List<StatusDao> statusDaos = new LinkedList<StatusDao>();
+        for (Status status : statuses) {
+            StatusDao statusDao = new StatusDao(status.getStatusId(), status.getUserId(), status.getUserName(), status.getDate(), status.getText());
+            statusDaos.add(statusDao);
+        }
+        StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);
+    }
+ 
     //todo: use 'partial' lock for instead of synchronized(?)
     private synchronized void refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         boolean firstUpdate = false;

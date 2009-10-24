@@ -4,15 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.AbsListView;
 import android.widget.ListView;
 
-public class AutoReloadList extends ListView {
+public class AutoLoadList extends ListView {
 
 	private Loader mLoader;
 
-	public AutoReloadList(Context context) {
+	public AutoLoadList(Context context) {
 		super(context);
 	}
 	
@@ -20,21 +18,38 @@ public class AutoReloadList extends ListView {
 		mLoader=loader;
 	}
 
-	public boolean onKey(View v, int keyCode, KeyEvent event) {
+	
+		
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
 		if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN
 				&& event.getAction() == KeyEvent.ACTION_DOWN
-				&& getSelectedItemPosition() == getAdapter().getCount() - 1) {
+				&& getSelectedItemPosition() == getAdapter().getCount() - 2) {
 			loadMore();
 		}
-		return false;
+		return super.onKeyDown(keyCode, event);
 	}
 
+/*	
+	@Override
+	public void onScrollChanged(int l, int t, int oldl, int oldt){
+		
+		if (getLastVisiblePosition() == getAdapter().getCount() - 1) {
+			loadMore();
+		}
+	}
+	*/
+	
+	/*
 	public void onScrollStateChanged(AbsListView v, int state) {
+		
 		if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
 				&& getLastVisiblePosition() == getAdapter().getCount() - 1) {
 			loadMore();
 		}
 	}
+	*/
 
 	private void loadMore() {
 		if (!mLoader.equals(null)){

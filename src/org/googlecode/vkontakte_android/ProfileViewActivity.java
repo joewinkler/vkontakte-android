@@ -9,14 +9,12 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ImageView;
 
-import org.googlecode.vkontakte_android.AutoReloadList.Loader;
+import org.googlecode.vkontakte_android.AutoLoadList.Loader;
 import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
@@ -168,9 +166,21 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
 		}
 		else if (tag.equals("updates_tab")){
 
-			final AutoReloadList arl= new AutoReloadList(this);
+			final AutoLoadList arl= new AutoLoadList(this);
 	        Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_USERID+"="+profileId, null, KEY_STATUS_DATE + " DESC ");
 			arl.setAdapter(new UpdatesListAdapter(this, R.layout.status_row, statusesCursor));
+			arl.setLoader(new Loader() {
+				@Override
+				public Boolean load() {
+					try {
+						return CGuiTest.s_instance.m_vkService.loadStatusesByUser(arl.getAdapter().getCount(), 
+								arl.getAdapter().getCount()+CheckingService.STATUS_NUM_LOAD,profileId);
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				return false;
+				}
+			});
 			return arl;
 		}
 		return tv;
