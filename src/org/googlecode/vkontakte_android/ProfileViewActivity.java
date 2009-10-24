@@ -9,31 +9,43 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ImageView;
+
+import org.googlecode.vkontakte_android.AutoReloadList.Loader;
 import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.vkontakte_android.service.CheckingService;
+
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_DATE;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_USERID;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.PROFILES_URI;
+import static org.googlecode.vkontakte_android.provider.UserapiProvider.STATUSES_URI;
 
 public class ProfileViewActivity  extends Activity implements TabHost.TabContentFactory{
     private ContentObserver observer;
     private static final String TAG = "org.googlecode.vkontakte_android.ProfileViewActivity";
-
+    private long profileId;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        
         setContentView(R.layout.profile_view);
-        
+
+        initTabHost();
+        initInfoTab();
+        initWallTab();
+        initUpdatesTab();
+    }
+    
+    private void initTabHost(){
         final TabHost tabHost = (TabHost) findViewById(R.id.ProfileTabHost);
-        
-        
         tabHost.setup();
-        
         tabHost.addTab(tabHost.newTabSpec("info_tab")
                 .setIndicator("Info")
                 .setContent(this));
@@ -43,41 +55,52 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
         tabHost.addTab(tabHost.newTabSpec("updates_tab")
                 .setIndicator("Updates")
                 .setContent(this));
-
-        
-        
-        Bundle extras = getIntent().getExtras();
-        long userId = CSettings.myId;
-        if (extras != null)
-            userId = extras.getLong(UserapiDatabaseHelper.KEY_PROFILE_USERID, userId);
-        final long finalProfileId = userId;
-        observer = new ContentObserver(new Handler()) {
-            @Override
-            public void onChange(boolean b) {
-                Cursor cursor = managedQuery(PROFILES_URI, null, UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?", new String[]{String.valueOf(finalProfileId)}, null);
-                if (cursor.getCount() == 0)
-                    setProgressBarIndeterminateVisibility(true);
-                else {
-                    cursor.moveToFirst();
-                    ProfileDao profile = new ProfileDao(cursor);
-                    loadAndShowProfile(profile);
-                }
-            }
-        };
-        downloadProfile(userId);
-      
     }
+    
+    
+    private void initUpdatesTab(){
+        
+       
+     
+    }
+    
+    private void initWallTab(){
+    	
+    }
+    
 
+    private void initInfoTab()
+    {
+    	 Bundle extras = getIntent().getExtras();
+         long userId = CSettings.myId;
+         if (extras != null)
+             userId = extras.getLong(UserapiDatabaseHelper.KEY_PROFILE_USERID, userId);
+         profileId = userId;
+         observer = new ContentObserver(new Handler()) {
+             @Override
+             public void onChange(boolean b) {
+                 Cursor cursor = managedQuery(PROFILES_URI, null, UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?", new String[]{String.valueOf(profileId)}, null);
+                 if (cursor.getCount() == 0)
+                     setProgressBarIndeterminateVisibility(true);
+                 else {
+                     cursor.moveToFirst();
+                     ProfileDao profile = new ProfileDao(cursor);
+                     loadAndShowProfile(profile);
+                 }
+             }
+         };
+         downloadProfile(userId);
+    }
+    
     private void downloadProfile(long userId) {
-        System.out.println("userId = " + userId);
+        Log.d(TAG,"userId = " + userId);
         try {
             if (!CGuiTest.s_instance.m_vkService.loadProfile(userId,false)) {
                 Log.e(TAG, "Cannot load profile");
             }
         } catch (RemoteException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();  
         }
-
     }
 
     private void loadAndShowProfile(ProfileDao profile) {
@@ -85,7 +108,6 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
         ((TextView) findViewById(R.id.firstname)).setText(profile.firstname);
         ((TextView) findViewById(R.id.surname)).setText(profile.surname);
         ((ImageView) findViewById(R.id.photo)).setImageBitmap(UserHelper.getPhotoByUserId(this, profile.id));
-//        System.out.println(profile.status);
     }
 
     @Override
@@ -139,16 +161,18 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
 
 	@Override
 	public View createTabContent(String tag) {
-		//final TextView tv = new TextView(this);
-		//tv.setText("Content for tab with tag " + tag);
 		View tv= new View(this);
 		
-		if (tag.equals("info_tab"))
-		{
+		if (tag.equals("info_tab")){
 			tv=getLayoutInflater().inflate(R.layout.profile_view_info, null);
-			
 		}
-		
+		else if (tag.equals("updates_tab")){
+
+			final AutoReloadList arl= new AutoReloadList(this);
+	        Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_USERID+"="+profileId, null, KEY_STATUS_DATE + " DESC ");
+			arl.setAdapter(new UpdatesListAdapter(this, R.layout.status_row, statusesCursor));
+			return arl;
+		}
 		return tv;
 	}
 }

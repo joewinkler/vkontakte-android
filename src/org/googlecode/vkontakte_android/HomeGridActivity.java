@@ -30,7 +30,7 @@ import android.widget.AdapterView.OnItemClickListener;
 public class HomeGridActivity extends Activity implements OnItemClickListener {
 
     private GridView mHomeGrid = null;
-    private final static String TAG = "HomeGridActivity";
+    private final static String TAG = "org.googlecode.vkontakte_android.HomeGridActivity";
 
     public IVkontakteService mVKService;
     private VkontakteServiceConnection mVKServiceConnection = new VkontakteServiceConnection();
@@ -77,11 +77,13 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         startActivity(i);
     }
 
+    /*
     private void showFriends() {
         Intent i = new Intent(this, FriendsListTabActivity.class);
 //        i.putExtra(FriendsListTabActivity.SHOW_ONLY_NEW, false);
         startActivity(i);
     }
+    */
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -94,6 +96,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
             showRequests();
         } else if (arg1.getTag().equals("Help")) {
             AboutDialog.makeDialog(this).show();
+            backToHome();
         }
         // Not implemented
         else if (arg1.getTag().equals("Help")
