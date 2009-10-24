@@ -83,7 +83,7 @@ public class LoginDialog extends Dialog {
 	}
 	
 	public static boolean isEmailValid(String s) {
-		//Everybody stand back! I know regular expressions! 
+		//Everybody stand back! I know regular expressions! //okay, my email is "some+hello@gmail.com" and it's not pass this regexep, but it's valid.
 	    Pattern pattern = Pattern.compile(
 		"^[a-zA-Z]{1}[\\w\\.-]*@[a-zA-Z]{1}[\\.\\w-]*\\.[a-zA-Z]{2,7}$");
 	    Matcher matcher = pattern.matcher(s);

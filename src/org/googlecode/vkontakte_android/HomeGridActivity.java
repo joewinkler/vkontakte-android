@@ -182,9 +182,9 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         final LoginDialog ld = new LoginDialog(this);
         ld.setTitle(R.string.please_login);
         ld.show();
+
+
         ld.setOnLoginClick(new View.OnClickListener() {
-
-
             public void onClick(View view) {
                	if (! ld.checkCorrectInput(ld.getLogin(), ld.getPass())) {
                 	return;
@@ -192,7 +192,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
             	ld.showProgress();
                 String login = ld.getLogin();
                 String pass = ld.getPass();
-                Log.i(TAG, login + ":" + pass);
+                Log.i(TAG, login + ":--hidden--" );
 
                 new AsyncTask<String, Void, Boolean>() {
                     @Override
@@ -223,7 +223,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         });
 
         ld.setOnCancelClick(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 try {
