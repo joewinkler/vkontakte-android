@@ -63,6 +63,8 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         Context ctx = m_context;
         VkontakteAPI api = ApiCheckingKit.getApi();
 
+        if (CSettings.isLogged(ctx))
+        {
             try {
                 Credentials cred = new Credentials(CSettings.getLogin(ctx),
                         CSettings.getPass(ctx), CSettings.getRemixPass(ctx),
@@ -97,6 +99,11 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
                 return false;
             }
+        }else{
+            Log.d(TAG, "No Login/Password stored");
+        	return false;
+        }
+        	
     }
 
     @Override
