@@ -8,10 +8,10 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ImageView;
 
 import org.googlecode.vkontakte_android.AutoLoadList.Loader;
 import org.googlecode.vkontakte_android.database.ProfileDao;
@@ -52,6 +52,7 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
         tabHost.addTab(tabHost.newTabSpec("updates_tab")
                 .setIndicator("Updates")
                 .setContent(this));
+    
     }
     
     
@@ -61,7 +62,7 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
     
     private void initInfoTab()
     {
-         long profileId = CSettings.myId;
+          profileId = CSettings.myId;
          if (getIntent().getExtras() != null)
              profileId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_PROFILE_USERID, profileId);
 
@@ -103,7 +104,7 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
     private void showProfileInfo(ProfileDao profile) {
         ((TextView) findViewById(R.id.InfoFirstName)).setText(profile.firstname);
         ((TextView) findViewById(R.id.InfoLastName)).setText(profile.surname);
-        ((ImageView)findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, profile.id));
+        ((ImageButton)findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, profile.id));
         ((TextView) findViewById(R.id.InfoStatusText)).setText(profile.status);
     }
 
