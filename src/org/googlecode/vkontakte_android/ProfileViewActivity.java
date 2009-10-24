@@ -56,7 +56,26 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
     }
     
     
-    private void initUpdatesTab(){}
+    private void initUpdatesTab(){
+        Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_USERID+"="+profileId, null, KEY_STATUS_DATE + " DESC ");
+        if (statusesCursor.getCount()<2){
+        	new AsyncTask<Long, Object, Boolean>(){
+
+				@Override
+				protected Boolean doInBackground(Long... params) {
+					try {
+						return CGuiTest.s_instance.m_vkService.loadStatusesByUser(0,CheckingService.STATUS_NUM_LOAD,profileId);
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				return false;
+				}
+        		
+        	}.execute(new Long[]{profileId});
+        }
+        
+
+    }
     
     private void initWallTab(){}
     
