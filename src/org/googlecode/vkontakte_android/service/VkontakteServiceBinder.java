@@ -63,16 +63,33 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         Context ctx = m_context;
         VkontakteAPI api = ApiCheckingKit.getApi();
 
-        if (CSettings.isLogged(ctx)) {
             try {
                 Credentials cred = new Credentials(CSettings.getLogin(ctx),
                         CSettings.getPass(ctx), CSettings.getRemixPass(ctx),
                         CSettings.getSid(ctx));
+                
+                Credentials cred1 = new Credentials(CSettings.getLogin(ctx),
+                        CSettings.getPass(ctx), CSettings.getRemixPass(ctx),
+                        null);
+                
+                Credentials cred2 = new Credentials(CSettings.getLogin(ctx),
+                        CSettings.getPass(ctx), null,
+                        null);
+                
                 if (api.login(cred)) {
-                    Log.d(TAG, "Logged with credentials");
+                    Log.d(TAG, "Logged with SID");
                     return true;
+                
+                }else if (api.login(cred1)) {
+                        Log.d(TAG, "Logged with REMIX");
+                        return true;
+
+                }else if (api.login(cred2)) {
+                    Log.d(TAG, "Logged with LOGIN/PASSWORD");
+                    return true;
+                    
                 } else {
-                    Log.d(TAG, "Cannot log with credentials");
+                    Log.d(TAG, "Cannot log with 3 methods");
                     CSettings.clearPrivateInfo(ctx);
                     return false;
                 }
@@ -80,10 +97,6 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
                 return false;
             }
-        } else {
-            Log.d(TAG, "Not authorized");
-            return false;
-        }
     }
 
     @Override
