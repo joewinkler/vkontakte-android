@@ -5,6 +5,9 @@ v0.2.0 alpha:
   *  Lazy loading for statuses and messages
   *  'Mark as read' and 'delete' implemented im messages 
   *  Fixed F/C due to the incorrect service binding
+  *  Fixed login issues
+  *  Profile View now have tabs (Info, Wall, Updates)
+     two of them working (Info, Updates) 	
 
 v0.1.1 alpha:
   *  URL encode bugfix
