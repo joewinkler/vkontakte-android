@@ -12,13 +12,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -47,7 +51,19 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
 
         // Binding service
         bindService();
+        
+        final EditText statusEdit =(EditText) findViewById(R.id.StatusEditText);
+        statusEdit.setInputType(InputType.TYPE_NULL);        
+        
+        statusEdit.setOnTouchListener(new OnTouchListener(){
+        	@Override
+        	public boolean onTouch(View v, MotionEvent event) {
+            statusEdit.setInputType(InputType.TYPE_CLASS_TEXT); 
+        	statusEdit.onTouchEvent(event); 
+        	return true; // consume touch even
+        	}
 
+        	});
     }
 
     private void backToHome() {
@@ -98,8 +114,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         super.onResume();
         Log.d(TAG, "Activity Resumed");
         backToHome();
-        bindService();
-
     }
 
     @Override
@@ -107,10 +121,15 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         super.onStop();
         Log.d(TAG, "Activity Stopped");
         //try {m_vkService.stop();} catch (RemoteException e) {e.printStackTrace();}
-        Log.d(TAG, "Unbinding the service");
-        unbindService(mVKServiceConnection);
     }
 
+    @Override
+    public void onDestroy(){
+    	super.onDestroy();
+        Log.d(TAG, "Activity Destroyed");
+    	unbindService(mVKServiceConnection);
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
