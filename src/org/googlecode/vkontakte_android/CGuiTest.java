@@ -126,7 +126,6 @@ public class CGuiTest extends TabActivity {
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-                unbindService(m_connection);
                 ld.dismiss();
                 finish();
             }
