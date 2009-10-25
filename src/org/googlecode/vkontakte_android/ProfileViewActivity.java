@@ -175,7 +175,7 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
 
 			final AutoLoadList arl= new AutoLoadList(this);
 	        Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_USERID+"="+profileId, null, KEY_STATUS_DATE + " DESC ");
-			arl.setAdapter(new UpdatesListAdapter(this, R.layout.status_row, statusesCursor));
+			arl.setAdapter(new UpdatesListAdapter(this, R.layout.status_row_profile, statusesCursor));
 			arl.setLoader(new Loader() {
 				@Override
 				public Boolean load() {

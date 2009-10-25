@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 
 public class UpdatesListAdapter extends ResourceCursorAdapter {
     public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm ");//todo: get rid of extra space by using padding(?)
+    public static final SimpleDateFormat weektimeFormat= new SimpleDateFormat("EEE, HH:mm ");
 
     public UpdatesListAdapter(Context context, int layout, Cursor cursor) {
         super(context, layout, cursor);
@@ -29,9 +30,9 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         TextView statusLine = (TextView) view.findViewById(R.id.status);
         statusLine.setText(Html.fromHtml(status.getText()));
         TextView timeLine = (TextView) view.findViewById(R.id.time);
-        timeLine.setText(timeFormat.format(status.getDate()));
+        timeLine.setText(weektimeFormat.format(status.getDate()));
         Bitmap bm = UserHelper.getPhotoByUserId(context, status.getUserId());
-        if (bm != null) {
+        if (bm != null &&  view.findViewById(R.id.photo)!=null ) {
         	ImageView photo = (ImageView) view.findViewById(R.id.photo);
             int maxSize = 90;//todo!
             int srcWidth = bm.getWidth();
