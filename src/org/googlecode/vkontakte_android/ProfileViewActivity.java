@@ -116,7 +116,7 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
 
  				return null;
  			}
- 		}.execute(new Long[]{profileId});
+ 		}.execute(profileId);
          
     }
     

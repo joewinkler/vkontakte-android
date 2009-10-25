@@ -1,42 +1,41 @@
 package org.googlecode.vkontakte_android;
 
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_DATE;
-import static org.googlecode.vkontakte_android.provider.UserapiProvider.STATUSES_URI;
-
-import org.googlecode.vkontakte_android.database.StatusDao;
-import org.googlecode.vkontakte_android.service.CheckingService;
-
 import android.database.Cursor;
-import android.os.Bundle; 
+import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import org.googlecode.vkontakte_android.database.StatusDao;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_DATE;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_PERSONAL;
+import static org.googlecode.vkontakte_android.provider.UserapiProvider.STATUSES_URI;
+import org.googlecode.vkontakte_android.service.CheckingService;
 
 public class UpdatesListTabActivity extends AutoLoadActivity implements AdapterView.OnItemClickListener {
-	private static final String TAG = "UpdatesListTabActivity";
-	 
+    private static final String TAG = "org.googlecode.vkontakte_android.UpdatesListTabActivity";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.status_list);
-        final Cursor statusesCursor = managedQuery(STATUSES_URI, null, null, null, KEY_STATUS_DATE + " DESC ");
-        
-        setupLoader(new UpdatesListTabActivity.Loader(){
-			@Override
-			public Boolean load() {
-				try {
-					return CGuiTest.s_instance.m_vkService.loadStatuses(m_adapter.getCount(), 
-							m_adapter.getCount()+CheckingService.STATUS_NUM_LOAD);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				};
-				return false;
-			}
-		}, new UpdatesListAdapter(this, R.layout.status_row, statusesCursor));
-        
+        final Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_PERSONAL + "=0", null, KEY_STATUS_DATE + " DESC ");
+
+        setupLoader(new UpdatesListTabActivity.Loader() {
+            @Override
+            public Boolean load() {
+                try {
+                    return CGuiTest.s_instance.m_vkService.loadStatuses(m_adapter.getCount(),
+                            m_adapter.getCount() + CheckingService.STATUS_NUM_LOAD);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        }, new UpdatesListAdapter(this, R.layout.status_row, statusesCursor));
+
         registerForContextMenu(getListView());
         getListView().setOnItemClickListener(this);
     }

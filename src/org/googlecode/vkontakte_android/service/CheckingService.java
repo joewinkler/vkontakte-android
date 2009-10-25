@@ -208,7 +208,8 @@ public class CheckingService extends Service {
         List<Status> statuses = api.getTimeline(start, end);
         List<StatusDao> statusDaos = new LinkedList<StatusDao>();
         for (Status status : statuses) {
-            StatusDao statusDao = new StatusDao(status.getStatusId(), status.getUserId(), status.getUserName(), status.getDate(), status.getText());
+            boolean personal = false;
+            StatusDao statusDao = new StatusDao(status.getStatusId(), status.getUserId(), status.getUserName(), status.getDate(), status.getText(), personal);
             statusDaos.add(statusDao);
         }
         StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);
@@ -220,7 +221,8 @@ public class CheckingService extends Service {
         List<Status> statuses = api.getStatusHistory(id, start, end, 0);
         List<StatusDao> statusDaos = new LinkedList<StatusDao>();
         for (Status status : statuses) {
-            StatusDao statusDao = new StatusDao(status.getStatusId(), status.getUserId(), status.getUserName(), status.getDate(), status.getText());
+            boolean personal = true;
+            StatusDao statusDao = new StatusDao(status.getStatusId(), status.getUserId(), status.getUserName(), status.getDate(), status.getText(), personal);
             statusDaos.add(statusDao);
         }
         StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);

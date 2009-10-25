@@ -46,6 +46,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
 
     public static final String KEY_STATUS_ROWID = BaseColumns._ID;
     public static final String KEY_STATUS_STATUSID = "statusid";
+    public static final String KEY_STATUS_PERSONAL = "personal";
     public static final String KEY_STATUS_USERID = "userid";
     public static final String KEY_STATUS_USERNAME = "username";
     public static final String KEY_STATUS_DATE = "date";
@@ -103,6 +104,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_STATUS_CREATE = "create table " + DATABASE_STATUS_TABLE + " ("
             + KEY_STATUS_ROWID + " integer primary key autoincrement, "
             + KEY_STATUS_STATUSID + " long,"
+            + KEY_STATUS_PERSONAL + " int,"
             + KEY_STATUS_USERID + " long,"
             + KEY_STATUS_USERNAME + " text, "
             + KEY_STATUS_DATE + " long,"

@@ -21,21 +21,22 @@ public class StatusDao {
     private String userName;
     private Date date;
     private String text;
+    private boolean personal;
 
-    public static int bulkSave(Context context, List<StatusDao> statusList) {
-        ContentValues[] values = new ContentValues[statusList.size()];
-        int i = 0;
-        for (StatusDao status : statusList) {
-            ContentValues insertValues = new ContentValues();
-            insertValues.put(KEY_STATUS_STATUSID, status.getStatusId());
-            insertValues.put(KEY_STATUS_USERID, status.getUserId());
-            insertValues.put(KEY_STATUS_USERNAME, status.getUserName());
-            insertValues.put(KEY_STATUS_DATE, status.getDate().getTime());
-            insertValues.put(KEY_STATUS_TEXT, status.getText());
-            values[i++] = insertValues;
-        }
-        return context.getContentResolver().bulkInsert(STATUSES_URI, values);
-    }
+//    public static int bulkSave(Context context, List<StatusDao> statusList) {
+//        ContentValues[] values = new ContentValues[statusList.size()];
+//        int i = 0;
+//        for (StatusDao status : statusList) {
+//            ContentValues insertValues = new ContentValues();
+//            insertValues.put(KEY_STATUS_STATUSID, status.getStatusId());
+//            insertValues.put(KEY_STATUS_USERID, status.getUserId());
+//            insertValues.put(KEY_STATUS_USERNAME, status.getUserName());
+//            insertValues.put(KEY_STATUS_DATE, status.getDate().getTime());
+//            insertValues.put(KEY_STATUS_TEXT, status.getText());
+//            values[i++] = insertValues;
+//        }
+//        return context.getContentResolver().bulkInsert(STATUSES_URI, values);
+//    }
 
     public static int bulkSaveOrUpdate(Context context, List<StatusDao> statusList) {
         int updated = 0;
@@ -74,6 +75,7 @@ public class StatusDao {
         ContentValues insertValues = new ContentValues();
         insertValues.put(KEY_STATUS_STATUSID, getStatusId());
         insertValues.put(KEY_STATUS_USERID, getUserId());
+        insertValues.put(KEY_STATUS_PERSONAL, isPersonal() ? 1 : 0);
         insertValues.put(KEY_STATUS_USERNAME, getUserName());
         insertValues.put(KEY_STATUS_DATE, getDate().getTime());
         insertValues.put(KEY_STATUS_TEXT, getText());
@@ -93,14 +95,16 @@ public class StatusDao {
         userName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_STATUS_USERNAME));
         date = new Date(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_STATUS_DATE)));
         text = cursor.getString(cursor.getColumnIndexOrThrow(KEY_STATUS_TEXT));
+        personal = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_STATUS_PERSONAL)) == 1;
     }
 
-    public StatusDao(long statusId, long userId, String userName, Date date, String text) {
+    public StatusDao(long statusId, long userId, String userName, Date date, String text, boolean personal) {
         this.statusId = statusId;
         this.userId = userId;
         this.userName = userName;
         this.date = date;
         this.text = text;
+        this.personal = personal;
     }
 
     public String getUserName() {
@@ -123,6 +127,10 @@ public class StatusDao {
         return text;
     }
 
+    public boolean isPersonal() {
+        return personal;
+    }
+
     @Override
     public String toString() {
         return "StatusDao{" +
@@ -132,6 +140,7 @@ public class StatusDao {
                 ", userName='" + userName + '\'' +
                 ", date=" + date +
                 ", text='" + text + '\'' +
+                ", personal=" + personal +
                 '}';
     }
 }
