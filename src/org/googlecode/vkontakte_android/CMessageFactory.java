@@ -26,11 +26,11 @@ public class CMessageFactory {
 
 
 		ImageView photo = (ImageView) v.findViewById(R.id.sender_photo);
-		photo.setImageBitmap( bm==null ? CImagesManager.getBitmap("stub"):bm);
+		//photo.setImageBitmap( bm==null ? CImagesManager.getBitmap("stub"):bm);
 	
 		
 		ImageButton b = (ImageButton) v.findViewById(R.id.answer_btn);
-        b.setImageDrawable(new BitmapDrawable(CImagesManager.getBitmap("reply")));
+        //b.setImageDrawable(new BitmapDrawable(CImagesManager.getBitmap("reply")));
         	
 		return v;
 

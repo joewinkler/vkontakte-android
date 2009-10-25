@@ -17,8 +17,7 @@ import java.util.List;
 
 public class UserDao {
     private static final String TAG = "org.googlecode.vkontakte_android.database.UserDao";
-
-
+    
     public long rowId;
     public long userId;
     public String userName;
@@ -190,9 +189,10 @@ public class UserDao {
     public void updatePhoto(Context ctx, User proto, Uri uri) throws IOException {
         String oldPhotoUrl = userPhotoUrl;
         String newPhotoUrl = proto.getUserPhotoUrl();
-        //photo exists and (updated or file was not downloaded)
-        if ((newPhotoUrl != null && !newPhotoUrl.equalsIgnoreCase(oldPhotoUrl) || !UserapiProvider.isExists(getPath()))) {
-            Log.d(TAG, "saving photo: " + newPhotoUrl);
+     
+        //photo was updated or file was not downloaded
+        if (!newPhotoUrl.equalsIgnoreCase(oldPhotoUrl) || !UserapiProvider.isExists(getPath())) {
+            Log.d(TAG, "Saving photo of " + proto.getUserName() + " " + newPhotoUrl);
             byte[] photo = proto.getUserPhoto();
             OutputStream os = ctx.getContentResolver().openOutputStream(uri);
             os.write(photo);

@@ -246,7 +246,6 @@ public class CheckingService extends Service {
                 userDao.setUserPhotoUrl(null);//special hack for photo update
                 users.add(userDao);
             } else {
-                userDao.saveOrUpdate(context);
                 notIn.append(user.getUserId()).append(",");
                 Uri useruri = userDao.saveOrUpdate(this);
                 userDao.updatePhoto(this, user, useruri);
@@ -257,7 +256,7 @@ public class CheckingService extends Service {
             }
         }
         
-        if (firstUpdate) {
+        if (false && firstUpdate) {
             UserDao.bulkSave(context, users);
             //todo: make async
         } else {

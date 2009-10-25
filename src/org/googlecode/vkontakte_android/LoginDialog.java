@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import android.app.Dialog;
 import android.content.Context;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.text.TextUtils;
@@ -43,10 +44,16 @@ public class LoginDialog extends Dialog {
     }
     
     public void showProgress() {
+    	((EditText)findViewById(R.id.login)).setEnabled(false);
+    	((EditText)findViewById(R.id.pass)).setEnabled(false);
+    	((Button)findViewById(R.id.button_login)).setEnabled(false);
     	((ProgressBar)findViewById(R.id.progress_bar)).setVisibility(View.VISIBLE);
     }
     
     public void stopProgress() {
+    	((EditText)findViewById(R.id.login)).setEnabled(true);
+    	((EditText)findViewById(R.id.pass)).setEnabled(true);
+    	((Button)findViewById(R.id.button_login)).setEnabled(true);
     	((ProgressBar)findViewById(R.id.progress_bar)).setVisibility(View.GONE);
     }
     
@@ -83,7 +90,9 @@ public class LoginDialog extends Dialog {
 	}
 	
 	public static boolean isEmailValid(String s) {
-		//Everybody stand back! I know regular expressions! //okay, my email is "some+hello@gmail.com" and it's not pass this regexep, but it's valid.
+		//Everybody stand back! I know regular expressions! 
+		//okay, my email is "some+hello@gmail.com" and it's not pass this regexep, but it's valid.
+		//vkontakte doesn't eat such emails. I checked
 	    Pattern pattern = Pattern.compile(
 		"^[a-zA-Z]{1}[\\w\\.-]*@[a-zA-Z]{1}[\\.\\w-]*\\.[a-zA-Z]{2,7}$");
 	    Matcher matcher = pattern.matcher(s);

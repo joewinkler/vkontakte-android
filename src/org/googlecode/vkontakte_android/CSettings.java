@@ -42,6 +42,12 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         return true;
     }
 
+    public static boolean shouldLoadPics(Context ctx) {
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        return prefs.getBoolean("pics", true);	
+    }
+    
+    
     //================  work with login/pass
 
     public static Long myId = 0L;
@@ -81,7 +87,7 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
     	Editor ed = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
         ed.remove("sid");
         ed.commit();
-    }
+    } 
     
     public static void clearPrivateInfo(Context ctx) {
         Editor ed = PreferenceManager.getDefaultSharedPreferences(ctx).edit();

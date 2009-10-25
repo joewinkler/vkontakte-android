@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
+import org.googlecode.vkontakte_android.CImagesManager.Icons;
 import org.googlecode.vkontakte_android.database.UserDao;
 
 import java.io.FileNotFoundException;
@@ -35,17 +36,23 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         else statusText += context.getResources().getString(R.string.status_offline);
         status.setText(statusText);
 
-        if (userDao.getUserPhotoUrl() != null) {
-            Log.d(TAG, "setting photo");
-            Bitmap bm = UserHelper.getPhoto(context, userDao.rowId);
-            if (bm == null) {
-                //todo: seems that photo was not downloaded - we should download it
-            } else {
-                ImageView photo = (ImageView) view.findViewById(R.id.photo);
-                photo.setImageBitmap(bm);
-            }
+        if (CSettings.shouldLoadPics(context)) {
+        	Log.d(TAG, "Setting photo for " + userDao.userName);
+        	if (userDao.getUserPhotoUrl() != null) {
+        		Bitmap bm = UserHelper.getPhoto(context, userDao.rowId);
+        		if (bm == null) {
+                    //todo: seems that photo was not downloaded - we should download it
+                } else {
+                    ImageView photo = (ImageView) view.findViewById(R.id.photo);
+                    photo.setImageBitmap(bm);
+                }
+        	} else {
+        		//TODO it seems a stub picture for friends doesn't downloaded  
+        	}
         } else {
-            //todo: use default avatar
+        	Log.d(TAG, "Setting stub for " + userDao.userName);
+        	ImageView photo = (ImageView) view.findViewById(R.id.photo);
+            photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
         }
     }
 }

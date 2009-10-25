@@ -360,6 +360,7 @@ public class UserapiProvider extends ContentProvider {
     }
     
     public static boolean isExists(String path) {
-    	return (path==null || !new File(path).exists()) ? false : true; 
+    	File f = new File(path);
+    	return (path==null || !f.exists() || f.length()==0) ? false : true; 
     }
 }

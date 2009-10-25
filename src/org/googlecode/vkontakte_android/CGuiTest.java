@@ -136,7 +136,6 @@ public class CGuiTest extends TabActivity {
     private void initializeActivity() {
         //refresh(contentToUpdate.ALL);
         // load icons from the files
-        CImagesManager.loadImages(getApplicationContext());
 
         final TabHost tabHost = getTabHost();
         tabHost.addTab(tabHost.newTabSpec("My Profile").setIndicator(
@@ -281,7 +280,7 @@ public class CGuiTest extends TabActivity {
     /**
      * Makes Service to refresh given content
      *
-     * @throws RemoteException
+     * @throws RemoteException 
      */
     private void refresh(CheckingService.contentToUpdate what) {
         Log.d(TAG, "request to refresh");

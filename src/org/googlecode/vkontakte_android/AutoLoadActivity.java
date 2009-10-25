@@ -3,28 +3,37 @@ package org.googlecode.vkontakte_android;
 import android.app.ListActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.ListAdapter;
 
+/**
+ * ListActivity that can load more records when user scrolls down the main ListView. 
+ * Setup it with setupLoader() function.
+ * 
+ * @author bea
+ *
+ */
 public class AutoLoadActivity extends ListActivity  {
 
+	private static String TAG = "AutoLoadActivity";
 	protected ListAdapter m_adapter;
 	private Loader m_loader;
+
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        
 	}
 	
 	/**
 	 * Call it only after child performs setContentView() 
-	 * @param l
-	 * @param ad
+	 * @param l - callback to be performed when needed.
+	 * @param ad - adapter to load more data from it. 
 	 */
 	public void setupLoader(Loader l, ListAdapter ad) {
 		m_loader = l;
@@ -50,6 +59,10 @@ public class AutoLoadActivity extends ListActivity  {
     }
 	
     private void loadMore() {
+    	if (m_loader == null) {
+    		Log.e(TAG, "Callback undefined. Use setupLoader() at first");
+    		return;
+    	}
     	new AsyncTask<Object, Object, Boolean>() {
 
             @Override

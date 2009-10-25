@@ -45,7 +45,7 @@ public class MessagesListTabActivity extends AutoLoadActivity implements AbsList
                 }
                 return false;
 			}
-        	
+        	 
         }, new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.ALL)));
         
         registerForContextMenu(getListView());

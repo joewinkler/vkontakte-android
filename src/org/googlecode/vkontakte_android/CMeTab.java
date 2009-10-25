@@ -54,7 +54,6 @@ public class CMeTab extends Activity {
         });
 
         ImageButton b = (ImageButton) findViewById(R.id.ImageButton01);
-        b.setImageDrawable(new BitmapDrawable(CImagesManager.getBitmap("ok")));
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

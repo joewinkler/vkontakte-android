@@ -16,7 +16,7 @@ public class CFriendFactory {
 		View v = LayoutInflater.from(ctx).inflate(R.layout.friend_row, null);
   
 		ImageView photo = (ImageView) v.findViewById(R.id.photo);
-		photo.setImageBitmap( bm==null ? CImagesManager.getBitmap("stub"):bm);
+		//photo.setImageBitmap( bm==null ? CImagesManager.getBitmap("stub"):bm);
 		
 		TextView vfrom = (TextView) v.findViewById(R.id.name);
 		vfrom.setText(friendname);
