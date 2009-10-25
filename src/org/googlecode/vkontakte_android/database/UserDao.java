@@ -37,6 +37,7 @@ public class UserDao {
         newFriend = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_NEW)) == 1;
         isFriend = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_IS_FRIEND)) == 1;
         userPhotoUrl = cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_AVATAR_URL));
+        _data = cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_AVATAR_SMALL));
     }
 
 //    public UserDao(long userId, String userName, boolean male, boolean online,
@@ -191,7 +192,7 @@ public class UserDao {
         String newPhotoUrl = proto.getUserPhotoUrl();
      
         //photo was updated or file was not downloaded
-        if (!newPhotoUrl.equalsIgnoreCase(oldPhotoUrl) || !UserapiProvider.isExists(getPath())) {
+        if ((newPhotoUrl!=null && !newPhotoUrl.equalsIgnoreCase(oldPhotoUrl)) || !UserapiProvider.isExists(getPath())) {
             Log.d(TAG, "Saving photo of " + proto.getUserName() + " " + newPhotoUrl);
             byte[] photo = proto.getUserPhoto();
             OutputStream os = ctx.getContentResolver().openOutputStream(uri);

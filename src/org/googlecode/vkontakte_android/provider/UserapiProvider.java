@@ -346,7 +346,7 @@ public class UserapiProvider extends ContentProvider {
 //        getContext().getContentResolver().notifyChange(uri, null);
         return count;
     }
-
+ 
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         return this.openFileHelper(uri, mode);
@@ -360,7 +360,10 @@ public class UserapiProvider extends ContentProvider {
     }
     
     public static boolean isExists(String path) {
+    	if (path==null) {
+    		return false;
+    	}
     	File f = new File(path);
-    	return (path==null || !f.exists() || f.length()==0) ? false : true; 
+    	return (!f.exists() || f.length()==0) ? false : true; 
     }
 }

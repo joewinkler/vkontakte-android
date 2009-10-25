@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Log;
+
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_SENDERID;
@@ -60,6 +62,7 @@ public class UserHelper {
     public static Bitmap getPhotoByUserId(Context context, long userId) {
         UserDao user = UserDao.findByUserId(context, userId);
         if (user == null || !UserapiProvider.isExists(user._data)) return null;//todo: not yet loaded
-        else return getPhoto(context, user.getRowId());
+        else
+        	return getPhoto(context, user.getRowId());
     }
 }

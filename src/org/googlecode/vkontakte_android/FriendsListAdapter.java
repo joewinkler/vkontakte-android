@@ -14,8 +14,7 @@ import java.io.FileNotFoundException;
 
 
 public class FriendsListAdapter extends ResourceCursorAdapter {
-    private boolean loading = false;
-    private static final String TAG = "org.googlecode.vkontakte_android.FriendsListAdapter";
+   private static final String TAG = "org.googlecode.vkontakte_android.FriendsListAdapter";
 
     public FriendsListAdapter(Context context, int layout, Cursor cursor) {
         super(context, layout, cursor);
@@ -41,16 +40,15 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         	if (userDao.getUserPhotoUrl() != null) {
         		Bitmap bm = UserHelper.getPhoto(context, userDao.rowId);
         		if (bm == null) {
-                    //todo: seems that photo was not downloaded - we should download it
+        			Log.d(TAG, "Can't get photo of "+userDao.userName);
                 } else {
                     ImageView photo = (ImageView) view.findViewById(R.id.photo);
                     photo.setImageBitmap(bm);
                 }
         	} else {
-        		//TODO it seems a stub picture for friends doesn't downloaded  
+        		Log.e(TAG, "Error: no photo url for "+userDao.userName);
         	}
         } else {
-        	Log.d(TAG, "Setting stub for " + userDao.userName);
         	ImageView photo = (ImageView) view.findViewById(R.id.photo);
             photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
         }
