@@ -229,7 +229,7 @@ public class CheckingService extends Service {
     //todo: use 'partial' lock for instead of synchronized(?)
     private synchronized void refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         boolean firstUpdate = false;
-        Cursor cursor = getContentResolver().query(UserapiProvider.USERS_URI, null, null, null, null);//todo: request only rowId
+        Cursor cursor = getContentResolver().query(UserapiProvider.USERS_URI, new String[]{UserapiDatabaseHelper.KEY_USER_ROWID}, null, null, null);
         if (cursor != null && cursor.getCount() == 0) {
             firstUpdate = true;
             cursor.close();
