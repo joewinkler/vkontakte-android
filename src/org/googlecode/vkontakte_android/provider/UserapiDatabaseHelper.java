@@ -53,7 +53,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_STATUS_TEXT = "text";
 
     public static final String DATABASE_NAME = "userapi";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public static final String DATABASE_USERS_TABLE = "users";
     private static final String DATABASE_USERS_CREATE = "create table " + DATABASE_USERS_TABLE + " (" +
