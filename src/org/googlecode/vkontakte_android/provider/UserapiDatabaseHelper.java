@@ -130,8 +130,8 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
                 + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_USERS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_MESSAGES_TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_PROFILE_CREATE);
-        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_STATUS_CREATE);
+        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_PROFILE_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_STATUS_TABLE);
         onCreate(db);
     }
 }
