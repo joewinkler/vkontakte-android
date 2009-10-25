@@ -20,8 +20,10 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -58,12 +60,39 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         statusEdit.setOnTouchListener(new OnTouchListener(){
         	@Override
         	public boolean onTouch(View v, MotionEvent event) {
-            statusEdit.setInputType(InputType.TYPE_CLASS_TEXT); 
-        	statusEdit.onTouchEvent(event); 
-        	return true; // consume touch even
-        	}
-
+        		statusEdit.setInputType(InputType.TYPE_CLASS_TEXT);
+        		statusEdit.onTouchEvent(event);
+        		return true;
+        		}
         	});
+
+        ((Button)findViewById(R.id.StatusSubmitButton)).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				 String statusText=((EditText) findViewById(R.id.StatusEditText)).getText().toString();
+				new AsyncTask<String, Object, Boolean>(){
+					
+					@Override
+					protected void onPostExecute(Boolean result) {
+						EditText et=((EditText) findViewById(R.id.StatusEditText));
+						Toast.makeText(et.getContext(),"\""+et.getText().toString()+"\" Shared!", Toast.LENGTH_SHORT).show();
+						et.setText("");
+					}
+					
+					@Override
+					protected Boolean doInBackground(String... params) {
+						try {
+							return mVKService.sendStatus(params[0]);
+						} catch (RemoteException e) {
+							e.printStackTrace();
+						}
+						return false;
+					}
+				}.execute(new String[]{statusText});
+				;
+			}
+		});
     }
 
     private void backToHome() {
