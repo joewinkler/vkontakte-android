@@ -64,7 +64,7 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
 				@Override
 				protected Boolean doInBackground(Long... params) {
 					try {
-						return CGuiTest.s_instance.m_vkService.loadStatusesByUser(0,CheckingService.STATUS_NUM_LOAD,profileId);
+						return ServiceHelper.mVKService.loadStatusesByUser(0,CheckingService.STATUS_NUM_LOAD,profileId);
 					} catch (RemoteException e) {
 						e.printStackTrace();
 					}
@@ -100,7 +100,7 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
  			protected ProfileDao doInBackground(Long... id) {
 
  				try {
- 		            if (!CGuiTest.s_instance.m_vkService.loadProfile(id[0],false)) {
+ 		            if (!ServiceHelper.mVKService.loadProfile(id[0],false)) {
  		                Log.e(TAG, "Cannot load profile");
  		                return null;
  		            }else
@@ -180,7 +180,7 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
 				@Override
 				public Boolean load() {
 					try {
-						return CGuiTest.s_instance.m_vkService.loadStatusesByUser(arl.getAdapter().getCount(), 
+						return ServiceHelper.mVKService.loadStatusesByUser(arl.getAdapter().getCount(), 
 								arl.getAdapter().getCount()+CheckingService.STATUS_NUM_LOAD,profileId);
 					} catch (RemoteException e) {
 						e.printStackTrace();

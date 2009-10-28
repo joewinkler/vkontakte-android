@@ -1,7 +1,6 @@
 package org.googlecode.vkontakte_android;
 
 import org.googlecode.vkontakte_android.service.CheckingService;
-import org.googlecode.vkontakte_android.service.IVkontakteService;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -29,13 +28,10 @@ import android.widget.GridView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class HomeGridActivity extends Activity implements OnItemClickListener {
+public class HomeGridActivity extends Activity implements OnItemClickListener, ServiceConnection  {
 
     private GridView mHomeGrid = null;
     private final static String TAG = "org.googlecode.vkontakte_android.HomeGridActivity";
-
-    public IVkontakteService mVKService;
-    private VkontakteServiceConnection mVKServiceConnection = new VkontakteServiceConnection();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,17 +39,20 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         setContentView(R.layout.homegrid);
-
+        bindService(new Intent(this,CheckingService.class), this, Context.BIND_AUTO_CREATE);
+        
 
         mHomeGrid = (GridView) findViewById(R.id.HomeGrid);
         mHomeGrid.setNumColumns(3);
         mHomeGrid.setAdapter(new HomeGridAdapter(this));
         mHomeGrid.setOnItemClickListener(this);
         this.setTitle(getResources().getString(R.string.app_name) + " > " + "Home");
+        initStatus();
+    }
 
-        // Binding service
-        bindService();
-        
+    
+    private void initStatus(){
+
         final EditText statusEdit =(EditText) findViewById(R.id.StatusEditText);
         statusEdit.setInputType(InputType.TYPE_NULL);        
         
@@ -65,36 +64,39 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         		return true;
         		}
         	});
-
-        ((Button)findViewById(R.id.StatusSubmitButton)).setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				 String statusText=((EditText) findViewById(R.id.StatusEditText)).getText().toString();
-				new AsyncTask<String, Object, Boolean>(){
-					
-					@Override
-					protected void onPostExecute(Boolean result) {
-						EditText et=((EditText) findViewById(R.id.StatusEditText));
-						Toast.makeText(et.getContext(),"\""+et.getText().toString()+"\" Shared!", Toast.LENGTH_SHORT).show();
-						et.setText("");
-					}
-					
-					@Override
-					protected Boolean doInBackground(String... params) {
-						try {
-							return mVKService.sendStatus(params[0]);
-						} catch (RemoteException e) {
-							e.printStackTrace();
-						}
-						return false;
-					}
-				}.execute(new String[]{statusText});
-				;
-			}
-		});
+       
+    	
+    	  ((Button)findViewById(R.id.StatusSubmitButton)).setOnClickListener(new OnClickListener() {
+  			
+  			@Override
+  			public void onClick(View v) {
+  				 String statusText=((EditText) findViewById(R.id.StatusEditText)).getText().toString();
+  				new AsyncTask<String, Object, Boolean>(){
+  					
+  					@Override
+  					protected void onPostExecute(Boolean result) {
+  						EditText et=((EditText) findViewById(R.id.StatusEditText));
+  						Toast.makeText(et.getContext(),"\""+et.getText().toString()+"\" Shared!", Toast.LENGTH_SHORT).show();
+  						et.setText("");
+  					}
+  					
+  					@Override
+  					protected Boolean doInBackground(String... params) {
+  						try {
+  							return ServiceHelper.mVKService.sendStatus(params[0]);
+  						} catch (RemoteException e) {
+  							e.printStackTrace();
+  						}
+  						return false;
+  					}
+  				}.execute(new String[]{statusText});
+  				;
+  			}
+  		});    	
+    	
     }
-
+    
+    
     private void backToHome() {
         this.setTitle(getResources().getString(R.string.app_name) + " > " + "Home");
         setProgressBarIndeterminateVisibility(false);
@@ -159,7 +161,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
     public void onDestroy(){
     	super.onDestroy();
         Log.d(TAG, "Activity Destroyed");
-    	unbindService(mVKServiceConnection);
+    	unbindService(this);
     }
     
     @Override
@@ -174,7 +176,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         switch (item.getItemId()) {
             case R.id.LogoutMenuItem:
                 try {
-                    mVKService.logout();
+                	ServiceHelper.mVKService.logout();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -189,7 +191,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
                 return true;
             case R.id.ExitMenuItem:
                 try {
-                    mVKService.stop();
+                	ServiceHelper.mVKService.stop();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -202,7 +204,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
     private void login() throws RemoteException {
         // TODO handle JSONException in api methods
 
-        if (mVKService.loginAuth()) {
+        if (ServiceHelper.mVKService.loginAuth()) {
             Log.d(TAG, "Already authorized");
             //initializeUserStuff();
             return;
@@ -238,7 +240,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
                     @Override
                     protected Boolean doInBackground(String... params) {
                         try {
-                            return mVKService.login(params[0], params[1]);
+                            return ServiceHelper.mVKService.login(params[0], params[1]);
                         } catch (RemoteException e) {
                             CGuiTest.fatalError("RemoteException");
                             ld.stopProgress();
@@ -255,7 +257,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
             @Override
             public void onClick(View v) {
                 try {
-                    mVKService.stop();
+                	ServiceHelper.mVKService.stop();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -265,31 +267,19 @@ public class HomeGridActivity extends Activity implements OnItemClickListener {
         });
     }
 
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+        ServiceHelper.connect(service);
+		try {
+			login();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-    // =========  RPC stuff ====================
-    /**
-     * Binds the service
-     */
-    private void bindService() {
-        Intent i = new Intent(this, CheckingService.class);
-        bindService(i, mVKServiceConnection, Context.BIND_AUTO_CREATE);
-        Log.d(TAG, "Binding the service");
-    }
-
-    class VkontakteServiceConnection implements ServiceConnection {
-        public void onServiceConnected(ComponentName className, IBinder boundService) {
-            mVKService = IVkontakteService.Stub.asInterface((IBinder) boundService);
-            Log.d(TAG, "Service has been connected");
-            // Try to login by saved prefs or show Login Dialog
-            try {
-                login();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            Log.d(TAG, "Service has been disconnected");
-        }
-    }
+	@Override
+	public void onServiceDisconnected(ComponentName name) {
+		ServiceHelper.disconnect();
+	}
 }

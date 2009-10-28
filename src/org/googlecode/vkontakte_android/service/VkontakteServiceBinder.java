@@ -88,6 +88,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
                 }else if (api.login(cred2)) {
                     Log.d(TAG, "Logged with LOGIN/PASSWORD");
+                    CSettings.saveLogin(ctx, api.getCred());
                     return true;
                     
                 } else {
