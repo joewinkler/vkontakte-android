@@ -136,6 +136,7 @@ public class ProfileViewActivity  extends Activity implements TabHost.TabContent
         UserDao user = UserDao.get(this, info.id);
         if (user.isNewFriend()) {
             menu.removeItem(R.id.remove_from_friends);
+            menu.removeItem(R.id.add_to_contacts);
         } else {
             menu.removeItem(R.id.add_to_friends);
         }
