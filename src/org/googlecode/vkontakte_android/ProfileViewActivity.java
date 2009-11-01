@@ -20,6 +20,7 @@ import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.service.CheckingService;
+import org.googlecode.vkontakte_android.utils.Phone;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_DATE;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_USERID;
@@ -238,8 +239,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         //TODO add mail and other
         Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
         intent.setType("vnd.android.cursor.item/person");
-        System.out.println("friendProfile.phone = " + friendProfile.phone);
-        intent.putExtra(Contacts.Intents.Insert.PHONE, friendProfile.phone);
+        intent.putExtra(Contacts.Intents.Insert.PHONE, Phone.formatPhoneNumber(friendProfile.phone));
         intent.putExtra(Contacts.Intents.Insert.NAME, friendProfile.firstname + " " + friendProfile.surname);
         startActivity(intent);
     }
