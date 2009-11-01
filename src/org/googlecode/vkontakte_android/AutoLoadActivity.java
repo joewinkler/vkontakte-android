@@ -23,6 +23,7 @@ public class AutoLoadActivity extends ListActivity  {
 	protected ListAdapter m_adapter;
 	private Loader m_loader;
 
+	boolean m_doLoad = true;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,16 +75,24 @@ public class AutoLoadActivity extends ListActivity  {
 			@Override
 			protected void onPostExecute(Boolean result) {
 				setProgressBarIndeterminateVisibility(false);
+				m_doLoad = true;
 			}
 
 			@Override
 			protected Boolean doInBackground(Object... params) {
-					return m_loader.load();
+					//to prevent multiple loading
+					if (m_doLoad) {
+						m_doLoad = false;
+						return m_loader.load();			
+					} else {
+						return false;
+					}
 			}
     	}.execute();
 }
 	
 	public abstract interface Loader {
+		
 		Boolean load();
 	}
 }
