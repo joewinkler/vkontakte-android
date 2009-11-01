@@ -44,7 +44,7 @@ public class HomeGridAdapter extends BaseAdapter {
 		mCellImages.add(R.drawable.my_search);
 		mCellImages.add(R.drawable.my_settings);
 		mCellImages.add(R.drawable.my_help);		
-
+ 
 		this.mContext = context;
 	}
 	

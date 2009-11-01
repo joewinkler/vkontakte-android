@@ -3,12 +3,15 @@ package org.googlecode.vkontakte_android;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.os.AsyncTask;
+import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -20,11 +23,62 @@ public class LoginDialog extends Dialog {
 	private Button button;
     private Button cancel;
 
-    public LoginDialog(Context context) {
-        super(context);
+    public LoginDialog(final Activity activity) {
+        super(activity);
         setContentView(R.layout.login_dialog);
         button = (Button) findViewById(R.id.button_login);
         cancel = (Button) findViewById(R.id.cancel);
+        
+        setOnCancelClick(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                	ServiceHelper.mVKService.stop();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                dismiss();
+                activity.finish();
+            }
+        });
+        
+        
+        setOnLoginClick(new View.OnClickListener() {
+            public void onClick(View view) {
+               	if (! checkCorrectInput(getLogin(), getPass())) {
+                	return;
+            	} 
+            	showProgress();
+                String login = getLogin();
+                String pass = getPass();
+                Log.i(TAG, login + ":--hidden--" );
+
+                new AsyncTask<String, Void, Boolean>() {
+                    @Override
+                    protected void onPostExecute(Boolean result) {
+                        stopProgress();
+                        if (result) {
+                            dismiss();
+                        } else {
+                        	showErrorMessage("Cannot login");
+                        }
+                    }
+
+                    @Override
+                    protected Boolean doInBackground(String... params) {
+                        try {
+                            return ServiceHelper.mVKService.login(params[0], params[1]);
+                        } catch (RemoteException e) {
+                            CGuiTest.fatalError("RemoteException");
+                            stopProgress();
+                            e.printStackTrace();
+                            return false;
+                        }
+                    }
+
+                }.execute(login, pass);
+            }
+        });
     }
 
     public void setOnLoginClick(View.OnClickListener l) {

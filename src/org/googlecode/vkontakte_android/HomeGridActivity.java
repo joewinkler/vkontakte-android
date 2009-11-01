@@ -64,7 +64,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         		return true;
         		}
         	});
-       
     	
     	  ((Button)findViewById(R.id.StatusSubmitButton)).setOnClickListener(new OnClickListener() {
   			
@@ -73,19 +72,23 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
   				 String statusText=((EditText) findViewById(R.id.StatusEditText)).getText().toString();
   				new AsyncTask<String, Object, Boolean>(){
   					
+  					String m_status = "";
+  					
   					@Override
   					protected void onPostExecute(Boolean result) {
   						EditText et=((EditText) findViewById(R.id.StatusEditText));
   						Toast.makeText(et.getContext(),"\""+et.getText().toString()+"\" Shared!", Toast.LENGTH_SHORT).show();
-  						et.setText("");
+  						et.setText( result ? m_status : "");
   					}
   					
   					@Override
   					protected Boolean doInBackground(String... params) {
   						try {
-  							return ServiceHelper.mVKService.sendStatus(params[0]);
+  							m_status = params[0];
+  							return ServiceHelper.mVKService.sendStatus(m_status);
   						} catch (RemoteException e) {
   							e.printStackTrace();
+  							AppHelper.showFatalError(HomeGridActivity.this, "Error while launching the application");
   						}
   						return false;
   					}
@@ -95,7 +98,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
   		});    	
     	
     }
-    
     
     private void backToHome() {
         this.setTitle(getResources().getString(R.string.app_name) + " > " + "Home");
@@ -171,101 +173,45 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         return super.onCreateOptionsMenu(menu);
     }
 
+	public boolean onOptionsItemSelected(MenuItem item) {
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.LogoutMenuItem:
-                try {
-                	ServiceHelper.mVKService.logout();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    login();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                return true;
-            case R.id.AboutMenuItem:
-                AboutDialog.makeDialog(this).show();
-                return true;
-            case R.id.ExitMenuItem:
-                try {
-                	ServiceHelper.mVKService.stop();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+		switch (item.getItemId()) {
+		case R.id.LogoutMenuItem:
+			try {
+				// todo async				
+				ServiceHelper.mVKService.logout();
+				login();
+				return true;
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				AppHelper.showFatalError(this, "Error while logging out");
+			}
+		case R.id.AboutMenuItem:
+			AboutDialog.makeDialog(this).show();
+			return true;
+		case R.id.ExitMenuItem:
+			try {
+				ServiceHelper.mVKService.stop();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			finish();
+			return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
 
     private void login() throws RemoteException {
-        // TODO handle JSONException in api methods
-
         if (ServiceHelper.mVKService.loginAuth()) {
             Log.d(TAG, "Already authorized");
-            //initializeUserStuff();
             return;
         }
 
         final LoginDialog ld = new LoginDialog(this);
         ld.setTitle(R.string.please_login);
         ld.show();
-
-
-        ld.setOnLoginClick(new View.OnClickListener() {
-            public void onClick(View view) {
-               	if (! ld.checkCorrectInput(ld.getLogin(), ld.getPass())) {
-                	return;
-            	} 
-            	ld.showProgress();
-                String login = ld.getLogin();
-                String pass = ld.getPass();
-                Log.i(TAG, login + ":--hidden--" );
-
-                new AsyncTask<String, Void, Boolean>() {
-                    @Override
-                    protected void onPostExecute(Boolean result) {
-                        ld.stopProgress();
-                        if (result) {
-                            ld.dismiss();
-                            //initializeUserStuff();
-                        } else {
-                        	ld.showErrorMessage("Cannot login");
-                        }
-                    }
-
-                    @Override
-                    protected Boolean doInBackground(String... params) {
-                        try {
-                            return ServiceHelper.mVKService.login(params[0], params[1]);
-                        } catch (RemoteException e) {
-                            CGuiTest.fatalError("RemoteException");
-                            ld.stopProgress();
-                            e.printStackTrace();
-                            return false;
-                        }
-                    }
-
-                }.execute(login, pass);
-            }
-        });
-
-        ld.setOnCancelClick(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                	ServiceHelper.mVKService.stop();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                ld.dismiss();
-                finish();
-            }
-        });
-    }
+   }
 
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
@@ -273,8 +219,8 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
 		try {
 			login();
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			AppHelper.showFatalError(this, "Error while launching the application");
 		}
 	}
 

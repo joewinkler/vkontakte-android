@@ -51,6 +51,7 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         } else {
         	ImageView photo = (ImageView) view.findViewById(R.id.photo);
             photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
+            photo.setVisibility(View.GONE);
         }
     }
 }

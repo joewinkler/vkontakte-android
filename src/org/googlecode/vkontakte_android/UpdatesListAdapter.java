@@ -50,6 +50,10 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
             } else {
             	Log.e(TAG, "Can't get photo for status "+status.getStatusId());
             }
+        } else {
+        	ImageView photo = (ImageView) view.findViewById(R.id.photo);
+            photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
+            photo.setVisibility(View.GONE);
         }
         
         
