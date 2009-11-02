@@ -52,4 +52,12 @@
 
     <string name="what_are_you_doing">Что вы сейчас делаете?</string>
     <string name="mark_as_read">Пометить как прочитанное</string>
+
+    <!--user info-->
+    <string name="info_sex">Пол:</string>
+    <string name="info_birthday">День рождения:</string>
+    <string name="info_status">Семейное положение:</string>
+    <string name="info_views">Политические взгляды:</string>
+    <string name="info_location">Родной город:</string>
+    <string name="info_phone">Телефон:</string>
 </resources>

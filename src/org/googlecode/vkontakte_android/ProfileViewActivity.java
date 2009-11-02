@@ -9,11 +9,7 @@ import android.os.RemoteException;
 import android.provider.Contacts;
 import android.util.Log;
 import android.view.*;
-import android.widget.AdapterView;
-import android.widget.ImageButton;
-import android.widget.TabHost;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 import org.googlecode.vkontakte_android.AutoLoadList.Loader;
 import org.googlecode.vkontakte_android.database.ProfileDao;
@@ -21,6 +17,9 @@ import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.utils.Phone;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_DATE;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_USERID;
@@ -133,6 +132,20 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         ((TextView) findViewById(R.id.InfoLastName)).setText(friendProfile.surname);
         ((ImageButton) findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, friendProfile.id));
         ((TextView) findViewById(R.id.InfoStatusText)).setText(friendProfile.status);
+
+        if (friendProfile.birthday != null && friendProfile.birthday!=0) {
+            findViewById(R.id.birthday_row).setVisibility(View.VISIBLE);
+            SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy");
+            ((TextView) findViewById(R.id.birthday)).setText(format.format(new Date(friendProfile.birthday)));
+        }
+//        if (friendProfile.sex != 0) {
+//            findViewById(R.id.sex_row).setVisibility(View.VISIBLE);
+//            ((TextView) findViewById(R.id.user_sex)).setText(friendProfile.sex);
+//        }
+        if (friendProfile.phone != null) {
+            findViewById(R.id.phone_row).setVisibility(View.VISIBLE);
+            ((TextView) findViewById(R.id.phone)).setText(friendProfile.phone);
+        }
         refreshMenu();  //TODO: avoid unnecessary calls
     }
 

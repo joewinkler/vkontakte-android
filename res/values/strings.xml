@@ -65,4 +65,11 @@
     <string name="password">Password</string>
     <string name="mark_as_read">Mark as read</string>
     <string name="what_are_you_doing">What you are doing?</string>
+    <!--user info-->
+    <string name="info_sex">Sex:</string>
+    <string name="info_birthday">Birthday:</string>
+    <string name="info_status">Marital status:</string>
+    <string name="info_views">Political views:</string>
+    <string name="info_location">Location:</string>
+    <string name="info_phone">Phone:</string>
 </resources>
