@@ -130,10 +130,11 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         friendProfile = profile;
         ((TextView) findViewById(R.id.InfoFirstName)).setText(friendProfile.firstname);
         ((TextView) findViewById(R.id.InfoLastName)).setText(friendProfile.surname);
+        setTitle(getTitle()+ ": "+friendProfile.firstname + " " + friendProfile.surname);
         ((ImageButton) findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, friendProfile.id));
         ((TextView) findViewById(R.id.InfoStatusText)).setText(friendProfile.status);
 
-        if (friendProfile.birthday != null && friendProfile.birthday!=0) {
+        if (friendProfile.birthday != null && friendProfile.birthday != 0) {
             findViewById(R.id.birthday_row).setVisibility(View.VISIBLE);
             SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy");
             ((TextView) findViewById(R.id.birthday)).setText(format.format(new Date(friendProfile.birthday)));
