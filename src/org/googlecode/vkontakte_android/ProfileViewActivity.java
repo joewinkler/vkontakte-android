@@ -128,9 +128,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
     private void showProfileInfo(ProfileDao profile) {
         friendProfile = profile;
-        ((TextView) findViewById(R.id.InfoFirstName)).setText(friendProfile.firstname);
-        ((TextView) findViewById(R.id.InfoLastName)).setText(friendProfile.surname);
-        setTitle(getTitle()+ ": "+friendProfile.firstname + " " + friendProfile.surname);
+        setTitle(getTitle() + ": " + friendProfile.firstname + " " + friendProfile.surname);
         ((ImageButton) findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, friendProfile.id));
         ((TextView) findViewById(R.id.InfoStatusText)).setText(friendProfile.status);
 

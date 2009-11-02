@@ -60,4 +60,5 @@
     <string name="info_views">Политические взгляды:</string>
     <string name="info_location">Родной город:</string>
     <string name="info_phone">Телефон:</string>
+    <string name="info_name">Имя:</string>
 </resources>

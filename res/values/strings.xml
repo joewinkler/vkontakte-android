@@ -72,4 +72,5 @@
     <string name="info_views">Political views:</string>
     <string name="info_location">Location:</string>
     <string name="info_phone">Phone:</string>
+    <string name="info_name">Name:</string>
 </resources>
