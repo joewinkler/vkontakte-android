@@ -85,7 +85,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
   					protected Boolean doInBackground(String... params) {
   						try {
   							m_status = params[0];
-  							return ServiceHelper.mVKService.sendStatus(m_status);
+  							return ServiceHelper.getService().sendStatus(m_status);
   						} catch (RemoteException e) {
   							e.printStackTrace();
   							AppHelper.showFatalError(HomeGridActivity.this, "Error while launching the application");
@@ -179,7 +179,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
 		case R.id.LogoutMenuItem:
 			try {
 				// todo async				
-				ServiceHelper.mVKService.logout();
+				ServiceHelper.getService().logout();
 				login();
 				return true;
 			} catch (RemoteException e) {
@@ -191,7 +191,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
 			return true;
 		case R.id.ExitMenuItem:
 			try {
-				ServiceHelper.mVKService.stop();
+				ServiceHelper.getService().stop();
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
@@ -203,7 +203,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
 	}
 
     private void login() throws RemoteException {
-        if (ServiceHelper.mVKService.loginAuth()) {
+        if (ServiceHelper.getService().loginAuth()) {
             Log.d(TAG, "Already authorized");
             return;
         }

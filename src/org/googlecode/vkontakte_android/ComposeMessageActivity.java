@@ -46,17 +46,14 @@ public class ComposeMessageActivity extends ListActivity implements AbsListView.
         findViewById(R.id.send_reply).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 try {
-                	IVkontakteService v = CGuiTest.s_instance.m_vkService;
-                	v.sendMessage(textView.getText().toString(), finalUserId);
-                    if (true) {
-                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.message_sent), Toast.LENGTH_SHORT).show();
-                        textView.setText("");
-                        CGuiTest.s_instance.m_vkService.update(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal());
-                        //todo: scroll
-                    }
+                	ServiceHelper.getService().sendMessage(textView.getText().toString(), finalUserId);
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.message_sent), Toast.LENGTH_SHORT).show();
+                    textView.setText("");
+                    ServiceHelper.getService().update(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal());
+                    //todo: scroll
                 }  catch (RemoteException e) {
-					Toast.makeText(ComposeMessageActivity.this, R.string.err_msg_fatal_error, Toast.LENGTH_SHORT);
 					e.printStackTrace();
+					AppHelper.showFatalError(ComposeMessageActivity.this, "While trying to send the message");
 				}
             }
         });

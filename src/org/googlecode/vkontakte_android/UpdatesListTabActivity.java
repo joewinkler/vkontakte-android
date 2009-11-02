@@ -27,10 +27,11 @@ public class UpdatesListTabActivity extends AutoLoadActivity implements AdapterV
             @Override
             public Boolean load() {
                 try {
-                    return CGuiTest.s_instance.m_vkService.loadStatuses(m_adapter.getCount(),
+                    return ServiceHelper.getService().loadStatuses(m_adapter.getCount(),
                             m_adapter.getCount() + CheckingService.STATUS_NUM_LOAD);
                 } catch (RemoteException e) {
                     e.printStackTrace();
+                    AppHelper.showFatalError(UpdatesListTabActivity.this, "While trying to load statuses");
                 }
                 return false;
             }

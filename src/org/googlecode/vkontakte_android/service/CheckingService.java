@@ -57,6 +57,7 @@ public class CheckingService extends Service {
 
     @Override
     public void onStart(final Intent intent, int startId) {
+    	super.onStart(intent, startId);
         doCheck(intent.getIntExtra("action", 1), intent.getExtras());
     }
 
@@ -381,6 +382,7 @@ public class CheckingService extends Service {
 
     @Override
     public void onDestroy() {
+    	super.onDestroy();
         Log.d(TAG, "service stopped");
 
         // stop all running threads

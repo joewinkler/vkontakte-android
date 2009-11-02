@@ -69,7 +69,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
                 @Override
                 protected Boolean doInBackground(Long... params) {
                     try {
-                        return ServiceHelper.mVKService.loadStatusesByUser(0, CheckingService.STATUS_NUM_LOAD, profileId);
+                        return ServiceHelper.getService().loadStatusesByUser(0, CheckingService.STATUS_NUM_LOAD, profileId);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -107,7 +107,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
             protected ProfileDao doInBackground(Long... id) {
 
                 try {
-                    if (!ServiceHelper.mVKService.loadProfile(id[0], false)) {
+                    if (!ServiceHelper.getService().loadProfile(id[0], false)) {
                         Log.e(TAG, "Cannot load profile");
                         return null;
                     } else {
@@ -137,7 +137,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
             SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy");
             ((TextView) findViewById(R.id.birthday)).setText(format.format(new Date(friendProfile.birthday)));
         }
-//        if (friendProfile.sex != 0) {
+//        if (friendProfile.sex != 0) {  
 //            findViewById(R.id.sex_row).setVisibility(View.VISIBLE);
 //            ((TextView) findViewById(R.id.user_sex)).setText(friendProfile.sex);
 //        }
@@ -206,7 +206,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
                 @Override
                 public Boolean load() {
                     try {
-                        return ServiceHelper.mVKService.loadStatusesByUser(arl.getAdapter().getCount(),
+                        return ServiceHelper.getService().loadStatusesByUser(arl.getAdapter().getCount(),
                                 arl.getAdapter().getCount() + CheckingService.STATUS_NUM_LOAD, profileId);
                     } catch (RemoteException e) {
                         e.printStackTrace();

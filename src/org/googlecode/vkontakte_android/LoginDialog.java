@@ -33,7 +33,7 @@ public class LoginDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 try {
-                	ServiceHelper.mVKService.stop();
+                	ServiceHelper.getService().stop();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -67,7 +67,7 @@ public class LoginDialog extends Dialog {
                     @Override
                     protected Boolean doInBackground(String... params) {
                         try {
-                            return ServiceHelper.mVKService.login(params[0], params[1]);
+                            return ServiceHelper.getService().login(params[0], params[1]);
                         } catch (RemoteException e) {
                             CGuiTest.fatalError("RemoteException");
                             stopProgress();

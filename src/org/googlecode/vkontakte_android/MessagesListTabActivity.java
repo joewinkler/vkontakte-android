@@ -37,11 +37,12 @@ public class MessagesListTabActivity extends AutoLoadActivity implements AbsList
 			@Override
 			public Boolean load() {
 				try {
-                    return CGuiTest.s_instance.m_vkService.loadPrivateMessages(
+                    return ServiceHelper.getService().loadPrivateMessages(
                             CheckingService.contentToUpdate.MESSAGES_IN.ordinal(),
                             m_adapter.getCount(), m_adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
                 } catch (RemoteException e) {
                     e.printStackTrace();
+                    AppHelper.showFatalError(MessagesListTabActivity.this, "While trying to load messages");
                 }
                 return false;
 			}

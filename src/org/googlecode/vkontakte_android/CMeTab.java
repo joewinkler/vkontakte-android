@@ -43,7 +43,7 @@ public class CMeTab extends Activity {
                 EditText editor = (EditText) findViewById(R.id.editor);
                 String status = editor.getText().toString();
                 try {
-                    boolean result = CGuiTest.s_instance.m_vkService.sendStatus(status);
+                    boolean result = ServiceHelper.getService().sendStatus(status);
                     if (result) Toast.makeText(getApplicationContext(), R.string.status_update_ok, Toast.LENGTH_SHORT).show();
                     else Toast.makeText(getApplicationContext(), R.string.status_update_err, Toast.LENGTH_SHORT).show();
                     //todo: return old text if update fails
@@ -89,7 +89,7 @@ public class CMeTab extends Activity {
 
     boolean loadProfile() throws RemoteException {
 
-        if (!CGuiTest.s_instance.m_vkService.loadMyProfile()) {
+        if (!ServiceHelper.getService().loadMyProfile()) {
         	Log.e(TAG, "Cannot load profile");
         	return false;
         }
