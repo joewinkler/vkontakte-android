@@ -37,7 +37,7 @@ public class UserHelper {
     }
 
     //todo: return null in case of FileNotFoundException
-    public static Bitmap getPhoto(Context context, long rowId) {
+    private static Bitmap getPhoto(Context context, long rowId) {
         Uri uri = ContentUris.withAppendedId(USERS_URI, rowId);
         InputStream is = null;
         Bitmap bitmap = null;
@@ -61,7 +61,7 @@ public class UserHelper {
 
     public static Bitmap getPhotoByUserId(Context context, long userId) {
         UserDao user = UserDao.findByUserId(context, userId);
-        if (user == null || !UserapiProvider.isExists(user._data)) return null;//todo: not yet loaded
+        if (user == null || user._data == null || !UserapiProvider.isExists(user._data)) return null;//todo: not yet loaded
         else
         	return getPhoto(context, user.getRowId());
     }

@@ -38,7 +38,7 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         if (CSettings.shouldLoadPics(context)) {
         	Log.d(TAG, "Setting photo for " + userDao.userName);
         	if (userDao.getUserPhotoUrl() != null) {
-        		Bitmap bm = UserHelper.getPhoto(context, userDao.rowId);
+        		Bitmap bm = UserHelper.getPhotoByUserId(context, userDao.userId);
         		if (bm == null) {
         			Log.d(TAG, "Can't get photo of "+userDao.userName);
                 } else {

@@ -6,6 +6,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
+
+import org.apache.http.client.utils.URIUtils;
+import org.googlecode.userapi.UrlBuilder;
 import org.googlecode.userapi.User;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
@@ -61,25 +64,25 @@ public class UserDao {
         this.userPhotoUrl = user.getUserPhotoUrl();
     }
 
-    public static int bulkSave(Context context, List<UserDao> userListDao) {
-        ContentValues[] values = new ContentValues[userListDao.size()];
-        int i = 0;
-        for (UserDao userDao : userListDao) {
-            ContentValues insertValues = new ContentValues();
-            insertValues.put(KEY_USER_USERID, userDao.getUserId());
-            insertValues.put(KEY_USER_NAME, userDao.getUserName());
-            insertValues.put(KEY_USER_MALE, userDao.isMale() ? 1 : 0);
-            insertValues.put(KEY_USER_ONLINE, userDao.isOnline() ? 1 : 0);
-            insertValues.put(KEY_USER_NEW, userDao.isNewFriend() ? 1 : 0);
-            insertValues.put(KEY_USER_IS_FRIEND, userDao.isFriend() ? 1 : 0);
-            insertValues.put(KEY_USER_AVATAR_URL, userDao.getUserPhotoUrl());
-            userDao._data = userDao.getPath();
-            insertValues.put(KEY_USER_AVATAR_SMALL, userDao._data);
-            values[i] = insertValues;
-            i++;
-        }
-        return context.getContentResolver().bulkInsert(USERS_URI, values);
-    }
+//    public static int bulkSave(Context context, List<UserDao> userListDao) {
+//        ContentValues[] values = new ContentValues[userListDao.size()];
+//        int i = 0;
+//        for (UserDao userDao : userListDao) {
+//            ContentValues insertValues = new ContentValues();
+//            insertValues.put(KEY_USER_USERID, userDao.getUserId());
+//            insertValues.put(KEY_USER_NAME, userDao.getUserName());
+//            insertValues.put(KEY_USER_MALE, userDao.isMale() ? 1 : 0);
+//            insertValues.put(KEY_USER_ONLINE, userDao.isOnline() ? 1 : 0);
+//            insertValues.put(KEY_USER_NEW, userDao.isNewFriend() ? 1 : 0);
+//            insertValues.put(KEY_USER_IS_FRIEND, userDao.isFriend() ? 1 : 0);
+//            insertValues.put(KEY_USER_AVATAR_URL, userDao.getUserPhotoUrl());
+//            userDao._data = userDao.getPath();
+//            insertValues.put(KEY_USER_AVATAR_SMALL, userDao._data);
+//            values[i] = insertValues;
+//            i++;
+//        }
+//        return context.getContentResolver().bulkInsert(USERS_URI, values);
+//    }
 
     public static UserDao get(Context context, long rowId) {
         if (rowId == -1) return null;
@@ -118,9 +121,7 @@ public class UserDao {
         insertValues.put(KEY_USER_NEW, newFriend ? 1 : 0);
         insertValues.put(KEY_USER_IS_FRIEND, isFriend ? 1 : 0);
         insertValues.put(KEY_USER_AVATAR_URL, userPhotoUrl);
-        _data = getPath();
-        insertValues.put(KEY_USER_AVATAR_SMALL, _data);
-
+        
         if (userDao == null) {
             return context.getContentResolver().insert(USERS_URI, insertValues);
         } else {
@@ -193,11 +194,18 @@ public class UserDao {
      
         //photo was updated or file was not downloaded
         if ((newPhotoUrl!=null && !newPhotoUrl.equalsIgnoreCase(oldPhotoUrl)) || !UserapiProvider.isExists(getPath())) {
-            Log.d(TAG, "Saving photo of " + proto.getUserName() + " " + newPhotoUrl);
-            byte[] photo = proto.getUserPhoto();
-            OutputStream os = ctx.getContentResolver().openOutputStream(uri);
-            os.write(photo);
-            os.close();
+        	
+        	//initialize _data field
+        	ContentValues insertValues = new ContentValues();
+        	_data = getPath();
+            insertValues.put(KEY_USER_AVATAR_SMALL, _data);
+            if (1 == ctx.getContentResolver().update(uri, insertValues, null, null)) {
+                Log.d(TAG, "Saving photo of " + proto.getUserName() + " " + newPhotoUrl);
+                byte[] photo = proto.getUserPhoto();
+                OutputStream os = ctx.getContentResolver().openOutputStream(uri);
+                os.write(photo);
+                os.close();	
+            }
         }
     }
     
