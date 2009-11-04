@@ -260,7 +260,7 @@ public class CheckingService extends Service {
         }
         
         if (false && firstUpdate) {
-            UserDao.bulkSave(context, users);
+      //      UserDao.bulkSave(context, users);
             //todo: make async
         } else {
             notIn.deleteCharAt(notIn.length() - 1);//remove last ','

@@ -210,6 +210,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
 
         final LoginDialog ld = new LoginDialog(this);
         ld.setTitle(R.string.please_login);
+        ld.setCancelable(false);
         ld.show();
    }
 
