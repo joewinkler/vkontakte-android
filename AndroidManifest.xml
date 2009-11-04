@@ -18,6 +18,9 @@
         <activity android:name=".CMeTab"
                   android:label="@string/app_name">
         </activity>
+        <activity android:name="FriendListActivity"
+                  android:label="@string/app_name">
+        </activity>
         <activity android:name="MessagesListTabActivity"
                   android:label="@string/app_name">
         </activity>

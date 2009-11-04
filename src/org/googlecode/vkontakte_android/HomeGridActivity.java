@@ -105,8 +105,8 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     }
 
     private void showRequests() {
-        Intent i = new Intent(this, FriendsListTabActivity.class);
-        i.putExtra(FriendsListTabActivity.SHOW_ONLY_NEW, true);
+        Intent i = new Intent(this, FriendListActivity.class);
+//        i.putExtra(FriendsListTabActivity.SHOW_ONLY_NEW, true);
         startActivity(i);
     }
 
