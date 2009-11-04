@@ -61,72 +61,72 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
     }
 
 
-    private void initUpdatesTab() {
-        Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_USERID + "=" + profileId, null, KEY_STATUS_DATE + " DESC ");
-        if (statusesCursor.getCount() < 2) {
-            new AsyncTask<Long, Object, Boolean>() {
-
-                @Override
-                protected Boolean doInBackground(Long... params) {
-                    try {
-                        return ServiceHelper.getService().loadStatusesByUser(0, CheckingService.STATUS_NUM_LOAD, profileId);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                    return false;
-                }
-
-            }.execute(new Long[]{profileId});
-        }
-
-
-    }
-
-    private void initWallTab() {
-    }
-
     private void initInfoTab() {
-        profileId = CSettings.myId;
-        if (getIntent().getExtras() != null)
-            profileId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_PROFILE_USERID, profileId);
+	    profileId = CSettings.myId;
+	    if (getIntent().getExtras() != null)
+	        profileId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_PROFILE_USERID, profileId);
+	
+	    new AsyncTask<Long, Object, ProfileDao>() {
+	        @Override
+	        protected void onPreExecute() {
+	            super.onPreExecute();
+	            setProgressBarIndeterminateVisibility(true);
+	        }
+	
+	        @Override
+	        protected void onPostExecute(ProfileDao result) {
+	            setProgressBarIndeterminateVisibility(false);
+	            if (!result.equals(null)) showProfileInfo(result);
+	        }
+	
+	        @Override
+	        protected ProfileDao doInBackground(Long... id) {
+	
+	            try {
+	                if (!ServiceHelper.getService().loadProfile(id[0], false)) {
+	                    Log.e(TAG, "Cannot load profile");
+	                    return null;
+	                } else {
+	                    Cursor cursor = managedQuery(PROFILES_URI, null, UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?", new String[]{String.valueOf(id[0])}, null);
+	                    cursor.moveToFirst();
+	                    return new ProfileDao(cursor);
+	                }
+	
+	            } catch (RemoteException e) {
+	                e.printStackTrace();
+	            }
+	
+	            return null;
+	        }
+	    }.execute(profileId);
+	
+	}
 
-        new AsyncTask<Long, Object, ProfileDao>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                setProgressBarIndeterminateVisibility(true);
-            }
-
-            @Override
-            protected void onPostExecute(ProfileDao result) {
-                setProgressBarIndeterminateVisibility(false);
-                if (!result.equals(null)) showProfileInfo(result);
-            }
-
-            @Override
-            protected ProfileDao doInBackground(Long... id) {
-
-                try {
-                    if (!ServiceHelper.getService().loadProfile(id[0], false)) {
-                        Log.e(TAG, "Cannot load profile");
-                        return null;
-                    } else {
-                        Cursor cursor = managedQuery(PROFILES_URI, null, UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?", new String[]{String.valueOf(id[0])}, null);
-                        cursor.moveToFirst();
-                        return new ProfileDao(cursor);
-                    }
-
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-
-                return null;
-            }
-        }.execute(profileId);
-
+	private void initWallTab() {
     }
 
-    private void showProfileInfo(ProfileDao profile) {
+    private void initUpdatesTab() {
+	    Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_USERID + "=" + profileId, null, KEY_STATUS_DATE + " DESC ");
+	    if (statusesCursor.getCount() < 2) {
+	        new AsyncTask<Long, Object, Boolean>() {
+	
+	            @Override
+	            protected Boolean doInBackground(Long... params) {
+	                try {
+	                    return ServiceHelper.getService().loadStatusesByUser(0, CheckingService.STATUS_NUM_LOAD, profileId);
+	                } catch (RemoteException e) {
+	                    e.printStackTrace();
+	                }
+	                return false;
+	            }
+	
+	        }.execute(new Long[]{profileId});
+	    }
+	
+	
+	}
+
+	private void showProfileInfo(ProfileDao profile) {
         friendProfile = profile;
         setTitle(getTitle() + ": " + friendProfile.firstname + " " + friendProfile.surname);
         ((ImageButton) findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, friendProfile.id));
@@ -155,7 +155,16 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
     }
 
 
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    private void addOrEditContact() {
+	    //TODO add mail and other
+	    Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
+	    intent.setType("vnd.android.cursor.item/person");
+	    intent.putExtra(Contacts.Intents.Insert.PHONE, Phone.formatPhoneNumber(friendProfile.phone));
+	    intent.putExtra(Contacts.Intents.Insert.NAME, friendProfile.firstname + " " + friendProfile.surname);
+	    startActivity(intent);
+	}
+
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.friend_context_menu, menu);
@@ -245,15 +254,6 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
             default:
                 return true;
         }
-    }
-
-    private void addOrEditContact() {
-        //TODO add mail and other
-        Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
-        intent.setType("vnd.android.cursor.item/person");
-        intent.putExtra(Contacts.Intents.Insert.PHONE, Phone.formatPhoneNumber(friendProfile.phone));
-        intent.putExtra(Contacts.Intents.Insert.NAME, friendProfile.firstname + " " + friendProfile.surname);
-        startActivity(intent);
     }
 
 }
