@@ -73,4 +73,6 @@
     <string name="info_location">Location:</string>
     <string name="info_phone">Phone:</string>
     <string name="info_name">Name:</string>
+    <string name="sex_female">Female</string>
+    <string name="sex_male">Male</string>
 </resources>

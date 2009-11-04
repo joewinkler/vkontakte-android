@@ -61,4 +61,6 @@
     <string name="info_location">Родной город:</string>
     <string name="info_phone">Телефон:</string>
     <string name="info_name">Имя:</string>
+    <string name="sex_female">Женский</string>
+    <string name="sex_male">Мужской</string>
 </resources>

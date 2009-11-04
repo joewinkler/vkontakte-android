@@ -76,7 +76,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 	        @Override
 	        protected void onPostExecute(ProfileDao result) {
 	            setProgressBarIndeterminateVisibility(false);
-	            if (!result.equals(null)) showProfileInfo(result);
+	            if (!(result == null)) showProfileInfo(result);
 	        }
 	
 	        @Override
@@ -137,10 +137,10 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
             SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy");
             ((TextView) findViewById(R.id.birthday)).setText(format.format(new Date(friendProfile.birthday)));
         }
-//        if (friendProfile.sex != 0) {  
-//            findViewById(R.id.sex_row).setVisibility(View.VISIBLE);
-//            ((TextView) findViewById(R.id.user_sex)).setText(friendProfile.sex);
-//        }
+        if (friendProfile.sex != 0) {
+            findViewById(R.id.sex_row).setVisibility(View.VISIBLE);
+            ((TextView) findViewById(R.id.user_sex)).setText(friendProfile.sex == 1 ? R.string.sex_female : R.string.sex_male);
+        }
         if (friendProfile.phone != null) {
             findViewById(R.id.phone_row).setVisibility(View.VISIBLE);
             ((TextView) findViewById(R.id.phone)).setText(friendProfile.phone);
