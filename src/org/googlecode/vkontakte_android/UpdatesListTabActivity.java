@@ -25,7 +25,7 @@ public class UpdatesListTabActivity extends AutoLoadActivity implements AdapterV
 
         setupLoader(new UpdatesListTabActivity.Loader() {
             @Override
-            public Boolean load(Long ...longs) {
+            public Boolean load() {
                 try {
                     return ServiceHelper.getService().loadStatuses(m_adapter.getCount(),
                             m_adapter.getCount() + CheckingService.STATUS_NUM_LOAD);

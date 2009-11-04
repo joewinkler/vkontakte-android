@@ -35,7 +35,7 @@ public class MessagesListTabActivity extends AutoLoadActivity implements AbsList
         setupLoader(new AutoLoadActivity.Loader(){
 
 			@Override
-			public Boolean load(Long ...longs) {
+			public Boolean load() {
 				try {
                     return ServiceHelper.getService().loadPrivateMessages(
                             CheckingService.contentToUpdate.MESSAGES_IN.ordinal(),

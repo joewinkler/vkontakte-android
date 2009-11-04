@@ -44,7 +44,7 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
         setupLoader(new AutoLoadActivity.Loader(){
 
 			@Override
-			public Boolean load(Long ...longs) {
+			public Boolean load() {
 				getIdsToUpdate();
 				try {
                    ServiceHelper.getService().loadUsersPhotos(getIdsToUpdate());

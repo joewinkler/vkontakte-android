@@ -95,6 +95,6 @@ public class AutoLoadActivity extends ListActivity  {
 	
     //TODO make template
 	public abstract interface Loader {
-		Boolean load(Long ...longs);
+		Boolean load();
 	}
 }
