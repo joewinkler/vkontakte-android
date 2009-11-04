@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import org.googlecode.vkontakte_android.service.*;
 import org.apache.http.client.utils.URIUtils;
 import org.googlecode.userapi.UrlBuilder;
 import org.googlecode.userapi.User;
@@ -21,7 +22,7 @@ import java.util.List;
 public class UserDao {
     private static final String TAG = "org.googlecode.vkontakte_android.database.UserDao";
     
-    public long rowId;
+    public long rowId = -1;
     public long userId;
     public String userName;
     private String userPhotoUrl;
@@ -187,6 +188,27 @@ public class UserDao {
     public void setUserPhotoUrl(String  userPhotoUrl) {
         this.userPhotoUrl = userPhotoUrl;
     }
+    
+    
+    public void updatePhoto(Context ctx) throws IOException {
+    	
+    	if (this.userPhotoUrl == null) {
+    		this.userPhotoUrl = User.STUB_URL;
+    	}
+
+		ContentValues insertValues = new ContentValues();
+		this._data = getPath();
+		insertValues.put(KEY_USER_AVATAR_SMALL, _data);
+		Uri uri = Uri.withAppendedPath(UserapiProvider.USERS_URI, String.valueOf(this.rowId));
+		if (1 == ctx.getContentResolver().update(uri, insertValues, null, null)) {
+			Log.d(TAG, "Updating photo of " + this.userName + " " + userPhotoUrl);
+			byte[] photo = ApiCheckingKit.getApi().getFileFromUrl(userPhotoUrl);
+			OutputStream os = ctx.getContentResolver().openOutputStream(uri);
+			os.write(photo);
+			os.close();
+		}
+    }
+    
     
     public void updatePhoto(Context ctx, User proto, Uri uri) throws IOException {
         String oldPhotoUrl = userPhotoUrl;

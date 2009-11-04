@@ -3,6 +3,7 @@ package org.googlecode.vkontakte_android.service;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.List;
 
 import org.googlecode.userapi.Credentials;
 import org.googlecode.userapi.Message;
@@ -12,11 +13,15 @@ import org.googlecode.vkontakte_android.CSettings;
 import org.googlecode.vkontakte_android.R;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.ProfileDao;
+import org.googlecode.vkontakte_android.database.UserDao;
+import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
 import org.json.JSONException;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -256,5 +261,32 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 		}
 		return false;
 	}
+
+	/**
+	 *  Load photos for users with given ids
+	 */
+	@Override
+	public boolean loadUsersPhotos(List<String> l) throws RemoteException {
+		StringBuffer users = new StringBuffer();
+		for (String ids:l) {
+			users.append(ids).append(",");	
+		}
+		users.deleteCharAt(users.length() - 1);//remove last ','
+		Log.d(TAG, "Ids to update:"+users);
+		Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null, 
+				UserapiDatabaseHelper.KEY_USER_USERID + " IN(" + users + ")", null, null);
+		while (c.moveToNext()) {
+			UserDao ud = new UserDao(c);
+			try {
+				ud.updatePhoto(m_context);
+			} catch (IOException e) {
+				Log.e(TAG, "Cannot download photo");
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
+	
 
 }

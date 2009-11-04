@@ -15,7 +15,7 @@ import android.util.Log;
 /*
  *  A kit of methods that allows to check the account for some updates
  */
-class ApiCheckingKit {
+public class ApiCheckingKit {
 
     private static String TAG = "ApiCheckingKit";
 

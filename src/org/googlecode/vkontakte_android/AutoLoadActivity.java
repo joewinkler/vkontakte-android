@@ -45,7 +45,10 @@ public class AutoLoadActivity extends ListActivity  {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && event.getAction() == KeyEvent.ACTION_DOWN
                         && getListView().getSelectedItemPosition() == m_adapter.getCount() - 1) {
-                    loadMore();
+                	//to prevent multiple loading
+					if (m_doLoad) {
+                	    loadMore();
+					}
                 }
                 return false;
             }
@@ -55,7 +58,10 @@ public class AutoLoadActivity extends ListActivity  {
 	public void onScrollStateChanged(AbsListView v, int state) {
         if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
                 && getListView().getLastVisiblePosition() == m_adapter.getCount() - 1) {
-            loadMore();
+        	//to prevent multiple loading
+			if (m_doLoad) {
+        	    loadMore();
+			}
         }
     }
 	
@@ -70,6 +76,7 @@ public class AutoLoadActivity extends ListActivity  {
             protected void onPreExecute() {
                 super.onPreExecute();
                 setProgressBarIndeterminateVisibility(true);
+                m_doLoad = false;
             } 
     		
 			@Override
@@ -80,19 +87,14 @@ public class AutoLoadActivity extends ListActivity  {
 
 			@Override
 			protected Boolean doInBackground(Object... params) {
-					//to prevent multiple loading
-					if (m_doLoad) {
-						m_doLoad = false;
-						return m_loader.load();			
-					} else {
-						return false;
-					}
+				Log.d(TAG, "loading more info...");
+				return m_loader.load();			
 			}
     	}.execute();
 }
 	
+    //TODO make template
 	public abstract interface Loader {
-		
-		Boolean load();
+		Boolean load(Long ...longs);
 	}
 }

@@ -245,29 +245,23 @@ public class CheckingService extends Service {
         List<UserDao> users = new ArrayList<UserDao>(friends.size());
         for (User user : friends) {
             UserDao userDao = new UserDao(user, isNew, true);
-            if (false && firstUpdate) {
-                userDao.setUserPhotoUrl(null);//special hack for photo update
-                users.add(userDao);
-            } else {
-                notIn.append(user.getUserId()).append(",");
-                Uri useruri = userDao.saveOrUpdate(this);
-                userDao.updatePhoto(this, user, useruri);
-                if (counter++ == 10) {
-                    getContentResolver().notifyChange(useruri, null);
-                    counter = 0;
-                }
+            notIn.append(user.getUserId()).append(",");
+            Uri useruri = userDao.saveOrUpdate(this);
+            if (!firstUpdate) {  //special hack for photo update - load it when needed
+              	//userDao.updatePhoto(this, user, useruri);
             }
+            if (counter++ == 10) {
+                getContentResolver().notifyChange(useruri, null);
+                counter = 0;
+            }
+            users.add(userDao);
         }
         
-        if (false && firstUpdate) {
-      //      UserDao.bulkSave(context, users);
-            //todo: make async
-        } else {
-            notIn.deleteCharAt(notIn.length() - 1);//remove last ','
-            getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND "
-                    + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")" + " AND " +
-                    UserapiDatabaseHelper.KEY_USER_IS_FRIEND + "=1", null);
-        }
+        notIn.deleteCharAt(notIn.length() - 1);//remove last ','
+        getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND "
+                + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")" + " AND " +
+                UserapiDatabaseHelper.KEY_USER_IS_FRIEND + "=1", null);
+
     }
    
 

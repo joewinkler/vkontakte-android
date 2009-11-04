@@ -1,23 +1,23 @@
 package org.googlecode.vkontakte_android;
 
-import android.app.ListActivity;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
+
+import org.googlecode.vkontakte_android.database.MessageDao;
+import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.vkontakte_android.service.CheckingService;
+
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.util.Log;
-import android.view.*;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
-
-import org.googlecode.userapi.VkontakteAPI;
-import org.googlecode.vkontakte_android.database.MessageDao;
-import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
-import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import org.googlecode.vkontakte_android.service.CheckingService;
 
 
 public class MessagesListTabActivity extends AutoLoadActivity implements AbsListView.OnScrollListener {
@@ -35,7 +35,7 @@ public class MessagesListTabActivity extends AutoLoadActivity implements AbsList
         setupLoader(new AutoLoadActivity.Loader(){
 
 			@Override
-			public Boolean load() {
+			public Boolean load(Long ...longs) {
 				try {
                     return ServiceHelper.getService().loadPrivateMessages(
                             CheckingService.contentToUpdate.MESSAGES_IN.ordinal(),
