@@ -1,29 +1,33 @@
 package org.googlecode.vkontakte_android.service;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
+import org.googlecode.userapi.ChangesHistory;
+import org.googlecode.userapi.Message;
 import org.googlecode.userapi.Status;
+import org.googlecode.userapi.User;
+import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.CSettings;
-import org.googlecode.vkontakte_android.database.StatusDao;
 import org.googlecode.vkontakte_android.database.MessageDao;
+import org.googlecode.vkontakte_android.database.StatusDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import org.googlecode.userapi.Message;
-import org.googlecode.userapi.User;
-import org.googlecode.userapi.VkontakteAPI;
 import org.json.JSONException;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -52,7 +56,6 @@ public class CheckingService extends Service {
         m_binder = new VkontakteServiceBinder(this);
 
         s_prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        ApiCheckingKit.s_ctx = getApplicationContext();
     }
 
     @Override
@@ -198,9 +201,19 @@ public class CheckingService extends Service {
 
     private void updateHistory() throws IOException, JSONException {
         Log.d(TAG, "updating history");
-        ApiCheckingKit kit = ApiCheckingKit.getInstance();
-        VkontakteAPI api = ApiCheckingKit.getApi();
-        updateInMessages(0, api.getChangesHistory().getFriendsCount());
+        ChangesHistory hist = ApiCheckingKit.getApi().getChangesHistory();
+        if (hist.getFriendsCount() - ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum > 0) {
+        	//notif
+        	ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum = hist.getFriendsCount();
+        }
+        if (hist.getMessagesCount() - ApiCheckingKit.m_histChanges.prevUnreadMessNum > 0) {
+        	
+        	ApiCheckingKit.m_histChanges.prevUnreadMessNum = hist.getMessagesCount();
+        }
+        if (hist.getPhotosCount() - ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum > 0) {
+	
+        	ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum = hist.getPhotosCount();
+        }
     }
 
     protected void updateStatuses(int start, int end) throws IOException, JSONException {
@@ -281,76 +294,6 @@ public class CheckingService extends Service {
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
         getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=1" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
     }
-
-//	private void processMessages(ApiCheckingKit kit, Map<UpdateType, Long> res) {
-//		long incomingMess = res.get(UpdateType.MESSAGES)
-//				- kit.getPreviosUnreadMessNum();
-//		Log.d(TAG, "process messages: " + incomingMess);
-//		if (incomingMess == 0) // messages count didn't changed since last
-//								// checking
-//			return;
-//
-//		if (incomingMess > 0) // new incoming messages
-//		{
-//			// TODO check this
-//			VkontakteAPI api = ApiCheckingKit.getS_api();
-//			try {
-//				List<Message> mess = api.getPrivateMessages(api.id, 0, 1024,
-//						privateMessagesTypes.inbox);
-//				Message last = mess.get(mess.size() - 1);
-//				if (useNotifications())
-//					UpdatesNotifier.notifyMessages(getApplicationContext(),
-//							incomingMess, last.getSender().getUserId());
-//				kit.setPreviosUnreadMessNum(res.get(UpdateType.MESSAGES));
-//
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (JSONException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//
-//		} else // some messages were read by another way
-//		{
-//			kit.setPreviosUnreadMessNum(res.get(UpdateType.MESSAGES));
-//		}
-//	}
-//
-//	private void processFriends(ApiCheckingKit kit, Map<UpdateType, Long> res) {
-//		long incomingFr = res.get(UpdateType.FRIENDSHIP_REQ)
-//				- kit.getPreviosFriendshipRequestsNum();
-//
-//		if (incomingFr == 0)
-//			return;
-//
-//		if (incomingFr > 0) {
-//			// if (useNotifications())
-//			// UpdatesNotifier.notify(getApplicationContext(), "New friends: " +
-//			// incomingFr, useSound());
-//			kit.setPreviosFriendshipRequestsNum(res
-//					.get(UpdateType.FRIENDSHIP_REQ));
-//		} else {
-//			kit.setPreviosFriendshipRequestsNum(res.get(UpdateType.MESSAGES));
-//		}
-//	}
-//
-//	private void processPhotoTags(ApiCheckingKit kit, Map<UpdateType, Long> res) {
-//		long incomingTags = res.get(UpdateType.TAGS)
-//				- kit.getPreviosNewPhotoTagsNum();
-//
-//		if (incomingTags == 0)
-//			return;
-//
-//		if (incomingTags > 0) {
-//			// if (useNotifications())
-//			// UpdatesNotifier.notify(getApplicationContext(),
-//			// "New photo tags: " + incomingTags, useSound());
-//			kit.setPreviosNewPhotoTagsNum(res.get(UpdateType.TAGS));
-//		} else {
-//			kit.setPreviosNewPhotoTagsNum(res.get(UpdateType.TAGS));
-//		}
-//	}
 
     // ========= preferences
 
