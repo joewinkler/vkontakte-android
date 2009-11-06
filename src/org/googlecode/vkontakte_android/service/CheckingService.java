@@ -61,9 +61,9 @@ public class CheckingService extends Service {
     @Override
     public void onStart(final Intent intent, int startId) {
     	super.onStart(intent, startId);
-        doCheck(intent.getIntExtra("action", 1), intent.getExtras());
+       
     }
-
+  
     /**
      * Check given content type for updates
      *
@@ -124,7 +124,7 @@ public class CheckingService extends Service {
     /**
      * Starts a thread checking api periodically
      */
-    private void restartScheduledUpdates() {
+    private void launchScheduledUpdates() {
 
         class CheckingTask extends TimerTask {
             @Override
@@ -139,8 +139,8 @@ public class CheckingService extends Service {
                 }
             }
         }
-        int period = CSettings.getPeriod(getApplicationContext());
-        m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, 1000 * 30);
+        int period = 10000;//CSettings.getPeriod(getApplicationContext());
+        m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, period);
         Log.d(TAG, "Timer with period: " + period);
     }
 
@@ -202,17 +202,25 @@ public class CheckingService extends Service {
     private void updateHistory() throws IOException, JSONException {
         Log.d(TAG, "updating history");
         ChangesHistory hist = ApiCheckingKit.getApi().getChangesHistory();
-        if (hist.getFriendsCount() - ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum > 0) {
-        	//notif
+        long new_friends = hist.getFriendsCount() - ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum;
+        long new_messages = hist.getMessagesCount() - ApiCheckingKit.m_histChanges.prevUnreadMessNum;
+        long new_tags = hist.getPhotosCount() - ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum;
+        
+        if (new_friends > 0) {
         	ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum = hist.getFriendsCount();
+        	Log.d(TAG, "Received new friends: "+new_friends);
         }
-        if (hist.getMessagesCount() - ApiCheckingKit.m_histChanges.prevUnreadMessNum > 0) {
-        	
+        if (new_messages > 0) {
         	ApiCheckingKit.m_histChanges.prevUnreadMessNum = hist.getMessagesCount();
+        	Log.d(TAG, "Received new messages: "+new_messages);
         }
-        if (hist.getPhotosCount() - ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum > 0) {
-	
-        	ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum = hist.getPhotosCount();
+        if (new_tags > 0) {
+       	ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum = hist.getPhotosCount();
+        	Log.d(TAG, "Received new phototags: "+new_friends);
+        }
+        
+        if ((new_friends | new_messages | new_tags) != 0) {
+        	UpdatesNotifier.notifyHistoryMessages(getApplicationContext(), new_friends, new_messages, new_tags);
         }
     }
 
@@ -336,8 +344,11 @@ public class CheckingService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+    	launchScheduledUpdates();
         return m_binder;
     }
+
+	
 
 
 }

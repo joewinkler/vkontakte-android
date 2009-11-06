@@ -18,24 +18,14 @@ import android.util.Log;
  *
  */
 public class ApiCheckingKit {
-    private static String TAG = "ApiCheckingKit";
-    private ApiCheckingKit() throws IOException {
-
-    }
-    private static VkontakteAPI s_api = new VkontakteAPI();
-    private static ApiCheckingKit s_instance;
-    public static HistoryChanges m_histChanges = new HistoryChanges();
+    private ApiCheckingKit() throws IOException {}
     
-    public static synchronized ApiCheckingKit getInstance() throws IOException {
-        if (s_instance == null)
-            s_instance = new ApiCheckingKit();
-        return s_instance;
-    }
-
+    private static VkontakteAPI s_api = new VkontakteAPI();
     public static VkontakteAPI getApi() {
         return s_api;
     }
-
+    
+    public static HistoryChanges m_histChanges = new HistoryChanges();
     
 }
 

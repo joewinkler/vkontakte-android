@@ -3,14 +3,16 @@ package org.googlecode.vkontakte_android.service;
 import org.googlecode.vkontakte_android.*;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
-
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 //TODO toast => notifier
@@ -23,6 +25,32 @@ class UpdatesNotifier {
                 Looper.prepare();
                 Toast.makeText(ctx, error, Toast.LENGTH_SHORT).show();
                 Looper.loop();
+            }
+		}.start();
+	}
+	  
+	public static void notifyHistoryMessages(final Context ctx, final long friends, final long mess, final long tags) {
+		new Thread() {
+            @Override
+            public void run() {  
+                Looper.prepare();
+                NotificationManager mNotificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+                String titleText = "You have received: ";
+            	
+            	String f = (friends!=0)?"Fr: "+friends:"";
+            	String m = (mess!=0)?" Mess: "+mess:"";
+            	String t = (tags!=0)?" Tags: "+tags:"";
+            	 
+            	String text = f + m + t;
+
+            	Notification notification = new Notification(R.drawable.my_help, "VKontakte: updates", System.currentTimeMillis());
+             	Intent notificationIntent = new Intent(ctx, HomeGridActivity.class);
+            	PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
+            	notification.setLatestEventInfo(ctx, titleText, text, contentIntent);
+            	final int VK_ID = 42;
+            	mNotificationManager.notify(VK_ID, notification);
+            	 
+            	Looper.loop();
             }
 		}.start();
 	}
