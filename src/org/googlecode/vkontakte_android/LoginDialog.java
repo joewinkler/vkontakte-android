@@ -150,14 +150,14 @@ public class LoginDialog extends Dialog {
 	    Pattern pattern = Pattern.compile(
 		"^[a-zA-Z]{1}[\\w\\.-]*@[a-zA-Z]{1}[\\.\\w-]*\\.[a-zA-Z]{2,7}$");
 	    Matcher matcher = pattern.matcher(s);
-	    return matcher.matches() ? true:false;
+	    return matcher.matches();
 	}
 	
 	public static boolean isLoginValid(String s) {
 		Pattern pattern = Pattern.compile(
 		"^\\w+$");
 	    Matcher matcher = pattern.matcher(s);
-	    return matcher.matches() ? true:false;
+	    return matcher.matches();
 	}
 	
 }

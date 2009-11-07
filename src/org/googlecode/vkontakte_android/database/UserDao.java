@@ -190,7 +190,7 @@ public class UserDao {
     }
     
     
-    public void updatePhoto(Context ctx) throws IOException {
+    public synchronized void updatePhoto(Context ctx) throws IOException {
     	
     	if (this.userPhotoUrl == null) {
     		this.userPhotoUrl = User.STUB_URL;
@@ -210,7 +210,7 @@ public class UserDao {
     }
     
     
-    public void updatePhoto(Context ctx, User proto, Uri uri) throws IOException {
+    public synchronized void updatePhoto(Context ctx, User proto, Uri uri) throws IOException {
         String oldPhotoUrl = userPhotoUrl;
         String newPhotoUrl = proto.getUserPhotoUrl();
      

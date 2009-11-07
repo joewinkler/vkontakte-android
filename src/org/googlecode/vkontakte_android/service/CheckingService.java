@@ -39,8 +39,8 @@ public class CheckingService extends Service {
     public static final int MESSAGE_NUM_LOAD = 10;
     public static final int STATUS_NUM_LOAD = 6;
 
-
     private Timer m_timer = new Timer();
+    private static boolean s_timerHasStarted = false;
     private static SharedPreferences s_prefs;
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
     //private boolean m_hasConnection = true;
@@ -125,7 +125,11 @@ public class CheckingService extends Service {
      * Starts a thread checking api periodically
      */
     private void launchScheduledUpdates() {
-
+    	if (CheckingService.s_timerHasStarted) {
+    		return;
+    	}
+    	CheckingService.s_timerHasStarted = true;
+    	
         class CheckingTask extends TimerTask {
             @Override
             public void run() {

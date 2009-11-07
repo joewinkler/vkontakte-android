@@ -29,7 +29,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class HomeGridActivity extends Activity implements OnItemClickListener, ServiceConnection  {
-
+ 
     private GridView mHomeGrid = null;
     private final static String TAG = "org.googlecode.vkontakte_android.HomeGridActivity";
 

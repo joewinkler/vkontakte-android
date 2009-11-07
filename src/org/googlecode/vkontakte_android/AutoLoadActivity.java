@@ -1,6 +1,7 @@
 package org.googlecode.vkontakte_android;
 
 import android.app.ListActivity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.AbsListView.OnScrollListener;
 
 /**
  * ListActivity that can load more records when user scrolls down the main ListView. 
@@ -17,8 +20,18 @@ import android.widget.ListAdapter;
  * @author bea
  *
  */
-public class AutoLoadActivity extends ListActivity  {
+public class AutoLoadActivity extends ListActivity implements AbsListView.OnScrollListener  {
 
+	/**
+	 * Loading is performed when corresponding action is set
+	 */
+	public int ACTION_FLAGS = 3; //default ACTION_ON_SCROLL_END | ACTION_ON_KEY
+	
+	public static int ACTION_ON_SCROLL_END = 1;
+	public static int ACTION_ON_KEY = 2;
+	public static int ACTION_ON_SCROLL = 4;
+	
+	
 	private static String TAG = "AutoLoadActivity";
 	protected ListAdapter m_adapter;
 	private Loader m_loader;
@@ -46,25 +59,17 @@ public class AutoLoadActivity extends ListActivity  {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && event.getAction() == KeyEvent.ACTION_DOWN
                         && getListView().getSelectedItemPosition() == m_adapter.getCount() - 1) {
                 	//to prevent multiple loading
-					if (m_doLoad) {
+					if (m_doLoad && ((ACTION_FLAGS & ACTION_ON_KEY) != 0)) {
                 	    loadMore();
 					}
                 }
                 return false;
             }
         });
+		
+		getListView().setOnScrollListener(this);
 	}
-	
-	public void onScrollStateChanged(AbsListView v, int state) {
-        if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
-                && getListView().getLastVisiblePosition() == m_adapter.getCount() - 1) {
-        	//to prevent multiple loading
-			if (m_doLoad) {
-        	    loadMore();
-			}
-        }
-    }
-	
+
     private void loadMore() {
     	if (m_loader == null) {
     		Log.e(TAG, "Callback undefined. Use setupLoader() at first");
@@ -91,10 +96,29 @@ public class AutoLoadActivity extends ListActivity  {
 				return m_loader.load();			
 			}
     	}.execute();
-}
-	
+    }
+    	
     //TODO make template
 	public abstract interface Loader {
 		Boolean load();
+	}
+
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem,
+			int visibleItemCount, int totalItemCount) {
+		if ((ACTION_FLAGS & ACTION_ON_SCROLL) != 0 && m_doLoad) {
+			loadMore();
+		}
+	}
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
+				&& getListView().getLastVisiblePosition() == m_adapter.getCount() - 1) {
+			// to prevent multiple loading
+			if ((ACTION_FLAGS & ACTION_ON_SCROLL_END) != 0 && m_doLoad) {
+				loadMore();
+			}
+		}
 	}
 }

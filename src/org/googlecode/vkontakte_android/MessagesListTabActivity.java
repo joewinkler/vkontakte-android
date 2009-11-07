@@ -20,7 +20,7 @@ import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 
 
-public class MessagesListTabActivity extends AutoLoadActivity implements AbsListView.OnScrollListener {
+public class MessagesListTabActivity extends AutoLoadActivity {
     private static final String TAG = "org.googlecode.vkontakte_android.MessagesListTabActivity";
 
     enum MessagesCursorType {
@@ -31,7 +31,6 @@ public class MessagesListTabActivity extends AutoLoadActivity implements AbsList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_list);
-
         setupLoader(new AutoLoadActivity.Loader(){
 
 			@Override
@@ -121,7 +120,5 @@ public class MessagesListTabActivity extends AutoLoadActivity implements AbsList
         }
     }
 
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-    }
+
 }

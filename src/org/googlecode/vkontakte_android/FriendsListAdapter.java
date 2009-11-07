@@ -35,21 +35,22 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         else statusText += context.getResources().getString(R.string.status_offline);
         status.setText(statusText);
 
+        ImageView photo = (ImageView) view.findViewById(R.id.photo);
         if (CSettings.shouldLoadPics(context)) {
         	Log.d(TAG, "Setting photo for " + userDao.userName);
         	if (userDao.getUserPhotoUrl() != null) {
         		Bitmap bm = UserHelper.getPhotoByUserId(context, userDao.userId);
         		if (bm == null) {
         			Log.d(TAG, "Can't get photo of "+userDao.userName);
+        			photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
                 } else {
-                    ImageView photo = (ImageView) view.findViewById(R.id.photo);
+                    photo = (ImageView) view.findViewById(R.id.photo);
                     photo.setImageBitmap(bm);
                 }
         	} else {
         		Log.e(TAG, "Error: no photo url for "+userDao.userName);
         	}
         } else {
-        	ImageView photo = (ImageView) view.findViewById(R.id.photo);
             photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
             photo.setVisibility(View.GONE);
         }

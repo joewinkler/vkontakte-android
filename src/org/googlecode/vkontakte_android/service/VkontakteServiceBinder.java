@@ -258,7 +258,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 		return false;
 	}
 
@@ -266,24 +266,28 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 	 *  Load photos for users with given ids
 	 */
 	@Override
-	public boolean loadUsersPhotos(List<String> l) throws RemoteException {
-		StringBuffer users = new StringBuffer();
+	public synchronized boolean loadUsersPhotos(List<String> l) throws RemoteException {
+		StringBuffer users = new StringBuffer(" ");
 		for (String ids:l) {
 			users.append(ids).append(",");	
 		}
 		users.deleteCharAt(users.length() - 1);//remove last ','
+		
 		Log.d(TAG, "Ids to update:"+users);
 		Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null, 
 				UserapiDatabaseHelper.KEY_USER_USERID + " IN(" + users + ")", null, null);
 		while (c.moveToNext()) {
 			UserDao ud = new UserDao(c);
 			try {
-				ud.updatePhoto(m_context);
+				if (ud._data == null) {   ////!!!
+					ud.updatePhoto(m_context);
+				}
 			} catch (IOException e) {
-				Log.e(TAG, "Cannot download photo");
+				Log.e(TAG, "Cannot download photo"); 
 				e.printStackTrace();
 			}
 		}
+		c.close();
 		return false;
 	}
 

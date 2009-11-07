@@ -25,7 +25,7 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
     private FriendsListAdapter adapter;
     private static String TAG = "FriendsListTabActivity";
     
-    enum MessagesCursorType {
+    enum FriendsCursorType {
         ALL, NEW, ONLINE
     }
 
@@ -38,55 +38,56 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
         boolean onlyNew = false;
         Bundle extras = getIntent().getExtras();
         if (extras != null) onlyNew = extras.getBoolean(SHOW_ONLY_NEW);
-        Cursor cursor = onlyNew ? makeCursor(MessagesCursorType.NEW) : makeCursor(MessagesCursorType.ALL);
+        Cursor cursor = onlyNew ? makeCursor(FriendsCursorType.NEW) : makeCursor(FriendsCursorType.ALL);
         adapter = new FriendsListAdapter(this, R.layout.friend_row, cursor);
+        
         
         setupLoader(new AutoLoadActivity.Loader(){
 
 			@Override
 			public Boolean load() {
-				getIdsToUpdate();
 				try {
-                   ServiceHelper.getService().loadUsersPhotos(getIdsToUpdate());
+					//TODO check for thread-safety
+                   ServiceHelper.getService().loadUsersPhotos(getIdsToUpdatePhotos());
                 } catch (RemoteException e) {
                     e.printStackTrace();
                     AppHelper.showFatalError(FriendsListTabActivity.this, "While trying to load friends photos");
                 }
+				
                 return false;
 			}
         	 
         }, adapter);
-        
+       ACTION_FLAGS |= AutoLoadActivity.ACTION_ON_SCROLL ;
        registerForContextMenu(getListView());
        getListView().setOnItemClickListener(this);
    }
 
-    private List<String> getIdsToUpdate() {
+    private List<String> getIdsToUpdatePhotos() {
     	List<String> us = new LinkedList<String>();
     	
     	int f = getListView().getFirstVisiblePosition();
     	int l = getListView().getLastVisiblePosition();
-    	int num_to_load = l - f;
-    	
-    	//load next num_to_load photos
-    	for (int i=l; i<=l+num_to_load; ++i) {
-    		Cursor c = (Cursor)getListView().getItemAtPosition(i);
+    	for (int i=f; i<=l; ++i) {
+    		Cursor c = (Cursor)getListView().getItemAtPosition(i); 
     		if (c == null || c.isAfterLast()) {
     			break;
     		}
-    		UserDao ud = new UserDao(c);
-     		Log.d(TAG, "getIdsToUpdate: "+ud.userName);
-    		us.add(String.valueOf(ud.userId));
+    		//TODO WARNING fail may be here :(
+    		UserDao ud = new UserDao(c); 
+     		us.add(String.valueOf(ud.userId)); 
     	}
     	return us; 
     }
     
     
-    private Cursor makeCursor(MessagesCursorType type) {
+    private Cursor makeCursor(FriendsCursorType type) {
+    	
         switch (type) {
             case NEW:
                 return managedQuery(USERS_URI, null, KEY_USER_NEW + "=1", null,
                         KEY_USER_USERID + " ASC," + KEY_USER_NEW + " DESC, " + KEY_USER_ONLINE + " DESC"
+                       
                 );
             case ONLINE:
                 return managedQuery(USERS_URI, null, KEY_USER_ONLINE + "=1", null,
