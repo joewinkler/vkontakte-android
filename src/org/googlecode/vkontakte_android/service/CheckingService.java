@@ -68,59 +68,67 @@ public class CheckingService extends Service {
      * Check given content type for updates
      *
      * @param toUpdate - ordinal of contentToUpdate
+     * @param syncronous
      */
-    void doCheck(final int toUpdate, final Bundle updateParams) {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                contentToUpdate what = contentToUpdate.values()[toUpdate];
-                Log.d(TAG, "updating " + what + " is starting...");
-                try {
-                    switch (what) {
-                        case FRIENDS:
-                            updateFriends();
-                            break;
-                        case WALL:
-                            updateWall();
-                            break;
-                        case MESSAGES_ALL:
-                            updateMessages();
-                            break;
-                        case MESSAGES_IN:
-                            updateInMessages(0, MESSAGE_NUM_LOAD);
-                            break;
-                        case MESSAGES_OUT:
-                            updateOutMessages(0, MESSAGE_NUM_LOAD); //should be called when user sends messages
-                            break;
-                        case HISTORY:
-                            updateHistory();
-                            break;
-                        case STATUSES:
-                            updateStatuses(0, STATUS_NUM_LOAD);
-                            break;
-                        case PROFILE:
-                        	//updateProfile();
-                        	break;
-                        
-                        default:
-                            updateStatuses(0, STATUS_NUM_LOAD);
-                            updateMessages();
-                            //updateWall();
-                            updateFriends();
-                            //updateHistory();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+    void doCheck(final int toUpdate, final Bundle updateParams, boolean syncronous) {
+    	if (syncronous) {
+    		updateContent(toUpdate, updateParams);
+    	} else {
+    		Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                	updateContent(toUpdate, updateParams);
                 }
-            }
-        });
-        threads.add(t);
-        t.start();
+            });
+            threads.add(t);
+            t.start();
+    	}
     }
 
+    private void updateContent(final int toUpdate, final Bundle updateParams) {
+    	contentToUpdate what = contentToUpdate.values()[toUpdate];
+        Log.d(TAG, "updating " + what + " is starting...");
+        try {
+            switch (what) {
+                case FRIENDS:
+                    updateFriends();
+                    break;
+                case WALL:
+                    updateWall();
+                    break;
+                case MESSAGES_ALL:
+                    updateMessages();
+                    break;
+                case MESSAGES_IN:
+                    updateInMessages(0, MESSAGE_NUM_LOAD);
+                    break;
+                case MESSAGES_OUT:
+                    updateOutMessages(0, MESSAGE_NUM_LOAD); //should be called when user sends messages
+                    break;
+                case HISTORY:
+                    updateHistory();
+                    break;
+                case STATUSES:
+                    updateStatuses(0, STATUS_NUM_LOAD);
+                    break;
+                case PROFILE:
+                	//updateProfile();
+                	break;
+                
+                default:
+                    updateStatuses(0, STATUS_NUM_LOAD);
+                    updateMessages();
+                    //updateWall();
+                    updateFriends();
+                    //updateHistory();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    
     /**
      * Starts a thread checking api periodically
      */

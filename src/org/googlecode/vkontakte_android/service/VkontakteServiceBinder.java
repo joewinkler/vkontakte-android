@@ -122,7 +122,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             ApiCheckingKit.getApi().sendMessageToUser(message);
             MessageDao md = new MessageDao(0, new Date(), text, 0, id, true);
             //don't save it to DB, TODO refresh last out message instead
-            m_service.doCheck(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal(), new Bundle());
+            m_service.doCheck(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal(), new Bundle(), false);
         } catch (IOException e) {
             UpdatesNotifier.showError(m_context,
                     R.string.err_msg_check_connection);
@@ -146,10 +146,17 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public void update(int what) throws RemoteException {
-    	m_service.doCheck(what,new Bundle());
+    public void update(int what, boolean synchronous) throws RemoteException {
+    	m_service.doCheck(what,new Bundle(), synchronous);
     }
 
+
+	@Override
+	public void updateSync(int what) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+	
     @Override
     public boolean logout() throws RemoteException {
         try {
@@ -299,11 +306,8 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 			UserDao ud = new UserDao(c);
 			try {
 				if (ud._data == null) {   
-					Log.d(TAG, "!!!!!!!!!!!! "+ud.userName);
 					ud.updatePhoto(m_context);
-				} else {
-					Log.d(TAG, "?????????????? "+ud.userName);
-				}
+				} 
 			} catch (IOException e) {
 				Log.e(TAG, "Cannot download photo"); 
 				e.printStackTrace();
@@ -312,7 +316,4 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 		c.close();
 		return false;
 	}
-
-	
-
 }

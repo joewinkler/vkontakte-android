@@ -6,6 +6,8 @@ import java.util.List;
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -17,6 +19,7 @@ import android.widget.AdapterView;
 import org.googlecode.vkontakte_android.MessagesListTabActivity.MessagesCursorType;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.service.CheckingService;
+import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
@@ -38,17 +41,28 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
         boolean onlyNew = false;
         Bundle extras = getIntent().getExtras();
         if (extras != null) onlyNew = extras.getBoolean(SHOW_ONLY_NEW);
-        Cursor cursor = onlyNew ? makeCursor(FriendsCursorType.NEW) : makeCursor(FriendsCursorType.ALL);
+        Cursor cursor = onlyNew ? makeCursor(FriendsCursorType.NEW) : makeCursor(FriendsCursorType.ONLINE);
         adapter = new FriendsListAdapter(this, R.layout.friend_row, cursor);
         
-        
+        final Handler handler = new Handler();
         setupLoader(new AutoLoadActivity.Loader(){
 
 			@Override
 			public Boolean load() {
 				try {
-					//TODO check for thread-safety
-                   ServiceHelper.getService().loadAllUsersPhotos();
+					//TODO check VkontakteApi for thread-safety!!1 
+                    //ServiceHelper.getService().loadAllUsersPhotos();
+					ServiceHelper.getService().update(contentToUpdate.FRIENDS.ordinal(), true);
+					ServiceHelper.getService().loadUsersPhotos(getVisibleUsers());
+					handler.post(new Runnable() {
+						
+						@Override
+						public void run() {
+							//TODO how to repaint all elements??
+							adapter.notifyDataSetChanged(); 
+						}
+					});
+					
                 } catch (RemoteException e) {
                     e.printStackTrace();
                     AppHelper.showFatalError(FriendsListTabActivity.this, "While trying to load friends photos");
@@ -56,14 +70,30 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
 				
                 return false;
 			} 
-        	 
+        	   
         }, adapter);
        ACTION_FLAGS = AutoLoadActivity.ACTION_ON_START ;
        registerForContextMenu(getListView());
        getListView().setOnItemClickListener(this);
    }
 
-    private List<String> getIdsToUpdatePhotos() {
+    /**
+     * Get list of ids of shown users
+     */
+    private List<String> getVisibleUsers() {
+    	List<String> us = new LinkedList<String>();
+    	for (int i=0; i<adapter.getCount(); ++i) {
+    		UserDao ud = new UserDao((Cursor)adapter.getItem(i));
+    		us.add(String.valueOf(ud.userId)); 
+    	}
+    	return us; 
+    }
+    
+    /**
+     * Get list of ids of users that appeared on the current screen
+     * @return list 
+     */
+    private List<String> getScreenVisibleUsers() {
     	List<String> us = new LinkedList<String>();
     	
     	int f = getListView().getFirstVisiblePosition();
@@ -73,8 +103,7 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
     		if (c == null || c.isAfterLast()) {
     			break;
     		}
-    		//TODO WARNING fail may be here :(
-    		UserDao ud = new UserDao(c); 
+     		UserDao ud = new UserDao(c); 
      		us.add(String.valueOf(ud.userId)); 
     	}
     	return us; 

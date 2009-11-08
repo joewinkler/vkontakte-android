@@ -1,7 +1,9 @@
 package org.googlecode.vkontakte_android.service;
 
 interface IVkontakteService {
-  void update(int what);
+  void update(int what, boolean synchronous);
+  void updateSync(int what); //synchronous version of "update(int what)"
+  
   boolean sendMessage(String mess, long id);
   boolean sendStatus(String status);
   

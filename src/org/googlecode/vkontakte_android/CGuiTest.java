@@ -288,7 +288,7 @@ public class CGuiTest extends TabActivity {
         setProgressBarIndeterminateVisibility(true);
 
         try {
-            m_vkService.update(what.ordinal());
+            m_vkService.update(what.ordinal(), false);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
