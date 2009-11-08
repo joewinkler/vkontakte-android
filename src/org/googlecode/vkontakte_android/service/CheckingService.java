@@ -32,6 +32,8 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+//TODO check for thread-safety!!1 
+
 public class CheckingService extends Service {
 
     private static final String TAG = "VK-Service";

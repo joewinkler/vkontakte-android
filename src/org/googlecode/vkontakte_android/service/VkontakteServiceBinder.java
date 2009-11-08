@@ -150,14 +150,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     	m_service.doCheck(what,new Bundle(), synchronous);
     }
 
-
-	@Override
-	public void updateSync(int what) throws RemoteException {
-		// TODO Auto-generated method stub
-		
-	}
-	
-    @Override
+   @Override
     public boolean logout() throws RemoteException {
         try {
             Log.d(TAG, "Logout");

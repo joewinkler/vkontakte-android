@@ -50,15 +50,12 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
 			@Override
 			public Boolean load() {
 				try {
-					//TODO check VkontakteApi for thread-safety!!1 
-                    //ServiceHelper.getService().loadAllUsersPhotos();
-					ServiceHelper.getService().update(contentToUpdate.FRIENDS.ordinal(), true);
+ 					ServiceHelper.getService().update(contentToUpdate.FRIENDS.ordinal(), true);
 					ServiceHelper.getService().loadUsersPhotos(getVisibleUsers());
 					handler.post(new Runnable() {
 						
 						@Override
 						public void run() {
-							//TODO how to repaint all elements??
 							adapter.notifyDataSetChanged(); 
 						}
 					});
