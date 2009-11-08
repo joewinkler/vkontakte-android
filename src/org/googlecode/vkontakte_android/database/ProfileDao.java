@@ -27,6 +27,8 @@ public class ProfileDao {
     public int sex;
     public Long birthday;
     public String phone;
+    public int politicalViews;
+    public int familyStatus;
 
     public ProfileDao(Cursor cursor) {
         rowid = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_PROFILE_ROWID));
@@ -37,10 +39,12 @@ public class ProfileDao {
         sex = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_PROFILE_SEX));
         birthday = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_PROFILE_BIRTHDAY));
         phone = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PROFILE_PHONE));
+        politicalViews = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_PROFILE_PV));
+        familyStatus = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_PROFILE_FS));
     }
 
     public ProfileDao(long id, String fn, String sn, String st,
-                      int sex, Date bd, String phone) {
+                      int sex, Date bd, String phone, int pv, int fs) {
         this.id = id;
         this.firstname = fn;
         this.surname = sn;
@@ -48,6 +52,8 @@ public class ProfileDao {
         this.sex = sex;
         this.birthday = (bd == null) ? 0 : bd.getTime();
         this.phone = phone;
+        this.politicalViews = pv;
+        this.familyStatus = fs;
     }
 
 
@@ -61,6 +67,8 @@ public class ProfileDao {
         insertValues.put(KEY_PROFILE_SEX, this.sex);
         insertValues.put(KEY_PROFILE_BIRTHDAY, this.birthday);
         insertValues.put(KEY_PROFILE_PHONE, this.phone);
+        insertValues.put(KEY_PROFILE_FS, this.familyStatus);
+        insertValues.put(KEY_PROFILE_PV, this.politicalViews);
 
         if (profile == null) {
             //TODO updating "_data"

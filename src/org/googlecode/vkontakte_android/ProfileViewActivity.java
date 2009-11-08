@@ -32,6 +32,8 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
     private long profileId;
     private ProfileDao friendProfile;
     private Menu menuToRefresh; //menu is disabled until we haven't friend data
+    private static final int SEX_FEMALE = 1;
+    private static final int SEX_MALE = 2;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,75 +64,79 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
 
     private void initInfoTab() {
-	    profileId = CSettings.myId;
-	    if (getIntent().getExtras() != null)
-	        profileId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_PROFILE_USERID, profileId);
-	
-	    new AsyncTask<Long, Object, ProfileDao>() {
-	        @Override
-	        protected void onPreExecute() {
-	            super.onPreExecute();
-	            setProgressBarIndeterminateVisibility(true);
-	        }
-	
-	        @Override
-	        protected void onPostExecute(ProfileDao result) {
-	            setProgressBarIndeterminateVisibility(false);
-	            if (!(result == null)) showProfileInfo(result);
-	        }
-	
-	        @Override
-	        protected ProfileDao doInBackground(Long... id) {
-	
-	            try {
-	                if (!ServiceHelper.getService().loadProfile(id[0], false)) {
-	                    Log.e(TAG, "Cannot load profile");
-	                    return null;
-	                } else {
-	                    Cursor cursor = managedQuery(PROFILES_URI, null, UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?", new String[]{String.valueOf(id[0])}, null);
-	                    cursor.moveToFirst();
-	                    return new ProfileDao(cursor);
-	                }
-	
-	            } catch (RemoteException e) {
-	                e.printStackTrace();
-	            }
-	
-	            return null;
-	        }
-	    }.execute(profileId);
-	
-	}
+        profileId = CSettings.myId;
+        if (getIntent().getExtras() != null)
+            profileId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_PROFILE_USERID, profileId);
 
-	private void initWallTab() {
+        new AsyncTask<Long, Object, ProfileDao>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                setProgressBarIndeterminateVisibility(true);
+            }
+
+            @Override
+            protected void onPostExecute(ProfileDao result) {
+                setProgressBarIndeterminateVisibility(false);
+                if (!(result == null)) showProfileInfo(result);
+            }
+
+            @Override
+            protected ProfileDao doInBackground(Long... id) {
+
+                try {
+                    if (!ServiceHelper.getService().loadProfile(id[0], false)) {
+                        Log.e(TAG, "Cannot load profile");
+                        return null;
+                    } else {
+                        Cursor cursor = managedQuery(PROFILES_URI, null, UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?", new String[]{String.valueOf(id[0])}, null);
+                        cursor.moveToFirst();
+                        return new ProfileDao(cursor);
+                    }
+
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+        }.execute(profileId);
+
+    }
+
+    private void initWallTab() {
     }
 
     private void initUpdatesTab() {
-	    Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_USERID + "=" + profileId, null, KEY_STATUS_DATE + " DESC ");
-	    if (statusesCursor.getCount() < 2) {
-	        new AsyncTask<Long, Object, Boolean>() {
-	
-	            @Override
-	            protected Boolean doInBackground(Long... params) {
-	                try {
-	                    return ServiceHelper.getService().loadStatusesByUser(0, CheckingService.STATUS_NUM_LOAD, profileId);
-	                } catch (RemoteException e) {
-	                    e.printStackTrace();
-	                }
-	                return false;
-	            }
-	
-	        }.execute(new Long[]{profileId});
-	    }
-	
-	
-	}
+        Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_USERID + "=" + profileId, null, KEY_STATUS_DATE + " DESC ");
+        if (statusesCursor.getCount() < 2) {
+            new AsyncTask<Long, Object, Boolean>() {
 
-	private void showProfileInfo(ProfileDao profile) {
+                @Override
+                protected Boolean doInBackground(Long... params) {
+                    try {
+                        return ServiceHelper.getService().loadStatusesByUser(0, CheckingService.STATUS_NUM_LOAD, profileId);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    return false;
+                }
+
+            }.execute(new Long[]{profileId});
+        }
+
+
+    }
+
+    private void showProfileInfo(ProfileDao profile) {
         friendProfile = profile;
         setTitle(getTitle() + ": " + friendProfile.firstname + " " + friendProfile.surname);
         ((ImageButton) findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, friendProfile.id));
-        ((TextView) findViewById(R.id.InfoStatusText)).setText(friendProfile.status);
+        if (friendProfile.status != null) {
+            TextView status = ((TextView) findViewById(R.id.InfoStatusText));
+            status.setText(friendProfile.status);
+            status.setVisibility(View.VISIBLE);
+        }
 
         if (friendProfile.birthday != null && friendProfile.birthday != 0) {
             findViewById(R.id.birthday_row).setVisibility(View.VISIBLE);
@@ -139,11 +145,94 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         }
         if (friendProfile.sex != 0) {
             findViewById(R.id.sex_row).setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R.id.user_sex)).setText(friendProfile.sex == 1 ? R.string.sex_female : R.string.sex_male);
+            ((TextView) findViewById(R.id.user_sex)).setText(friendProfile.sex == SEX_FEMALE ? R.string.sex_female : R.string.sex_male);
         }
         if (friendProfile.phone != null) {
             findViewById(R.id.phone_row).setVisibility(View.VISIBLE);
             ((TextView) findViewById(R.id.phone)).setText(friendProfile.phone);
+        }
+        if (friendProfile.politicalViews != 0) {
+            findViewById(R.id.views_row).setVisibility(View.VISIBLE);
+            int id;
+            switch (friendProfile.politicalViews) {
+                case 1:
+                    id = R.string.pv_communist;
+                    break;
+                case 2:
+                    id = R.string.pv_socialist;
+                    break;
+                case 3:
+                    id = R.string.pv_moderate;
+                    break;
+                case 4:
+                    id = R.string.pv_liberal;
+                    break;
+                case 5:
+                    id = R.string.pv_conservative;
+                    break;
+                case 6:
+                    id = R.string.pv_monarchist;
+                    break;
+                case 7:
+                    id = R.string.pv_ultraconservative;
+                    break;
+                case 8:
+                    id = R.string.pv_apathetic;
+                    break;
+                default:
+                    id = -1; // should never happen
+            }
+            TextView politViews = ((TextView) findViewById(R.id.views));
+            if (id != -1) {
+                politViews.setText(id);
+            } else {
+                politViews.setText("");
+            }
+        }
+        if (friendProfile.familyStatus != 0) {
+            findViewById(R.id.family_status_row).setVisibility(View.VISIBLE);
+            int id = -1;
+            switch (friendProfile.familyStatus) {
+                case 1:
+                    if (friendProfile.sex == SEX_FEMALE) {
+                        id = R.string.fs_single_female;
+                    } else {
+                        id = R.string.fs_single_male;
+                    }
+                    break;
+                case 2:
+                    id = R.string.fs_relationship;
+                    break;
+                case 3:
+                    if (friendProfile.sex == SEX_FEMALE) {
+                        id = R.string.fs_engaged_female;
+                    } else {
+                        id = R.string.fs_engaged_male;
+                    }
+                    break;
+                case 4:
+                    if (friendProfile.sex == SEX_FEMALE) {
+                        id = R.string.fs_married_female;
+                    } else {
+                        id = R.string.fs_married_male;
+                    }
+                    break;
+                case 5:
+                    id = R.string.fs_complicated;
+                    break;
+                case 6:
+                    id = R.string.fs_as;
+                    break;
+                default:
+                    id = -1;
+                    break;
+            }
+            TextView status = ((TextView) findViewById(R.id.status));
+            if (friendProfile.familyStatus != -1) {
+                status.setText(id);
+            } else {
+                status.setText("");
+            }
         }
         refreshMenu();  //TODO: avoid unnecessary calls
     }
@@ -156,15 +245,15 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
 
     private void addOrEditContact() {
-	    //TODO add mail and other
-	    Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
-	    intent.setType("vnd.android.cursor.item/person");
-	    intent.putExtra(Contacts.Intents.Insert.PHONE, Phone.formatPhoneNumber(friendProfile.phone));
-	    intent.putExtra(Contacts.Intents.Insert.NAME, friendProfile.firstname + " " + friendProfile.surname);
-	    startActivity(intent);
-	}
+        //TODO add mail and other
+        Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
+        intent.setType("vnd.android.cursor.item/person");
+        intent.putExtra(Contacts.Intents.Insert.PHONE, Phone.formatPhoneNumber(friendProfile.phone));
+        intent.putExtra(Contacts.Intents.Insert.NAME, friendProfile.firstname + " " + friendProfile.surname);
+        startActivity(intent);
+    }
 
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.friend_context_menu, menu);

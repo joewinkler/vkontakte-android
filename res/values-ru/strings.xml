@@ -3,7 +3,7 @@
     <string name="hello">Hello World, CVkontakteGui!</string>
     <string name="app_name">В Контакте</string>
     <string name="legal">Информация о лицензии</string>
-    <string name="copyright">© 2009 Ильдар Каримов, Евгений Баландин, Сергей Подтынный и другие</string>
+    <string name="copyright">© 2009 Ильдар Каримов, Евгений Баландин, Сергей Подтынный, Анастасия Дремина и другие</string>
 
     <string name="set_status">Редактировать статус</string>
     <string name="ok">Ok</string>
@@ -49,10 +49,8 @@
     <string name="status_update_err">Ошибка при обновлении</string>
     <!--login message-->
     <string name="login_err">Неправильные логин/пароль</string>
-
     <string name="what_are_you_doing">Что вы сейчас делаете?</string>
     <string name="mark_as_read">Пометить как прочитанное</string>
-
     <!--user info-->
     <string name="info_sex">Пол:</string>
     <string name="info_birthday">День рождения:</string>
@@ -63,4 +61,23 @@
     <string name="info_name">Имя:</string>
     <string name="sex_female">Женский</string>
     <string name="sex_male">Мужской</string>
+    <!--family status-->
+    <string name="fs_single_female">Не женат</string>
+    <string name="fs_single_male">Не замужем</string>
+    <string name="fs_engaged_female">Помолвлен</string>
+    <string name="fs_engaged_male">Помолвлена</string>
+    <string name="fs_married_female">Замужем</string>
+    <string name="fs_married_male">Женат</string>
+    <string name="fs_as">В активном поиске</string>
+    <string name="fs_complicated">Всё сложно</string>
+     <string name="fs_relationship">Встречается</string>
+    <!--political views-->
+    <string name="pv_apathetic">Индиффирентные</string>
+    <string name="pv_communist">Коммунистические</string>
+    <string name="pv_socialist">Социалистические</string>
+    <string name="pv_moderate">Умеренные</string>
+    <string name="pv_liberal">Либеральные</string>
+    <string name="pv_conservative">Консервативные</string>
+    <string name="pv_monarchist">Монахрические</string>
+    <string name="pv_ultraconservative">Ультраконсервативные</string>
 </resources>
