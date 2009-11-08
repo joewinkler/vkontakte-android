@@ -152,7 +152,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
             ((TextView) findViewById(R.id.phone)).setText(friendProfile.phone);
         }
         if (friendProfile.politicalViews != 0) {
-            findViewById(R.id.views_row).setVisibility(View.VISIBLE);
+            findViewById(R.id.pw).setVisibility(View.VISIBLE);
             int id;
             switch (friendProfile.politicalViews) {
                 case 1:
@@ -233,6 +233,10 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
             } else {
                 status.setText("");
             }
+        }
+        if (friendProfile.currentCity != null) {
+            findViewById(R.id.current_city).setVisibility(View.VISIBLE);
+            ((TextView) findViewById(R.id.city)).setText(friendProfile.currentCity);
         }
         refreshMenu();  //TODO: avoid unnecessary calls
     }

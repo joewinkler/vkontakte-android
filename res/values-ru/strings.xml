@@ -61,6 +61,7 @@
     <string name="info_name">Имя:</string>
     <string name="sex_female">Женский</string>
     <string name="sex_male">Мужской</string>
+    <string name="info_city">Город:</string>
     <!--family status-->
     <string name="fs_single_female">Не женат</string>
     <string name="fs_single_male">Не замужем</string>

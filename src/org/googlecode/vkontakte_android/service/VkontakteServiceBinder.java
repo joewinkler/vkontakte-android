@@ -209,7 +209,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
             if (setMe)CSettings.myId = pr.getId();
             ProfileDao dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr.getSurname(), (pr.getStatus() == null) ? null : pr.getStatus().getText(),
-                    pr.getSex(), pr.getBirthday(), pr.getPhone(), pr.getPoliticalViews(), pr.getFamilyStatus());
+                    pr.getSex(), pr.getBirthday(), pr.getPhone(), pr.getPoliticalViews(), pr.getFamilyStatus(), pr.getCurrentCity());
             Uri uri = dao.saveOrUpdate(m_context);
             Log.d(TAG, uri.toString());
             OutputStream os = m_context.getContentResolver().openOutputStream(uri);

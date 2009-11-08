@@ -29,6 +29,7 @@ public class ProfileDao {
     public String phone;
     public int politicalViews;
     public int familyStatus;
+    public String currentCity;
 
     public ProfileDao(Cursor cursor) {
         rowid = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_PROFILE_ROWID));
@@ -41,10 +42,11 @@ public class ProfileDao {
         phone = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PROFILE_PHONE));
         politicalViews = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_PROFILE_PV));
         familyStatus = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_PROFILE_FS));
+        currentCity = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PROFILE_CURRENT_CITY));
     }
 
     public ProfileDao(long id, String fn, String sn, String st,
-                      int sex, Date bd, String phone, int pv, int fs) {
+                      int sex, Date bd, String phone, int pv, int fs, String curCity) {
         this.id = id;
         this.firstname = fn;
         this.surname = sn;
@@ -54,6 +56,7 @@ public class ProfileDao {
         this.phone = phone;
         this.politicalViews = pv;
         this.familyStatus = fs;
+        this.currentCity = curCity;
     }
 
 
@@ -69,6 +72,7 @@ public class ProfileDao {
         insertValues.put(KEY_PROFILE_PHONE, this.phone);
         insertValues.put(KEY_PROFILE_FS, this.familyStatus);
         insertValues.put(KEY_PROFILE_PV, this.politicalViews);
+        insertValues.put(KEY_PROFILE_CURRENT_CITY, this.currentCity);
 
         if (profile == null) {
             //TODO updating "_data"

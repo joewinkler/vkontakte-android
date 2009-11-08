@@ -76,6 +76,7 @@
     <string name="info_name">Name:</string>
     <string name="sex_female">Female</string>
     <string name="sex_male">Male</string>
+    <string name="info_city">Location:</string>
     <!--family status-->
     <string name="fs_single_female">Single</string>
     <string name="fs_single_male">Single</string>

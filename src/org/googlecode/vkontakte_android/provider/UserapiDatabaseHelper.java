@@ -45,6 +45,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_PROFILE_PHOTO = "_data";
     public static final String KEY_PROFILE_PV = "pv";
     public static final String KEY_PROFILE_FS = "fs";
+    public static final String KEY_PROFILE_CURRENT_CITY = "current_city";
 
     public static final String KEY_STATUS_ROWID = BaseColumns._ID;
     public static final String KEY_STATUS_STATUSID = "statusid";
@@ -101,7 +102,8 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             + KEY_PROFILE_PHONE + " text,"
             + KEY_PROFILE_PHOTO + " text,"
             + KEY_PROFILE_FS + " int,"
-            + KEY_PROFILE_PV + " int"
+            + KEY_PROFILE_PV + " int,"
+            + KEY_PROFILE_CURRENT_CITY + " text"
             + ");";
 
     public static final String DATABASE_STATUS_TABLE = "statuses";
