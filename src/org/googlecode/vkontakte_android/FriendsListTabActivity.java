@@ -48,17 +48,17 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
 			public Boolean load() {
 				try {
 					//TODO check for thread-safety
-                   ServiceHelper.getService().loadUsersPhotos(getIdsToUpdatePhotos());
+                   ServiceHelper.getService().loadAllUsersPhotos();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                     AppHelper.showFatalError(FriendsListTabActivity.this, "While trying to load friends photos");
                 }
 				
                 return false;
-			}
+			} 
         	 
         }, adapter);
-       ACTION_FLAGS |= AutoLoadActivity.ACTION_ON_SCROLL ;
+       ACTION_FLAGS = AutoLoadActivity.ACTION_ON_START ;
        registerForContextMenu(getListView());
        getListView().setOnItemClickListener(this);
    }

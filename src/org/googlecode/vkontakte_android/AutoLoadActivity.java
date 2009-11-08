@@ -30,7 +30,7 @@ public class AutoLoadActivity extends ListActivity implements AbsListView.OnScro
 	public static int ACTION_ON_SCROLL_END = 1;
 	public static int ACTION_ON_KEY = 2;
 	public static int ACTION_ON_SCROLL = 4;
-	
+	public static int ACTION_ON_START = 8;
 	
 	private static String TAG = "AutoLoadActivity";
 	protected ListAdapter m_adapter;
@@ -42,6 +42,14 @@ public class AutoLoadActivity extends ListActivity implements AbsListView.OnScro
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		if ((ACTION_FLAGS & AutoLoadActivity.ACTION_ON_START) != 0) {
+			loadMore();
+		}
 	}
 	
 	/**

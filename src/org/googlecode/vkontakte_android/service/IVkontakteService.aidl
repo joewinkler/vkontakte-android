@@ -15,6 +15,7 @@ interface IVkontakteService {
   boolean loadStatusesByUser(int start, int end, long id);
   
   boolean loadUsersPhotos(in List<String> l);  //how to pass Long as type?
+  boolean loadAllUsersPhotos(); 
   
   //load user's profile to the cache and return if successful
   boolean loadProfile(long userid,boolean setMe);

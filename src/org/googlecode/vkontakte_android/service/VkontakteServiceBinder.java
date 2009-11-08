@@ -291,6 +291,28 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 		return false;
 	}
 
+	@Override
+	public boolean loadAllUsersPhotos() throws RemoteException {
+		Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null, 
+				null, null, null);
+		while (c.moveToNext()) {
+			UserDao ud = new UserDao(c);
+			try {
+				if (ud._data == null) {   
+					Log.d(TAG, "!!!!!!!!!!!! "+ud.userName);
+					ud.updatePhoto(m_context);
+				} else {
+					Log.d(TAG, "?????????????? "+ud.userName);
+				}
+			} catch (IOException e) {
+				Log.e(TAG, "Cannot download photo"); 
+				e.printStackTrace();
+			}
+		}
+		c.close();
+		return false;
+	}
+
 	
 
 }
