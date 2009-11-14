@@ -20,7 +20,8 @@ import android.util.Log;
 public class ApiCheckingKit {
     private ApiCheckingKit() throws IOException {}
     
-    private static VkontakteAPI s_api = new VkontakteAPI();
+    private static final int SITE_ID = 2;
+    private static VkontakteAPI s_api = new VkontakteAPI(SITE_ID);
     public static VkontakteAPI getApi() {
         return s_api;
     }
