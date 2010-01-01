@@ -8,11 +8,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.googlecode.userapi.ChangesHistory;
-import org.googlecode.userapi.Message;
-import org.googlecode.userapi.Status;
-import org.googlecode.userapi.User;
-import org.googlecode.userapi.VkontakteAPI;
+import org.googlecode.userapi.*;
 import org.googlecode.vkontakte_android.CSettings;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.StatusDao;
@@ -45,7 +41,6 @@ public class CheckingService extends Service {
     private static boolean s_timerHasStarted = false;
     private static SharedPreferences s_prefs;
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
-    //private boolean m_hasConnection = true;
 
 
     public enum contentToUpdate {
@@ -164,7 +159,12 @@ public class CheckingService extends Service {
     protected void updateInMessages(long first, long last) throws IOException, JSONException {
         //todo: use history or friends-like update with save
         VkontakteAPI api = ApiCheckingKit.getApi();
-        List<Message> messages = api.getInbox((int) first, (int) last);
+        List<Message> messages = null;
+        try {
+            messages = api.getInbox((int) first, (int) last);
+        } catch (UserapiLoginException e) {
+            e.printStackTrace();
+        }
         MessageDao single = null;
         int countNew = 0;
         for (Message m : messages) {
@@ -186,7 +186,12 @@ public class CheckingService extends Service {
     protected void updateOutMessages(long first, long last) throws IOException, JSONException {
         //todo: use history or friends-like update with save
         VkontakteAPI api = ApiCheckingKit.getApi();
-        List<Message> messages = api.getOutbox((int) first, (int) last);
+        List<Message> messages = null;
+        try {
+            messages = api.getOutbox((int) first, (int) last);
+        } catch (UserapiLoginException e) {
+            e.printStackTrace();
+        }
         for (Message m : messages) {
             MessageDao md = new MessageDao(m);
             Log.d(TAG, "saving outcoming message");
@@ -215,7 +220,12 @@ public class CheckingService extends Service {
 
     private void updateHistory() throws IOException, JSONException {
         Log.d(TAG, "updating history");
-        ChangesHistory hist = ApiCheckingKit.getApi().getChangesHistory();
+        ChangesHistory hist = null;
+        try {
+            hist = ApiCheckingKit.getApi().getChangesHistory();
+        } catch (UserapiLoginException e) {
+            e.printStackTrace();
+        }
         long new_friends = hist.getFriendsCount() - ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum;
         long new_messages = hist.getMessagesCount() - ApiCheckingKit.m_histChanges.prevUnreadMessNum;
         long new_tags = hist.getPhotosCount() - ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum;
@@ -241,7 +251,12 @@ public class CheckingService extends Service {
     protected void updateStatuses(int start, int end) throws IOException, JSONException {
         Log.d(TAG, "updating statuses "+start+" to "+end);
         VkontakteAPI api = ApiCheckingKit.getApi();
-        List<Status> statuses = api.getTimeline(start, end);
+        List<Status> statuses = null;
+        try {
+            statuses = api.getTimeline(start, end);
+        } catch (UserapiLoginException e) {
+            e.printStackTrace();
+        }
         List<StatusDao> statusDaos = new LinkedList<StatusDao>();
         for (Status status : statuses) {
             boolean personal = false;
@@ -254,7 +269,12 @@ public class CheckingService extends Service {
     protected void updateStatuses(int start, int end, long id) throws IOException, JSONException {
         Log.d(TAG, "updating statuses for user:"+id+"/"+start+" to "+end);
         VkontakteAPI api = ApiCheckingKit.getApi();
-        List<Status> statuses = api.getStatusHistory(id, start, end, 0);
+        List<Status> statuses = null;
+        try {
+            statuses = api.getStatusHistory(id, start, end, 0);
+        } catch (UserapiLoginException e) {
+            e.printStackTrace();
+        }
         List<StatusDao> statusDaos = new LinkedList<StatusDao>();
         for (Status status : statuses) {
             boolean personal = true;
@@ -272,7 +292,12 @@ public class CheckingService extends Service {
             firstUpdate = true;
             cursor.close();
         }
-        List<User> friends = api.getMyFriends();
+        List<User> friends = null;
+        try {
+            friends = api.getMyFriends();
+        } catch (UserapiLoginException e) {
+            e.printStackTrace();
+        }
         Log.d(TAG, "got users: " + friends.size());
         StringBuilder notIn = new StringBuilder(" ");
         int counter = 0;
@@ -302,7 +327,12 @@ public class CheckingService extends Service {
 
     //todo: use 'partial' lock for instead of synchronized(?)
     private synchronized void refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
-        List<User> friends = api.getMyNewFriends();
+        List<User> friends = null;
+        try {
+            friends = api.getMyNewFriends();
+        } catch (UserapiLoginException e) {
+            e.printStackTrace(); 
+        }
         Log.d(TAG, "got new users: " + friends.size());
         StringBuilder notIn = new StringBuilder(" ");
         boolean isNew = true;

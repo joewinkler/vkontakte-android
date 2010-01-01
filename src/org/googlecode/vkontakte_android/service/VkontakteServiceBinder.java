@@ -5,10 +5,7 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
-import org.googlecode.userapi.Credentials;
-import org.googlecode.userapi.Message;
-import org.googlecode.userapi.ProfileInfo;
-import org.googlecode.userapi.VkontakteAPI;
+import org.googlecode.userapi.*;
 import org.googlecode.vkontakte_android.CSettings;
 import org.googlecode.vkontakte_android.R;
 import org.googlecode.vkontakte_android.database.MessageDao;
@@ -44,72 +41,49 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     public boolean login(String login, String pass) throws RemoteException {
         VkontakteAPI api = ApiCheckingKit.getApi();
         Context ctx = m_context;
-
+        boolean result = false;
         try {
-            Credentials cred = new Credentials(login, pass, null, null);
-            if (api.login(cred)) {
+            Credentials cred = new Credentials(login, pass, null);
+            try {
+                api.login(cred);
                 Log.d(TAG, "Successful log with login/pass");
-                CSettings.saveLogin(ctx, api.getCred());
-                return true;
-            } else {
-                Log.d(TAG, "Wrong login/pass");
-                return false;
+                CSettings.saveLogin(ctx, cred);
+                result = true;
+            } catch (UserapiLoginException e) {
+                e.printStackTrace();
             }
         } catch (IOException e) {
             e.printStackTrace();
             UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
             //TODO what to do in this case?
-            return false;
         }
+        return result;
     }
 
     @Override
     public boolean loginAuth() throws RemoteException {
         Context ctx = m_context;
         VkontakteAPI api = ApiCheckingKit.getApi();
-
-        if (CSettings.isLogged(ctx))
-        {
+        boolean result = false;
+        if (CSettings.isLogged(ctx)) {
             try {
-                Credentials cred = new Credentials(CSettings.getLogin(ctx),
-                        CSettings.getPass(ctx), CSettings.getRemixPass(ctx),
-                        CSettings.getSid(ctx));
-                
-                Credentials cred1 = new Credentials(CSettings.getLogin(ctx),
-                        CSettings.getPass(ctx), CSettings.getRemixPass(ctx),
-                        null);
-                
-                Credentials cred2 = new Credentials(CSettings.getLogin(ctx),
-                        CSettings.getPass(ctx), null,
-                        null);
-                
-                if (api.login(cred)) {
-                    Log.d(TAG, "Logged with SID");
-                    return true;
-                
-                }else if (api.login(cred1)) {
-                        Log.d(TAG, "Logged with REMIX");
-                        return true;
-
-                }else if (api.login(cred2)) {
-                    Log.d(TAG, "Logged with LOGIN/PASSWORD");
-                    CSettings.saveLogin(ctx, api.getCred());
-                    return true;
-                    
-                } else {
-                    Log.d(TAG, "Cannot log with 3 methods");
-                    CSettings.clearPrivateInfo(ctx);
-                    return false;
-                }
+                Credentials credentials = new Credentials(CSettings.getLogin(ctx),
+                        CSettings.getPass(ctx), CSettings.getRemixPass(ctx));
+                api.login(credentials);
+                result = true;
+                Log.d(TAG, "Logged in");
+                CSettings.saveLogin(ctx, credentials);
             } catch (IOException ex) {
+                CSettings.clearPrivateInfo(ctx);
                 UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
-                return false;
+            } catch (UserapiLoginException e) {
+                CSettings.clearPrivateInfo(ctx);
+                e.printStackTrace();
             }
-        }else{
+        } else {
             Log.d(TAG, "No Login/Password stored");
-        	return false;
         }
-        	
+        return result;
     }
 
     @Override
@@ -119,7 +93,11 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         message.setReceiverId(id);
         message.setText(text);
         try {
-            ApiCheckingKit.getApi().sendMessageToUser(message);
+            try {
+                ApiCheckingKit.getApi().sendMessageToUser(message);
+            } catch (UserapiLoginException e) {
+                e.printStackTrace();
+            }
             MessageDao md = new MessageDao(0, new Date(), text, 0, id, true);
             //don't save it to DB, TODO refresh last out message instead
             m_service.doCheck(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal(), new Bundle(), false);
@@ -140,6 +118,8 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (UserapiLoginException e) {
             e.printStackTrace();
         }
         return result;
@@ -180,7 +160,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 			case MESSAGES_OUT:
 				m_service.updateOutMessages(first, last);
 				return true;
-			default:  
+			default:
 				m_service.updateInMessages(first, last/2);
 				m_service.updateOutMessages(first, last/2);
 				return true;
@@ -197,9 +177,13 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
     @Override
     public boolean loadProfile(long userid, boolean setMe) throws RemoteException {
-        ProfileInfo pr;
+        ProfileInfo pr = null;
         try {
-            pr = ApiCheckingKit.getApi().getProfileOrThrow(userid);
+            try {
+                pr = ApiCheckingKit.getApi().getProfileOrThrow(userid);
+            } catch (UserapiLoginException e) {
+                e.printStackTrace();
+            }
 
             String photoUrl = pr.getPhoto();
             byte photo[] = null;
@@ -247,7 +231,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 		}
 		return false;
 	}
-	
+
 	public boolean loadStatusesByUser(int start, int end, long userId) throws RemoteException {
 		try {
 			m_service.updateStatuses(start, end, userId);
@@ -258,7 +242,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
 		return false;
 	}
 
@@ -269,12 +253,12 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 	public synchronized boolean loadUsersPhotos(List<String> l) throws RemoteException {
 		StringBuffer users = new StringBuffer(" ");
 		for (String ids:l) {
-			users.append(ids).append(",");	
+			users.append(ids).append(",");
 		}
 		users.deleteCharAt(users.length() - 1);//remove last ','
-		
+
 		Log.d(TAG, "Ids to update:"+users);
-		Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null, 
+		Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null,
 				UserapiDatabaseHelper.KEY_USER_USERID + " IN(" + users + ")", null, null);
 		while (c.moveToNext()) {
 			UserDao ud = new UserDao(c);
@@ -283,7 +267,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 					ud.updatePhoto(m_context);
 				}
 			} catch (IOException e) {
-				Log.e(TAG, "Cannot download photo"); 
+				Log.e(TAG, "Cannot download photo");
 				e.printStackTrace();
 			}
 		}
@@ -293,16 +277,16 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
 	@Override
 	public boolean loadAllUsersPhotos() throws RemoteException {
-		Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null, 
+		Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null,
 				null, null, null);
 		while (c.moveToNext()) {
 			UserDao ud = new UserDao(c);
 			try {
-				if (ud._data == null) {   
+				if (ud._data == null) {
 					ud.updatePhoto(m_context);
-				} 
+				}
 			} catch (IOException e) {
-				Log.e(TAG, "Cannot download photo"); 
+				Log.e(TAG, "Cannot download photo");
 				e.printStackTrace();
 			}
 		}

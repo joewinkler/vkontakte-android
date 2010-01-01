@@ -61,11 +61,9 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         ed.commit();
         ed.putString("remixpassword", cred.getRemixpass());
         ed.commit();
-        ed.putString("sid", cred.getSession());
-        ed.commit();
     }
     
-    public static void saveLogin(Context ctx, String login, String pass, String remixpassword, String sid) {
+    public static void saveLogin(Context ctx, String login, String pass, String remixpassword) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         Editor ed = prefs.edit();
         ed.putString("login", login);
@@ -74,8 +72,6 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         ed.commit();
         ed.putString("remixpassword", remixpassword);
         ed.commit();
-        ed.putString("sid", sid);
-        ed.commit();
     }
 
     public static boolean isLogged(Context ctx) {
@@ -83,12 +79,6 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         return prefs.contains("login") && prefs.contains("password");
     }
 
-    public static void clearSid(Context ctx) {
-    	Editor ed = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
-        ed.remove("sid");
-        ed.commit();
-    } 
-    
     public static void clearPrivateInfo(Context ctx) {
         Editor ed = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
         ed.remove("login");
@@ -96,8 +86,6 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         ed.remove("password");
         ed.commit();
         ed.remove("remixpassword");
-        ed.commit();
-        ed.remove("sid");
         ed.commit();
     }
 
@@ -111,10 +99,6 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
 
     public static String getRemixPass(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString("remixpassword", null);
-    }
-
-    public static String getSid(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getString("sid", null);
     }
 
     public static int getPeriod(Context ctx) {

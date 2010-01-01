@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.graphics.BitmapFactory;
 import org.googlecode.userapi.PageHiddenException;
+import org.googlecode.userapi.UserapiLoginException;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.userapi.Photo;
 import org.json.JSONException;
@@ -45,28 +46,33 @@ public class PhotoListAdapter extends BaseAdapter {
 
         try {
             try {
-                photos = api.getPhotos(api.myId, 0, 10, VkontakteAPI.photosTypes.photos);
+                try {
+                    photos = api.getPhotos(api.myId, 0, 10, VkontakteAPI.photosTypes.photos);
+                } catch (UserapiLoginException e) {
+                    e.printStackTrace();
+                }
             } catch (PageHiddenException e) {
                 e.printStackTrace(); //todo!
             }
             Log.w("photos:", photos.size() + "");
         notifyDataSetChanged();
     } catch (IOException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        e.printStackTrace();
     } catch (JSONException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        e.printStackTrace();
     }
     }
 
     public View getView(int pos, View v, ViewGroup p) {
+        //TODO ? na figa
         ImageView view = new ImageView(context);
-        byte[] image = new byte[0];
-        try {
-            image = photos.get(pos).getImage();
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        view.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+//        byte[] image = new byte[0];
+//        try {
+//            image = photos.get(pos).getImageUrl();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        view.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
         return view;
     }
 
