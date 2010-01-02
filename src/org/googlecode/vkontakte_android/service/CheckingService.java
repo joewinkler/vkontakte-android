@@ -139,15 +139,14 @@ public class CheckingService extends Service {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                catch (OutOfMemoryError error) {
-                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! OOM");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-                    onLowMemory();
-                }
+//                catch (OutOfMemoryError error) {
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                    }
+//                    onLowMemory();
+//                }
             }
         }
         int period = 10000;//CSettings.getPeriod(getApplicationContext());
