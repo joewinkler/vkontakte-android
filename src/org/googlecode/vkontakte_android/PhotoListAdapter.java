@@ -30,7 +30,7 @@ public class PhotoListAdapter extends BaseAdapter {
     }
 
     public Object getItem(int pos) {
-        return (Object) pos;
+        return pos;
     }
 
     public long getItemId(int pos) {

@@ -21,12 +21,12 @@ public class ApiCheckingKit {
     private ApiCheckingKit() throws IOException {}
     
     private static final int SITE_ID = 2;
-    private static VkontakteAPI s_api = new VkontakteAPI(SITE_ID);
+    private static final VkontakteAPI s_api = new VkontakteAPI(SITE_ID);
     public static VkontakteAPI getApi() {
         return s_api;
     }
     
-    public static HistoryChanges m_histChanges = new HistoryChanges();
+    public static final HistoryChanges m_histChanges = new HistoryChanges();
     
 }
 

@@ -191,7 +191,11 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             }
             byte photo[] = null;
             if (photoUrl != null) {
-                photo = ApiCheckingKit.getApi().getFileFromUrl(photoUrl);
+                try {
+                    photo = ApiCheckingKit.getApi().getFileFromUrl(photoUrl);
+                } catch (Exception e) {
+                    Log.e(TAG,"cannot load photo", e);
+                }
             }
 
             if (setMe) if (pr != null) {

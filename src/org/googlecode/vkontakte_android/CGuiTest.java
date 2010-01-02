@@ -324,7 +324,7 @@ public class CGuiTest extends TabActivity {
 	class VkontakteServiceConnection implements ServiceConnection {
         public void onServiceConnected(ComponentName className,
                                        IBinder boundService) {
-            m_vkService = IVkontakteService.Stub.asInterface((IBinder) boundService);
+            m_vkService = IVkontakteService.Stub.asInterface(boundService);
             Log.d(TAG, "Service has been connected");
             try {
                 login();

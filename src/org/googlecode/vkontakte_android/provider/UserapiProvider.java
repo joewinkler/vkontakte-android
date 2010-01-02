@@ -363,6 +363,6 @@ public class UserapiProvider extends ContentProvider {
     		return false;
     	}
     	File f = new File(path);
-    	return (!f.exists() || f.length()==0) ? false : true; 
+    	return (!(!f.exists() || f.length() == 0));
     }
 }
