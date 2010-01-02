@@ -191,7 +191,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         }
         if (friendProfile.familyStatus != 0) {
             findViewById(R.id.family_status_row).setVisibility(View.VISIBLE);
-            int id = -1;
+            int id;
             switch (friendProfile.familyStatus) {
                 case 1:
                     if (friendProfile.sex == SEX_FEMALE) {

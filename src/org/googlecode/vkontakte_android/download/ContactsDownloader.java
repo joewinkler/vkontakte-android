@@ -35,7 +35,7 @@ public class ContactsDownloader {
 
         for (int page = 1; page < 100; page++) {
             final HttpGet get = new HttpGet("http://pda.vkontakte.ru/friends" + page);
-            final HttpResponse response = client.execute(get);
+            final HttpResponse response =  client.execute(get);
 
             final List<VkRecord> chunk = parse(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
             if (chunk.isEmpty()) break;

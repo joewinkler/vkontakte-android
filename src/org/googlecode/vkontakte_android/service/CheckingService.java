@@ -1,12 +1,7 @@
 package org.googlecode.vkontakte_android.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import org.googlecode.userapi.*;
 import org.googlecode.vkontakte_android.CSettings;
@@ -167,15 +162,17 @@ public class CheckingService extends Service {
         }
         MessageDao single = null;
         int countNew = 0;
-        for (Message m : messages) {
+        if (messages != null) {
+            for (Message m : messages) {
 
-            MessageDao md = new MessageDao(m);
-            if (single == null) {
-                single = md;
+                MessageDao md = new MessageDao(m);
+                if (single == null) {
+                    single = md;
+                }
+                Log.d(TAG, "saving message");
+                countNew += md.saveOrUpdate(this);
+
             }
-            Log.d(TAG, "saving message");
-            countNew += md.saveOrUpdate(this);
-
         }
         if (countNew > 0)
             UpdatesNotifier.notifyMessages(this, countNew, single);
@@ -192,10 +189,12 @@ public class CheckingService extends Service {
         } catch (UserapiLoginException e) {
             e.printStackTrace();
         }
-        for (Message m : messages) {
-            MessageDao md = new MessageDao(m);
-            Log.d(TAG, "saving outcoming message");
-            md.saveOrUpdate(this);
+        if (messages != null) {
+            for (Message m : messages) {
+                MessageDao md = new MessageDao(m);
+                Log.d(TAG, "saving outcoming message");
+                md.saveOrUpdate(this);
+            }
         }
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
     }
@@ -203,7 +202,6 @@ public class CheckingService extends Service {
     private void updateFriends() throws IOException, JSONException {
         Log.d(TAG, "updating friends:");
         refreshFriends(ApiCheckingKit.getApi(), getApplicationContext());
-
         Log.d(TAG, "updating new friends:");
         refreshNewFriends(ApiCheckingKit.getApi(), getApplicationContext());
     }
@@ -226,20 +224,32 @@ public class CheckingService extends Service {
         } catch (UserapiLoginException e) {
             e.printStackTrace();
         }
-        long new_friends = hist.getFriendsCount() - ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum;
-        long new_messages = hist.getMessagesCount() - ApiCheckingKit.m_histChanges.prevUnreadMessNum;
-        long new_tags = hist.getPhotosCount() - ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum;
-        
+        long new_friends = 0;
+        if (hist != null) {
+            new_friends = hist.getFriendsCount() - ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum;
+        }
+        long new_messages = 0;
+        if (hist != null) {
+            new_messages = hist.getMessagesCount() - ApiCheckingKit.m_histChanges.prevUnreadMessNum;
+        }
+        long new_tags = 0;
+        if (hist != null) {
+            new_tags = hist.getPhotosCount() - ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum;
+        }
+
         if (new_friends > 0) {
-        	ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum = hist.getFriendsCount();
+            assert hist != null;
+            ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum = hist.getFriendsCount();
         	Log.d(TAG, "Received new friends: "+new_friends);
         }
         if (new_messages > 0) {
-        	ApiCheckingKit.m_histChanges.prevUnreadMessNum = hist.getMessagesCount();
+            assert hist != null;
+            ApiCheckingKit.m_histChanges.prevUnreadMessNum = hist.getMessagesCount();
         	Log.d(TAG, "Received new messages: "+new_messages);
         }
         if (new_tags > 0) {
-       	ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum = hist.getPhotosCount();
+            assert hist != null;
+            ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum = hist.getPhotosCount();
         	Log.d(TAG, "Received new phototags: "+new_friends);
         }
         
@@ -258,10 +268,12 @@ public class CheckingService extends Service {
             e.printStackTrace();
         }
         List<StatusDao> statusDaos = new LinkedList<StatusDao>();
-        for (Status status : statuses) {
-            boolean personal = false;
-            StatusDao statusDao = new StatusDao(status.getStatusId(), status.getUserId(), status.getUserName(), status.getDate(), status.getText(), personal);
-            statusDaos.add(statusDao);
+        if (statuses != null) {
+            for (Status status : statuses) {
+                boolean personal = false;
+                StatusDao statusDao = new StatusDao(status.getStatusId(), status.getUserId(), status.getUserName(), status.getDate(), status.getText(), personal);
+                statusDaos.add(statusDao);
+            }
         }
         StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);
     }
@@ -276,10 +288,12 @@ public class CheckingService extends Service {
             e.printStackTrace();
         }
         List<StatusDao> statusDaos = new LinkedList<StatusDao>();
-        for (Status status : statuses) {
-            boolean personal = true;
-            StatusDao statusDao = new StatusDao(status.getStatusId(), status.getUserId(), status.getUserName(), status.getDate(), status.getText(), personal);
-            statusDaos.add(statusDao);
+        if (statuses != null) {
+            for (Status status : statuses) {
+                boolean personal = true;
+                StatusDao statusDao = new StatusDao(status.getStatusId(), status.getUserId(), status.getUserName(), status.getDate(), status.getText(), personal);
+                statusDaos.add(statusDao);
+            }
         }
         StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);
     }
@@ -298,25 +312,32 @@ public class CheckingService extends Service {
         } catch (UserapiLoginException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "got users: " + friends.size());
+        if (friends != null) {
+            Log.d(TAG, "got users: " + friends.size());
+        }
         StringBuilder notIn = new StringBuilder(" ");
         int counter = 0;
         boolean isNew = false;
-        List<UserDao> users = new ArrayList<UserDao>(friends.size());
-        for (User user : friends) {
-            UserDao userDao = new UserDao(user, isNew, true);
-            notIn.append(user.getUserId()).append(",");
-            Uri useruri = userDao.saveOrUpdate(this);
-            if (!firstUpdate) {  //special hack for photo update - load it when needed
-              	//userDao.updatePhoto(this, user, useruri);
-            }
-            if (counter++ == 10) {
-                getContentResolver().notifyChange(useruri, null);
-                counter = 0;
-            }
-            users.add(userDao);
+        List<UserDao> users = null;
+        if (friends != null) {
+            users = new ArrayList<UserDao>(friends.size());
         }
-        
+        if (friends != null) {
+            for (User user : friends) {
+                UserDao userDao = new UserDao(user, isNew, true);
+                notIn.append(user.getUserId()).append(",");
+                Uri useruri = userDao.saveOrUpdate(this);
+                if (!firstUpdate) {  //special hack for photo update - load it when needed
+                      //userDao.updatePhoto(this, user, useruri);
+                }
+                if (counter++ == 10) {
+                    getContentResolver().notifyChange(useruri, null);
+                    counter = 0;
+                }
+                users.add(userDao);
+            }
+        }
+
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
         getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND "
                 + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")" + " AND " +
@@ -333,15 +354,19 @@ public class CheckingService extends Service {
         } catch (UserapiLoginException e) {
             e.printStackTrace(); 
         }
-        Log.d(TAG, "got new users: " + friends.size());
+        if (friends != null) {
+            Log.d(TAG, "got new users: " + friends.size());
+        }
         StringBuilder notIn = new StringBuilder(" ");
         boolean isNew = true;
-        for (User user : friends) {
-            UserDao userDao = new UserDao(user, isNew, false);
-            Uri useruri = userDao.saveOrUpdate(context);
-            notIn.append(user.getUserId()).append(",");
-            userDao.updatePhoto(this, user, useruri);
-            getContentResolver().notifyChange(useruri, null);
+        if (friends != null) {
+            for (User user : friends) {
+                UserDao userDao = new UserDao(user, isNew, false);
+                Uri useruri = userDao.saveOrUpdate(context);
+                notIn.append(user.getUserId()).append(",");
+                userDao.updatePhoto(this, user, useruri);
+                getContentResolver().notifyChange(useruri, null);
+            }
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
         getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=1" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);

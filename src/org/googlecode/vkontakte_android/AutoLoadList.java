@@ -52,7 +52,7 @@ public class AutoLoadList extends ListView {
 	*/
 
 	private void loadMore() {
-		if (!mLoader.equals(null)){
+		if (mLoader!=null){
 		new AsyncTask<Object, Object, Boolean>() {
 
 			@Override

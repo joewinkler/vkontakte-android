@@ -29,8 +29,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class HomeGridActivity extends Activity implements OnItemClickListener, ServiceConnection  {
- 
-    private GridView mHomeGrid = null;
+
     private final static String TAG = "org.googlecode.vkontakte_android.HomeGridActivity";
 
     @Override
@@ -40,9 +39,9 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
 
         setContentView(R.layout.homegrid);
         bindService(new Intent(this,CheckingService.class), this, Context.BIND_AUTO_CREATE);
-        
 
-        mHomeGrid = (GridView) findViewById(R.id.HomeGrid);
+
+        GridView mHomeGrid = (GridView) findViewById(R.id.HomeGrid);
         mHomeGrid.setNumColumns(3);
         mHomeGrid.setAdapter(new HomeGridAdapter(this));
         mHomeGrid.setOnItemClickListener(this);
@@ -65,7 +64,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         		}
         	});
     	
-    	  ((Button)findViewById(R.id.StatusSubmitButton)).setOnClickListener(new OnClickListener() {
+    	  findViewById(R.id.StatusSubmitButton).setOnClickListener(new OnClickListener() {
   			
   			@Override
   			public void onClick(View v) {
@@ -93,7 +92,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
   						return false;
   					}
   				}.execute(new String[]{statusText});
-  				;
   			}
   		});    	
     	
@@ -121,7 +119,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
         setProgressBarIndeterminateVisibility(true);
-        this.setTitle(getResources().getString(R.string.app_name) + " > " + (String) arg1.getTag());
+        this.setTitle(getResources().getString(R.string.app_name) + " > " + arg1.getTag());
 
         if (arg1.getTag().equals("Settings")) {
             startActivity(new Intent(this, CSettings.class));
@@ -137,7 +135,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
                 || arg1.getTag().equals("Photos")) {
             Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
             backToHome();
-            return;
         } else {
             Intent i = new Intent(this, CGuiTest.class);
             i.putExtra("tabToShow", (String) arg1.getTag());

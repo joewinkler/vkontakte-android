@@ -65,9 +65,9 @@ class UpdatesNotifier {
             	NotificationManager mNotificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
             	String tickerText = "VKontakte updates";
             	Notification notification = new Notification(R.drawable.icon, tickerText, System.currentTimeMillis());
-            	String contentTitle = "";
+            	String contentTitle;
             	String contentText  = "";
-            	Intent notificationIntent = null;
+            	Intent notificationIntent;
             	if (num==1) 
             	{  
             		contentTitle = "New message from "+mess.getSender(ctx).userName;

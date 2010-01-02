@@ -37,7 +37,7 @@ public class CMeTab extends Activity {
         setContentView(R.layout.main);
 
         TextView updates = (TextView) findViewById(updates_counter);
-        ((Button) findViewById(R.id.send_status)).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.send_status).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditText editor = (EditText) findViewById(R.id.editor);

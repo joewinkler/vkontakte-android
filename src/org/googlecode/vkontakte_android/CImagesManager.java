@@ -10,7 +10,7 @@ import android.graphics.BitmapFactory;
 
 public class CImagesManager {
 
-	public enum Icons {STUB};
+	public enum Icons {STUB}
 	private static Map<Icons, Bitmap> s_bitmaps = new HashMap<Icons, Bitmap>();
 	private static Map<Icons, Integer> s_iconPaths = new HashMap<Icons, Integer>();
 

@@ -98,17 +98,17 @@ public class LoginDialog extends Dialog {
     }
     
     public void showProgress() {
-    	((EditText)findViewById(R.id.login)).setEnabled(false);
-    	((EditText)findViewById(R.id.pass)).setEnabled(false);
-    	((Button)findViewById(R.id.button_login)).setEnabled(false);
-    	((ProgressBar)findViewById(R.id.progress_bar)).setVisibility(View.VISIBLE);
+    	findViewById(R.id.login).setEnabled(false);
+    	findViewById(R.id.pass).setEnabled(false);
+    	findViewById(R.id.button_login).setEnabled(false);
+    	findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
     }
     
     public void stopProgress() {
-    	((EditText)findViewById(R.id.login)).setEnabled(true);
-    	((EditText)findViewById(R.id.pass)).setEnabled(true);
-    	((Button)findViewById(R.id.button_login)).setEnabled(true);
-    	((ProgressBar)findViewById(R.id.progress_bar)).setVisibility(View.GONE);
+    	findViewById(R.id.login).setEnabled(true);
+    	findViewById(R.id.pass).setEnabled(true);
+    	findViewById(R.id.button_login).setEnabled(true);
+    	findViewById(R.id.progress_bar).setVisibility(View.GONE);
     }
     
     public void showErrorMessage(String err) {
@@ -119,7 +119,7 @@ public class LoginDialog extends Dialog {
     }
     
     public void hideErrorMessage() {
-    	((TextView)findViewById(R.id.login_error)).setVisibility(View.GONE);
+    	findViewById(R.id.login_error).setVisibility(View.GONE);
     }
 
 	public boolean checkCorrectInput(String login, String pass) {

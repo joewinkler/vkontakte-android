@@ -280,7 +280,6 @@ public class CGuiTest extends TabActivity {
     /**
      * Makes Service to refresh given content
      *
-     * @throws RemoteException 
      */
     private void refresh(CheckingService.contentToUpdate what) {
         Log.d(TAG, "request to refresh");

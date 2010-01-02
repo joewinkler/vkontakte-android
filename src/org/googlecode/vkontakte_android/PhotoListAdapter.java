@@ -23,8 +23,6 @@ public class PhotoListAdapter extends BaseAdapter {
 
     private List<Photo> photos = new LinkedList<Photo>();
     private Context context;
-    private int layout;
-    private LayoutInflater layoutInflater;
     private boolean loading = false;
 
     public int getCount() {
@@ -41,8 +39,8 @@ public class PhotoListAdapter extends BaseAdapter {
 
     public PhotoListAdapter(Context context, int layout, VkontakteAPI api) {
         this.context = context;
-        this.layout = layout;
-        layoutInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        int layout1 = layout;
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
         try {
             try {

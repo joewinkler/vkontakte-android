@@ -38,7 +38,6 @@ public class UserapiProvider extends ContentProvider {
 
 
     private static UriMatcher uriMatcher;
-    private UserapiDatabaseHelper databaseHelper;
     private SQLiteDatabase database;
 
     static {
@@ -59,7 +58,7 @@ public class UserapiProvider extends ContentProvider {
     public boolean onCreate() {
         Context context = getContext();
         createFolders();
-        databaseHelper = new UserapiDatabaseHelper(context);
+        UserapiDatabaseHelper databaseHelper = new UserapiDatabaseHelper(context);
         database = databaseHelper.getWritableDatabase();
         return (database != null);
     }

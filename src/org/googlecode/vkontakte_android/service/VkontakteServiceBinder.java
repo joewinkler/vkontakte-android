@@ -185,17 +185,30 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 e.printStackTrace();
             }
 
-            String photoUrl = pr.getPhoto();
+            String photoUrl = null;
+            if (pr != null) {
+                photoUrl = pr.getPhoto();
+            }
             byte photo[] = null;
             if (photoUrl != null) {
                 photo = ApiCheckingKit.getApi().getFileFromUrl(photoUrl);
             }
 
-            if (setMe)CSettings.myId = pr.getId();
-            ProfileDao dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr.getSurname(), (pr.getStatus() == null) ? null : pr.getStatus().getText(),
-                    pr.getSex(), pr.getBirthday(), pr.getPhone(), pr.getPoliticalViews(), pr.getFamilyStatus(), pr.getCurrentCity());
-            Uri uri = dao.saveOrUpdate(m_context);
-            Log.d(TAG, uri.toString());
+            if (setMe) if (pr != null) {
+                CSettings.myId = pr.getId();
+            }
+            ProfileDao dao = null;
+            if (pr != null) {
+                dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr.getSurname(), (pr.getStatus() == null) ? null : pr.getStatus().getText(),
+                        pr.getSex(), pr.getBirthday(), pr.getPhone(), pr.getPoliticalViews(), pr.getFamilyStatus(), pr.getCurrentCity());
+            }
+            Uri uri = null;
+            if (dao != null) {
+                uri = dao.saveOrUpdate(m_context);
+            }
+            if (uri != null) {
+                Log.d(TAG, uri.toString());
+            }
             OutputStream os = m_context.getContentResolver().openOutputStream(uri);
             os.write(photo);
             os.close();
@@ -207,7 +220,9 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             e.printStackTrace();
             return false;
         }
-        Log.d(TAG, pr.toString());
+        if (pr != null) {
+            Log.d(TAG, pr.toString());
+        }
         return true;
     }
 
