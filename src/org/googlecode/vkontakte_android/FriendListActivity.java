@@ -2,24 +2,10 @@ package org.googlecode.vkontakte_android;
 
 
 import android.app.TabActivity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.database.ContentObserver;
-import android.database.Cursor;
-import android.os.*;
-import android.util.Log;
-import android.view.*;
-import android.widget.EditText;
+import android.os.Bundle;
+import android.view.Window;
 import android.widget.TabHost;
-import android.widget.TextView;
-import android.widget.Toast;
-import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
-import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import org.googlecode.vkontakte_android.service.CheckingService;
-import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
-import org.googlecode.vkontakte_android.service.IVkontakteService;
 
 public class FriendListActivity extends TabActivity {
     public static final int ALL = 1;
@@ -34,7 +20,7 @@ public class FriendListActivity extends TabActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.friends_view);
-        
+
         final TabHost tabHost = getTabHost();
         Intent allFriends = new Intent(this, FriendsListTabActivity.class);
         allFriends.putExtra("type", ALL);

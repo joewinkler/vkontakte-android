@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.Contacts;
 import android.util.Log;
-import org.googlecode.vkontakte_android.contacts.ContactsHelper;
+import org.googlecode.vkontakte_android.utils.ContactsHelper;
 
 import java.util.HashSet;
 import java.util.Set;

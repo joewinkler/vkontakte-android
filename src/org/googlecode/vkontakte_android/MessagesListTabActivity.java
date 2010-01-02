@@ -1,12 +1,5 @@
 package org.googlecode.vkontakte_android;
 
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
-
-import org.googlecode.vkontakte_android.database.MessageDao;
-import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
-import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import org.googlecode.vkontakte_android.service.CheckingService;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -15,9 +8,14 @@ import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
+import org.googlecode.vkontakte_android.database.MessageDao;
+import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.vkontakte_android.service.CheckingService;
+
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
 
 
 public class MessagesListTabActivity extends AutoLoadActivity {
@@ -26,16 +24,16 @@ public class MessagesListTabActivity extends AutoLoadActivity {
     enum MessagesCursorType {
         ALL, INCOMING, OUTCOMING
     }
- 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_list);
-        setupLoader(new AutoLoadActivity.Loader(){
+        setupLoader(new AutoLoadActivity.Loader() {
 
-			@Override
-			public Boolean load() {
-				try {
+            @Override
+            public Boolean load() {
+                try {
                     return ServiceHelper.getService().loadPrivateMessages(
                             CheckingService.contentToUpdate.MESSAGES_IN.ordinal(),
                             m_adapter.getCount(), m_adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
@@ -44,12 +42,12 @@ public class MessagesListTabActivity extends AutoLoadActivity {
                     AppHelper.showFatalError(MessagesListTabActivity.this, "While trying to load messages");
                 }
                 return false;
-			}
-        	 
+            }
+
         }, new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.ALL)));
-        
+
         registerForContextMenu(getListView());
-        
+
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -75,7 +73,7 @@ public class MessagesListTabActivity extends AutoLoadActivity {
                 intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, isOutgoing ? messageDao.getReceiverId() : messageDao.getSenderId());
                 startActivity(intent);
                 return true;
-            case R.id.message_delete: 
+            case R.id.message_delete:
 //                VkontakteAPI api = null;
 //                boolean result = api.deleteMessage(messageDao.getSenderId(), messageDao.getId())
 //                todo: handle result - if true delete from db; if false shouw error to user

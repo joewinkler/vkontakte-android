@@ -8,28 +8,28 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
-import static org.googlecode.vkontakte_android.R.id.updates_counter;
 import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
-import static org.googlecode.vkontakte_android.provider.UserapiProvider.PROFILES_URI;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+
+import static org.googlecode.vkontakte_android.R.id.updates_counter;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_PROFILE_USERID;
+import static org.googlecode.vkontakte_android.provider.UserapiProvider.PROFILES_URI;
 
 public class CMeTab extends Activity {
 
     private static final String TAG = "org.googlecode.vkontakte_android.CMeTab";
 
     public static CMeTab s_instance; // :( not good
-     
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +44,8 @@ public class CMeTab extends Activity {
                 String status = editor.getText().toString();
                 try {
                     boolean result = ServiceHelper.getService().sendStatus(status);
-                    if (result) Toast.makeText(getApplicationContext(), R.string.status_update_ok, Toast.LENGTH_SHORT).show();
+                    if (result)
+                        Toast.makeText(getApplicationContext(), R.string.status_update_ok, Toast.LENGTH_SHORT).show();
                     else Toast.makeText(getApplicationContext(), R.string.status_update_err, Toast.LENGTH_SHORT).show();
                     //todo: return old text if update fails
                 } catch (RemoteException e) {
@@ -68,7 +69,7 @@ public class CMeTab extends Activity {
 
         });
 
-       
+
         TableLayout table = (TableLayout) findViewById(R.id.Wall);
 
 
@@ -82,16 +83,16 @@ public class CMeTab extends Activity {
         //table.addView(v2);
         //table.addView(v3);
         //table.addView(v4);
-        
-        
+
+
         findViewById(R.id.me_avatar).requestFocus();
     }
 
     boolean loadProfile() throws RemoteException {
 
         if (!ServiceHelper.getService().loadMyProfile()) {
-        	Log.e(TAG, "Cannot load profile");
-        	return false;
+            Log.e(TAG, "Cannot load profile");
+            return false;
         }
         Cursor c = managedQuery(UserapiProvider.PROFILES_URI, null, KEY_PROFILE_USERID + "=?",
                 new String[]{CSettings.myId.toString()}, null);
@@ -106,18 +107,18 @@ public class CMeTab extends Activity {
 
         Uri uri = ContentUris.withAppendedId(PROFILES_URI, pd.rowid);
         InputStream is = null;
-		try {
-			is = getContentResolver().openInputStream(uri);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-        
-        Bitmap bm = BitmapFactory.decodeStream(is); 
+        try {
+            is = getContentResolver().openInputStream(uri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        Bitmap bm = BitmapFactory.decodeStream(is);
         //= BitmapFactory.decodeByteArray(photo, 0, photo.length);
 
 
         float ratio = (float) bm.getWidth() / (float) bm.getHeight();
-        Log.d(TAG, "size" + bm.getHeight() + " " + bm.getWidth()  );
+        Log.d(TAG, "size" + bm.getHeight() + " " + bm.getWidth());
         Bitmap bface = Bitmap.createScaledBitmap(bm, 100, (int) (100 / ratio), false);
 
         ImageButton face = (ImageButton) findViewById(R.id.me_avatar);
@@ -137,17 +138,17 @@ public class CMeTab extends Activity {
 
         return true;
     }
-    
+
     @Override
     protected void onNewIntent(Intent intent) {
-    	if (intent.getStringExtra("action").equals("load")) {
-    		try {
-    			Log.d(TAG, "load");
-				loadProfile();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-    	}
+        if (intent.getStringExtra("action").equals("load")) {
+            try {
+                Log.d(TAG, "load");
+                loadProfile();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
         super.onNewIntent(intent);
     }
 

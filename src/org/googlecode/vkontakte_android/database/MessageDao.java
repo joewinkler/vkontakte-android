@@ -4,22 +4,19 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
-
 import org.googlecode.userapi.Message;
 import org.googlecode.vkontakte_android.CSettings;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 
+import java.util.Date;
+
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.MESSAGES_URI;
 
-import java.util.Date;
-import java.util.List;
-
 public class MessageDao extends Message {
     private static final String TAG = "org.googlecode.vkontakte_android.database.MessageDao";
-    
+
     public long rowId;
     public long id;
     public long date;
@@ -27,18 +24,18 @@ public class MessageDao extends Message {
     public long senderId;
     public long receiverId;
     public boolean read;
-    
+
     private UserDao sender = null;
     private UserDao receiver = null;
-    
+
     public MessageDao(Cursor cursor) {
-    	this.rowId = cursor.getLong(0);
-    	this.id = cursor.getLong(1);
-    	this.date = cursor.getLong(2);
-    	this.text = cursor.getString(3);
-    	this.senderId = cursor.getLong(4);
-    	this.receiverId = cursor.getLong(5);
-    	this.read = cursor.getInt(6) == 1;
+        this.rowId = cursor.getLong(0);
+        this.id = cursor.getLong(1);
+        this.date = cursor.getLong(2);
+        this.text = cursor.getString(3);
+        this.senderId = cursor.getLong(4);
+        this.receiverId = cursor.getLong(5);
+        this.read = cursor.getInt(6) == 1;
     }
 
     /*
@@ -52,9 +49,9 @@ public class MessageDao extends Message {
         this.receiverId = receiverId;
         this.read = read;
     }
-    
+
     public MessageDao(Message mess) {
-    	this.id = mess.getId();
+        this.id = mess.getId();
         this.date = mess.getDate().getTime();
         this.text = mess.getText();
         this.senderId = mess.getSender().getUserId();
@@ -92,10 +89,10 @@ public class MessageDao extends Message {
         } else if (cursor != null) cursor.close();
         return messageDao;
     }
-    
+
     public static MessageDao findByMessageId(Context context, long id) {
         if (id == -1) return null;
-        Cursor cursor = context.getContentResolver().query(MESSAGES_URI,null, UserapiDatabaseHelper.KEY_MESSAGE_MESSAGEID+"=?", new String[]{String.valueOf(id)}, null);
+        Cursor cursor = context.getContentResolver().query(MESSAGES_URI, null, UserapiDatabaseHelper.KEY_MESSAGE_MESSAGEID + "=?", new String[]{String.valueOf(id)}, null);
         MessageDao messageDao = null;
         if (cursor != null && cursor.moveToNext()) {
             messageDao = new MessageDao(cursor);
@@ -104,7 +101,7 @@ public class MessageDao extends Message {
         return messageDao;
     }
 
-    
+
     public int delete(Context context) {
         return context.getContentResolver().delete(ContentUris.withAppendedId(MESSAGES_URI, rowId), null, null);
     }
@@ -125,7 +122,7 @@ public class MessageDao extends Message {
 //    }
 
     public int saveOrUpdate(Context context) {
-        MessageDao message = MessageDao.findByMessageId(context, id) ;
+        MessageDao message = MessageDao.findByMessageId(context, id);
         ContentValues insertValues = new ContentValues();
         insertValues.put(KEY_MESSAGE_MESSAGEID, this.id);
         insertValues.put(KEY_MESSAGE_DATE, this.date);
@@ -133,11 +130,11 @@ public class MessageDao extends Message {
         insertValues.put(KEY_MESSAGE_SENDERID, this.senderId);
         insertValues.put(KEY_MESSAGE_RECEIVERID, this.receiverId);
         insertValues.put(KEY_MESSAGE_READ, this.isRead() ? 0 : 1);
-        
+
         //Log.d(TAG, "saving "+sender.userId+"("+sender.userName+") and "+ receiver.userId);
         saveUserIfNeed(context, sender);
         saveUserIfNeed(context, receiver);
-        
+
         if (message == null) {
             context.getContentResolver().insert(UserapiProvider.MESSAGES_URI, insertValues);
             return 1;
@@ -146,7 +143,7 @@ public class MessageDao extends Message {
             return 0;
         }
     }
-    
+
     public long getSenderId() {
         return senderId;
     }
@@ -154,23 +151,23 @@ public class MessageDao extends Message {
     public long getReceiverId() {
         return receiverId;
     }
-    
-    public UserDao getSender( Context ctx) {
-    	return UserDao.findByUserId(ctx, senderId);
+
+    public UserDao getSender(Context ctx) {
+        return UserDao.findByUserId(ctx, senderId);
     }
 
-    public UserDao getReceiver( Context ctx ) {
-    	return UserDao.findByUserId(ctx, receiverId);
+    public UserDao getReceiver(Context ctx) {
+        return UserDao.findByUserId(ctx, receiverId);
     }
-    
+
     public boolean saveUserIfNeed(Context ctx, UserDao user) {
-    	if (user == null) {
-    		return false;
-    	}
-    	if (user.getUserId()!=CSettings.myId) {
-    		user.saveOrUpdate(ctx);	
-    	}
-    	return true;
+        if (user == null) {
+            return false;
+        }
+        if (user.getUserId() != CSettings.myId) {
+            user.saveOrUpdate(ctx);
+        }
+        return true;
     }
-    
+
 }

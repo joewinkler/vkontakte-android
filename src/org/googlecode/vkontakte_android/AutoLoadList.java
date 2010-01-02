@@ -8,28 +8,26 @@ import android.widget.ListView;
 
 public class AutoLoadList extends ListView {
 
-	private Loader mLoader;
+    private Loader mLoader;
 
-	public AutoLoadList(Context context) {
-		super(context);
-	}
-	
-	public void setLoader(Loader loader){
-		mLoader=loader;
-	}
+    public AutoLoadList(Context context) {
+        super(context);
+    }
 
-	
-		
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event)
-	{
-		if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN
-				&& event.getAction() == KeyEvent.ACTION_DOWN
-				&& getSelectedItemPosition() == getAdapter().getCount() - 2) {
-			loadMore();
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+    public void setLoader(Loader loader) {
+        mLoader = loader;
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                && event.getAction() == KeyEvent.ACTION_DOWN
+                && getSelectedItemPosition() == getAdapter().getCount() - 2) {
+            loadMore();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
 /*	
 	@Override
@@ -40,42 +38,42 @@ public class AutoLoadList extends ListView {
 		}
 	}
 	*/
-	
-	/*
-	public void onScrollStateChanged(AbsListView v, int state) {
-		
-		if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
-				&& getLastVisiblePosition() == getAdapter().getCount() - 1) {
-			loadMore();
-		}
-	}
-	*/
 
-	private void loadMore() {
-		if (mLoader!=null){
-		new AsyncTask<Object, Object, Boolean>() {
+    /*
+     public void onScrollStateChanged(AbsListView v, int state) {
 
-			@Override
-			protected void onPreExecute() {
-				super.onPreExecute();
-				((Activity) getContext()).setProgressBarIndeterminateVisibility(true);
-			}
+         if (state == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
+                 && getLastVisiblePosition() == getAdapter().getCount() - 1) {
+             loadMore();
+         }
+     }
+     */
 
-			@Override
-			protected void onPostExecute(Boolean result) {
-				((Activity) getContext()).setProgressBarIndeterminateVisibility(false);
-			}
+    private void loadMore() {
+        if (mLoader != null) {
+            new AsyncTask<Object, Object, Boolean>() {
 
-			@Override
-			protected Boolean doInBackground(Object... params) {
-				return mLoader.load();
-			}
-		}.execute();
-		}
-	}
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                    ((Activity) getContext()).setProgressBarIndeterminateVisibility(true);
+                }
 
-	public abstract interface Loader {
-		Boolean load();
-	}
+                @Override
+                protected void onPostExecute(Boolean result) {
+                    ((Activity) getContext()).setProgressBarIndeterminateVisibility(false);
+                }
+
+                @Override
+                protected Boolean doInBackground(Object... params) {
+                    return mLoader.load();
+                }
+            }.execute();
+        }
+    }
+
+    public abstract interface Loader {
+        Boolean load();
+    }
 
 }

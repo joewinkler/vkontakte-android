@@ -8,11 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.graphics.BitmapFactory;
 import org.googlecode.userapi.PageHiddenException;
+import org.googlecode.userapi.Photo;
 import org.googlecode.userapi.UserapiLoginException;
 import org.googlecode.userapi.VkontakteAPI;
-import org.googlecode.userapi.Photo;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -53,12 +52,12 @@ public class PhotoListAdapter extends BaseAdapter {
                 e.printStackTrace(); //todo!
             }
             Log.w("photos:", photos.size() + "");
-        notifyDataSetChanged();
-    } catch (IOException e) {
-        e.printStackTrace();
-    } catch (JSONException e) {
-        e.printStackTrace();
-    }
+            notifyDataSetChanged();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public View getView(int pos, View v, ViewGroup p) {

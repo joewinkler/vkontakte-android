@@ -6,22 +6,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
-
-import org.googlecode.vkontakte_android.service.*;
-import org.apache.http.client.utils.URIUtils;
-import org.googlecode.userapi.UrlBuilder;
 import org.googlecode.userapi.User;
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
+import org.googlecode.vkontakte_android.service.ApiCheckingKit;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
+
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
+import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
 
 public class UserDao {
     private static final String TAG = "org.googlecode.vkontakte_android.database.UserDao";
-    
+
     public long rowId = -1;
     public long userId;
     public String userName;
@@ -122,7 +119,7 @@ public class UserDao {
         insertValues.put(KEY_USER_NEW, newFriend ? 1 : 0);
         insertValues.put(KEY_USER_IS_FRIEND, isFriend ? 1 : 0);
         insertValues.put(KEY_USER_AVATAR_URL, userPhotoUrl);
-        
+
         if (userDao == null) {
             return context.getContentResolver().insert(USERS_URI, insertValues);
         } else {
@@ -185,53 +182,53 @@ public class UserDao {
         return online;
     }
 
-    public void setUserPhotoUrl(String  userPhotoUrl) {
+    public void setUserPhotoUrl(String userPhotoUrl) {
         this.userPhotoUrl = userPhotoUrl;
     }
-    
-    
-    public synchronized void updatePhoto(Context ctx) throws IOException {
-    	
-    	if (this.userPhotoUrl == null) {
-    		this.userPhotoUrl = User.STUB_URL;
-    	}
 
-		ContentValues insertValues = new ContentValues();
-		this._data = getPath();
-		insertValues.put(KEY_USER_AVATAR_SMALL, _data);
-		Uri uri = Uri.withAppendedPath(UserapiProvider.USERS_URI, String.valueOf(this.rowId));
-		if (1 == ctx.getContentResolver().update(uri, insertValues, null, null)) {
-			Log.d(TAG, "Updating photo of " + this.userName + " " + userPhotoUrl);
-			byte[] photo = ApiCheckingKit.getApi().getFileFromUrl(userPhotoUrl);
-			OutputStream os = ctx.getContentResolver().openOutputStream(uri);
-			os.write(photo);
-			os.close();
-		}
+
+    public synchronized void updatePhoto(Context ctx) throws IOException {
+
+        if (this.userPhotoUrl == null) {
+            this.userPhotoUrl = User.STUB_URL;
+        }
+
+        ContentValues insertValues = new ContentValues();
+        this._data = getPath();
+        insertValues.put(KEY_USER_AVATAR_SMALL, _data);
+        Uri uri = Uri.withAppendedPath(UserapiProvider.USERS_URI, String.valueOf(this.rowId));
+        if (1 == ctx.getContentResolver().update(uri, insertValues, null, null)) {
+            Log.d(TAG, "Updating photo of " + this.userName + " " + userPhotoUrl);
+            byte[] photo = ApiCheckingKit.getApi().getFileFromUrl(userPhotoUrl);
+            OutputStream os = ctx.getContentResolver().openOutputStream(uri);
+            os.write(photo);
+            os.close();
+        }
     }
-    
-    
+
+
     public synchronized void updatePhoto(Context ctx, User proto, Uri uri) throws IOException {
         String oldPhotoUrl = userPhotoUrl;
         String newPhotoUrl = proto.getUserPhotoUrl();
-     
+
         //photo was updated or file was not downloaded
-        if ((newPhotoUrl!=null && !newPhotoUrl.equalsIgnoreCase(oldPhotoUrl)) || !UserapiProvider.isExists(getPath())) {
-        	
-        	//initialize _data field
-        	ContentValues insertValues = new ContentValues();
-        	_data = getPath();
+        if ((newPhotoUrl != null && !newPhotoUrl.equalsIgnoreCase(oldPhotoUrl)) || !UserapiProvider.isExists(getPath())) {
+
+            //initialize _data field
+            ContentValues insertValues = new ContentValues();
+            _data = getPath();
             insertValues.put(KEY_USER_AVATAR_SMALL, _data);
             if (1 == ctx.getContentResolver().update(uri, insertValues, null, null)) {
                 Log.d(TAG, "Saving photo of " + proto.getUserName() + " " + newPhotoUrl);
                 byte[] photo = proto.getUserPhoto();
                 OutputStream os = ctx.getContentResolver().openOutputStream(uri);
                 os.write(photo);
-                os.close();	
+                os.close();
             }
         }
     }
-    
+
     private String getPath() {
-    	return UserapiProvider.APP_DIR + "profiles/id" + userId + ".smallava";
+        return UserapiProvider.APP_DIR + "profiles/id" + userId + ".smallava";
     }
 }

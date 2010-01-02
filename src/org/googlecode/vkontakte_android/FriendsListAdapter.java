@@ -5,16 +5,15 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
-
+import android.widget.ImageView;
+import android.widget.ResourceCursorAdapter;
+import android.widget.TextView;
 import org.googlecode.vkontakte_android.CImagesManager.Icons;
 import org.googlecode.vkontakte_android.database.UserDao;
 
-import java.io.FileNotFoundException;
-
 
 public class FriendsListAdapter extends ResourceCursorAdapter {
-   private static final String TAG = "org.googlecode.vkontakte_android.FriendsListAdapter";
+    private static final String TAG = "org.googlecode.vkontakte_android.FriendsListAdapter";
 
     public FriendsListAdapter(Context context, int layout, Cursor cursor) {
         super(context, layout, cursor);
@@ -37,18 +36,18 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
 
         ImageView photo = (ImageView) view.findViewById(R.id.photo);
         if (CSettings.shouldLoadPics(context)) {
-        	if (userDao.getUserPhotoUrl() != null) {
-        		Bitmap bm = UserHelper.getPhotoByUserId(context, userDao.userId);
-        		if (bm == null) {
-        			photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
+            if (userDao.getUserPhotoUrl() != null) {
+                Bitmap bm = UserHelper.getPhotoByUserId(context, userDao.userId);
+                if (bm == null) {
+                    photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
                 } else {
                     photo = (ImageView) view.findViewById(R.id.photo);
                     photo.setImageBitmap(bm);
                 }
-        	} else {
-        		Log.e(TAG, "Error: no photo url for "+userDao.userName);
-        		photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
-        	}
+            } else {
+                Log.e(TAG, "Error: no photo url for " + userDao.userName);
+                photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
+            }
         } else {
             photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
             photo.setVisibility(View.GONE);

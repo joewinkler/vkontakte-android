@@ -1,20 +1,18 @@
 package org.googlecode.vkontakte_android.database;
 
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
-import static org.googlecode.vkontakte_android.provider.UserapiProvider.*;
-
-
-import java.util.Date;
-
-import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
-import org.googlecode.vkontakte_android.provider.UserapiProvider;
-
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
+import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
+
+import java.util.Date;
+
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
+import static org.googlecode.vkontakte_android.provider.UserapiProvider.PROFILES_URI;
 
 public class ProfileDao {
     private static final String TAG = "ProfileDao";

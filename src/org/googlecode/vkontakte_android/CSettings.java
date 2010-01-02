@@ -1,12 +1,11 @@
 package org.googlecode.vkontakte_android;
 
-import org.googlecode.userapi.Credentials;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.*;
+import org.googlecode.userapi.Credentials;
 
 public class CSettings extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
 
@@ -19,7 +18,7 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         Preference ps = scr.findPreference("sound");
         ps.setOnPreferenceChangeListener(this);
 
-        Preference pn = scr.findPreference("notif"); 
+        Preference pn = scr.findPreference("notif");
         pn.setOnPreferenceChangeListener(this);
 
         Preference list = scr.findPreference("period");
@@ -43,17 +42,17 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
     }
 
     public static boolean shouldLoadPics(Context ctx) {
-    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        return prefs.getBoolean("pics", true);	
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        return prefs.getBoolean("pics", true);
     }
-    
-    
+
+
     //================  work with login/pass
 
     public static Long myId = 0L;
-    
+
     public static void saveLogin(Context ctx, Credentials cred) {
-    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         Editor ed = prefs.edit();
         ed.putString("login", cred.getLogin());
         ed.commit();
@@ -62,7 +61,7 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         ed.putString("remixpassword", cred.getRemixpass());
         ed.commit();
     }
-    
+
     public static void saveLogin(Context ctx, String login, String pass, String remixpassword) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         Editor ed = prefs.edit();

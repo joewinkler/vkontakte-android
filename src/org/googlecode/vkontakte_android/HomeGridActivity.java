@@ -1,7 +1,5 @@
 package org.googlecode.vkontakte_android;
 
-import org.googlecode.vkontakte_android.service.CheckingService;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -13,22 +11,17 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.text.InputType;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
+import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
-import android.widget.Button;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
+import org.googlecode.vkontakte_android.service.CheckingService;
 
-public class HomeGridActivity extends Activity implements OnItemClickListener, ServiceConnection  {
+public class HomeGridActivity extends Activity implements OnItemClickListener, ServiceConnection {
 
     private final static String TAG = "org.googlecode.vkontakte_android.HomeGridActivity";
 
@@ -38,7 +31,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         setContentView(R.layout.homegrid);
-        bindService(new Intent(this,CheckingService.class), this, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, CheckingService.class), this, Context.BIND_AUTO_CREATE);
 
 
         GridView mHomeGrid = (GridView) findViewById(R.id.HomeGrid);
@@ -49,54 +42,54 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         initStatus();
     }
 
-    
-    private void initStatus(){
 
-        final EditText statusEdit =(EditText) findViewById(R.id.StatusEditText);
-        statusEdit.setInputType(InputType.TYPE_NULL);        
-        
-        statusEdit.setOnTouchListener(new OnTouchListener(){
-        	@Override
-        	public boolean onTouch(View v, MotionEvent event) {
-        		statusEdit.setInputType(InputType.TYPE_CLASS_TEXT);
-        		statusEdit.onTouchEvent(event);
-        		return true;
-        		}
-        	});
-    	
-    	  findViewById(R.id.StatusSubmitButton).setOnClickListener(new OnClickListener() {
-  			
-  			@Override
-  			public void onClick(View v) {
-  				 String statusText=((EditText) findViewById(R.id.StatusEditText)).getText().toString();
-  				new AsyncTask<String, Object, Boolean>(){
-  					
-  					String m_status = "";
-  					
-  					@Override
-  					protected void onPostExecute(Boolean result) {
-  						EditText et=((EditText) findViewById(R.id.StatusEditText));
-  						Toast.makeText(et.getContext(),"\""+et.getText().toString()+"\" Shared!", Toast.LENGTH_SHORT).show();
-  						et.setText( result ? m_status : "");
-  					}
-  					
-  					@Override
-  					protected Boolean doInBackground(String... params) {
-  						try {
-  							m_status = params[0];
-  							return ServiceHelper.getService().sendStatus(m_status);
-  						} catch (RemoteException e) {
-  							e.printStackTrace();
-  							AppHelper.showFatalError(HomeGridActivity.this, "Error while launching the application");
-  						}
-  						return false;
-  					}
-  				}.execute(new String[]{statusText});
-  			}
-  		});    	
-    	
+    private void initStatus() {
+
+        final EditText statusEdit = (EditText) findViewById(R.id.StatusEditText);
+        statusEdit.setInputType(InputType.TYPE_NULL);
+
+        statusEdit.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                statusEdit.setInputType(InputType.TYPE_CLASS_TEXT);
+                statusEdit.onTouchEvent(event);
+                return true;
+            }
+        });
+
+        findViewById(R.id.StatusSubmitButton).setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                String statusText = ((EditText) findViewById(R.id.StatusEditText)).getText().toString();
+                new AsyncTask<String, Object, Boolean>() {
+
+                    String m_status = "";
+
+                    @Override
+                    protected void onPostExecute(Boolean result) {
+                        EditText et = ((EditText) findViewById(R.id.StatusEditText));
+                        Toast.makeText(et.getContext(), "\"" + et.getText().toString() + "\" Shared!", Toast.LENGTH_SHORT).show();
+                        et.setText(result ? m_status : "");
+                    }
+
+                    @Override
+                    protected Boolean doInBackground(String... params) {
+                        try {
+                            m_status = params[0];
+                            return ServiceHelper.getService().sendStatus(m_status);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                            AppHelper.showFatalError(HomeGridActivity.this, "Error while launching the application");
+                        }
+                        return false;
+                    }
+                }.execute(new String[]{statusText});
+            }
+        });
+
     }
-    
+
     private void backToHome() {
         this.setTitle(getResources().getString(R.string.app_name) + " > " + "Home");
         setProgressBarIndeterminateVisibility(false);
@@ -157,12 +150,12 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     }
 
     @Override
-    public void onDestroy(){
-    	super.onDestroy();
+    public void onDestroy() {
+        super.onDestroy();
         Log.d(TAG, "Activity Destroyed");
-    	unbindService(this);
+        unbindService(this);
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -170,34 +163,34 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         return super.onCreateOptionsMenu(menu);
     }
 
-	public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-		switch (item.getItemId()) {
-		case R.id.LogoutMenuItem:
-			try {
-				// todo async				
-				ServiceHelper.getService().logout();
-				login();
-				return true;
-			} catch (RemoteException e) {
-				e.printStackTrace();
-				AppHelper.showFatalError(this, "Error while logging out");
-			}
-		case R.id.AboutMenuItem:
-			AboutDialog.makeDialog(this).show();
-			return true;
-		case R.id.ExitMenuItem:
-			try {
-				ServiceHelper.getService().stop();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-			finish();
-			return true;
-		}
+        switch (item.getItemId()) {
+            case R.id.LogoutMenuItem:
+                try {
+                    // todo async
+                    ServiceHelper.getService().logout();
+                    login();
+                    return true;
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                    AppHelper.showFatalError(this, "Error while logging out");
+                }
+            case R.id.AboutMenuItem:
+                AboutDialog.makeDialog(this).show();
+                return true;
+            case R.id.ExitMenuItem:
+                try {
+                    ServiceHelper.getService().stop();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                finish();
+                return true;
+        }
 
-		return super.onOptionsItemSelected(item);
-	}
+        return super.onOptionsItemSelected(item);
+    }
 
     private void login() throws RemoteException {
         if (ServiceHelper.getService().loginAuth()) {
@@ -209,21 +202,21 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         ld.setTitle(R.string.please_login);
         ld.setCancelable(false);
         ld.show();
-   }
+    }
 
-	@Override
-	public void onServiceConnected(ComponentName name, IBinder service) {
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
         ServiceHelper.connect(service);
-		try {
-			login();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			AppHelper.showFatalError(this, "Error while launching the application");
-		}
-	}
+        try {
+            login();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            AppHelper.showFatalError(this, "Error while launching the application");
+        }
+    }
 
-	@Override
-	public void onServiceDisconnected(ComponentName name) {
-		ServiceHelper.disconnect();
-	}
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        ServiceHelper.disconnect();
+    }
 }

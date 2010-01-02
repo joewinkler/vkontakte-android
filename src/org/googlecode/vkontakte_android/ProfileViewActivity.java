@@ -10,7 +10,6 @@ import android.provider.Contacts;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-
 import org.googlecode.vkontakte_android.AutoLoadList.Loader;
 import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;

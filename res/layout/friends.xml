@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:background="#ffffff" android:orientation="vertical"><LinearLayout android:id="@+id/LinearLayout02" android:layout_width="wrap_content" android:layout_height="wrap_content">
-<CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#000000" android:id="@+id/online_friends" android:text="@string/online_only" android:layout_weight="10"></CheckBox>
-</LinearLayout>
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="fill_parent"
+              xmlns:android="http://schemas.android.com/apk/res/android" android:background="#ffffff"
+              android:orientation="vertical">
+    <LinearLayout android:id="@+id/LinearLayout02" android:layout_width="wrap_content"
+                  android:layout_height="wrap_content">
+        <CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#000000"
+                  android:id="@+id/online_friends" android:text="@string/online_only"
+                  android:layout_weight="10"></CheckBox>
+    </LinearLayout>
 
-<ScrollView android:id="@+id/ScrollView01" android:layout_weight="80" android:layout_height="wrap_content" android:layout_width="fill_parent"><TableLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/friends_pane"></TableLayout></ScrollView>
+    <ScrollView android:id="@+id/ScrollView01" android:layout_weight="80" android:layout_height="wrap_content"
+                android:layout_width="fill_parent">
+        <TableLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+                     android:id="@+id/friends_pane"></TableLayout>
+    </ScrollView>
 </LinearLayout>

@@ -4,12 +4,13 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import static org.googlecode.vkontakte_android.provider.UserapiProvider.STATUSES_URI;
 
 import java.util.Date;
 import java.util.List;
+
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
+import static org.googlecode.vkontakte_android.provider.UserapiProvider.STATUSES_URI;
 
 public class StatusDao {
     private static final String TAG = "org.googlecode.vkontakte_android.database.StatusDao";

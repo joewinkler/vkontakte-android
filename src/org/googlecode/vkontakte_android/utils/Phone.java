@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class Phone {
     public static String formatPhoneNumber(String number) {
-    	number = number.replaceAll("[-()]*", "");
+        number = number.replaceAll("[-()]*", "");
         Pattern pattern = Pattern.compile("(\\+?\\d*).*");
         Matcher matcher = pattern.matcher(number);
         return matcher.find() ? matcher.group(1) : null;

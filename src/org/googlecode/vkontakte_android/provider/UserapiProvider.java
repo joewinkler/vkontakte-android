@@ -7,11 +7,11 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
-import android.util.Log;
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 
 public class UserapiProvider extends ContentProvider {
 
@@ -345,7 +345,7 @@ public class UserapiProvider extends ContentProvider {
 //        getContext().getContentResolver().notifyChange(uri, null);
         return count;
     }
- 
+
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         return this.openFileHelper(uri, mode);
@@ -357,12 +357,12 @@ public class UserapiProvider extends ContentProvider {
         f = new File(APP_DIR + "photos");
         f.mkdir();
     }
-    
+
     public static boolean isExists(String path) {
-    	if (path==null) {
-    		return false;
-    	}
-    	File f = new File(path);
-    	return (!(!f.exists() || f.length() == 0));
+        if (path == null) {
+            return false;
+        }
+        File f = new File(path);
+        return (!(!f.exists() || f.length() == 0));
     }
 }

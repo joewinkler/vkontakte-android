@@ -1,10 +1,11 @@
 package org.googlecode.vkontakte_android.service;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.RemoteException;
+import android.util.Log;
 import org.googlecode.userapi.*;
 import org.googlecode.vkontakte_android.CSettings;
 import org.googlecode.vkontakte_android.R;
@@ -16,14 +17,10 @@ import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
 import org.json.JSONException;
 
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.RemoteException;
-import android.text.TextUtils;
-import android.util.Log;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
 
 public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
@@ -127,10 +124,10 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
     @Override
     public void update(int what, boolean synchronous) throws RemoteException {
-    	m_service.doCheck(what,new Bundle(), synchronous);
+        m_service.doCheck(what, new Bundle(), synchronous);
     }
 
-   @Override
+    @Override
     public boolean logout() throws RemoteException {
         try {
             Log.d(TAG, "Logout");
@@ -150,30 +147,30 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-	public boolean loadPrivateMessages(int type, int first, int last)
-			throws RemoteException {
-		try {
-			switch (contentToUpdate.values()[type]) {
-			case MESSAGES_IN:
-				m_service.updateInMessages(first, last);
-				return true;
-			case MESSAGES_OUT:
-				m_service.updateOutMessages(first, last);
-				return true;
-			default:
-				m_service.updateInMessages(first, last/2);
-				m_service.updateOutMessages(first, last/2);
-				return true;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-	}
+    public boolean loadPrivateMessages(int type, int first, int last)
+            throws RemoteException {
+        try {
+            switch (contentToUpdate.values()[type]) {
+                case MESSAGES_IN:
+                    m_service.updateInMessages(first, last);
+                    return true;
+                case MESSAGES_OUT:
+                    m_service.updateOutMessages(first, last);
+                    return true;
+                default:
+                    m_service.updateInMessages(first, last / 2);
+                    m_service.updateOutMessages(first, last / 2);
+                    return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     @Override
     public boolean loadProfile(long userid, boolean setMe) throws RemoteException {
@@ -194,7 +191,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 try {
                     photo = ApiCheckingKit.getApi().getFileFromUrl(photoUrl);
                 } catch (Exception e) {
-                    Log.e(TAG,"cannot load photo", e);
+                    Log.e(TAG, "cannot load photo", e);
                 }
             }
 
@@ -233,83 +230,83 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     @Override
     public boolean loadMyProfile() throws RemoteException {
         Log.d(TAG, "" + ApiCheckingKit.getApi().myId);
-        return loadProfile(ApiCheckingKit.getApi().myId,true);
+        return loadProfile(ApiCheckingKit.getApi().myId, true);
     }
 
-	@Override
-	public boolean loadStatuses(int start, int end) throws RemoteException {
-		try {
-			m_service.updateStatuses(start, end);
-			return true;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return false;
-	}
+    @Override
+    public boolean loadStatuses(int start, int end) throws RemoteException {
+        try {
+            m_service.updateStatuses(start, end);
+            return true;
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-	public boolean loadStatusesByUser(int start, int end, long userId) throws RemoteException {
-		try {
-			m_service.updateStatuses(start, end, userId);
-			return true;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return false;
-	}
+    public boolean loadStatusesByUser(int start, int end, long userId) throws RemoteException {
+        try {
+            m_service.updateStatuses(start, end, userId);
+            return true;
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-	/**
-	 *  Load photos for users with given ids
-	 */
-	@Override
-	public synchronized boolean loadUsersPhotos(List<String> l) throws RemoteException {
-		StringBuffer users = new StringBuffer(" ");
-		for (String ids:l) {
-			users.append(ids).append(",");
-		}
-		users.deleteCharAt(users.length() - 1);//remove last ','
+    /**
+     * Load photos for users with given ids
+     */
+    @Override
+    public synchronized boolean loadUsersPhotos(List<String> l) throws RemoteException {
+        StringBuffer users = new StringBuffer(" ");
+        for (String ids : l) {
+            users.append(ids).append(",");
+        }
+        users.deleteCharAt(users.length() - 1);//remove last ','
 
-		Log.d(TAG, "Ids to update:"+users);
-		Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null,
-				UserapiDatabaseHelper.KEY_USER_USERID + " IN(" + users + ")", null, null);
-		while (c.moveToNext()) {
-			UserDao ud = new UserDao(c);
-			try {
-				if (ud._data == null) {   ////!!!
-					ud.updatePhoto(m_context);
-				}
-			} catch (IOException e) {
-				Log.e(TAG, "Cannot download photo");
-				e.printStackTrace();
-			}
-		}
-		c.close();
-		return false;
-	}
+        Log.d(TAG, "Ids to update:" + users);
+        Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null,
+                UserapiDatabaseHelper.KEY_USER_USERID + " IN(" + users + ")", null, null);
+        while (c.moveToNext()) {
+            UserDao ud = new UserDao(c);
+            try {
+                if (ud._data == null) {   ////!!!
+                    ud.updatePhoto(m_context);
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "Cannot download photo");
+                e.printStackTrace();
+            }
+        }
+        c.close();
+        return false;
+    }
 
-	@Override
-	public boolean loadAllUsersPhotos() throws RemoteException {
-		Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null,
-				null, null, null);
-		while (c.moveToNext()) {
-			UserDao ud = new UserDao(c);
-			try {
-				if (ud._data == null) {
-					ud.updatePhoto(m_context);
-				}
-			} catch (IOException e) {
-				Log.e(TAG, "Cannot download photo");
-				e.printStackTrace();
-			}
-		}
-		c.close();
-		return false;
+    @Override
+    public boolean loadAllUsersPhotos() throws RemoteException {
+        Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null,
+                null, null, null);
+        while (c.moveToNext()) {
+            UserDao ud = new UserDao(c);
+            try {
+                if (ud._data == null) {
+                    ud.updatePhoto(m_context);
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "Cannot download photo");
+                e.printStackTrace();
+            }
+        }
+        c.close();
+        return false;
 	}
 }

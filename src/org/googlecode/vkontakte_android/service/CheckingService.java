@@ -1,17 +1,5 @@
 package org.googlecode.vkontakte_android.service;
 
-import java.io.IOException;
-import java.util.*;
-
-import org.googlecode.userapi.*;
-import org.googlecode.vkontakte_android.CSettings;
-import org.googlecode.vkontakte_android.database.MessageDao;
-import org.googlecode.vkontakte_android.database.StatusDao;
-import org.googlecode.vkontakte_android.database.UserDao;
-import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
-import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import org.json.JSONException;
-
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -22,13 +10,23 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import org.googlecode.userapi.*;
+import org.googlecode.vkontakte_android.database.MessageDao;
+import org.googlecode.vkontakte_android.database.StatusDao;
+import org.googlecode.vkontakte_android.database.UserDao;
+import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.util.*;
 
 //TODO check for thread-safety!!1 
 
 public class CheckingService extends Service {
 
     private static final String TAG = "VK-Service";
-    
+
     public static final int MESSAGE_NUM_LOAD = 10;
     public static final int STATUS_NUM_LOAD = 6;
 
@@ -52,33 +50,33 @@ public class CheckingService extends Service {
 
     @Override
     public void onStart(final Intent intent, int startId) {
-    	super.onStart(intent, startId);
-       
+        super.onStart(intent, startId);
+
     }
-  
+
     /**
      * Check given content type for updates
      *
-     * @param toUpdate - ordinal of contentToUpdate
+     * @param toUpdate   - ordinal of contentToUpdate
      * @param syncronous
      */
     void doCheck(final int toUpdate, final Bundle updateParams, boolean syncronous) {
-    	if (syncronous) {
-    		updateContent(toUpdate, updateParams);
-    	} else {
-    		Thread t = new Thread(new Runnable() {
+        if (syncronous) {
+            updateContent(toUpdate, updateParams);
+        } else {
+            Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                	updateContent(toUpdate, updateParams);
+                    updateContent(toUpdate, updateParams);
                 }
             });
             threads.add(t);
             t.start();
-    	}
+        }
     }
 
     private void updateContent(final int toUpdate, final Bundle updateParams) {
-    	contentToUpdate what = contentToUpdate.values()[toUpdate];
+        contentToUpdate what = contentToUpdate.values()[toUpdate];
         Log.d(TAG, "updating " + what + " is starting...");
         try {
             switch (what) {
@@ -104,9 +102,9 @@ public class CheckingService extends Service {
                     updateStatuses(0, STATUS_NUM_LOAD);
                     break;
                 case PROFILE:
-                	//updateProfile();
-                	break;
-                
+                    //updateProfile();
+                    break;
+
                 default:
                     updateStatuses(0, STATUS_NUM_LOAD);
                     updateMessages();
@@ -120,16 +118,16 @@ public class CheckingService extends Service {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Starts a thread checking api periodically
      */
     private void launchScheduledUpdates() {
-    	if (CheckingService.s_timerHasStarted) {
-    		return;
-    	}
-    	CheckingService.s_timerHasStarted = true;
-    	
+        if (CheckingService.s_timerHasStarted) {
+            return;
+        }
+        CheckingService.s_timerHasStarted = true;
+
         class CheckingTask extends TimerTask {
             @Override
             public void run() {
@@ -140,6 +138,15 @@ public class CheckingService extends Service {
                     e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }
+                catch (OutOfMemoryError error) {
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! OOM");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+                    onLowMemory();
                 }
             }
         }
@@ -240,26 +247,26 @@ public class CheckingService extends Service {
         if (new_friends > 0) {
             assert hist != null;
             ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum = hist.getFriendsCount();
-        	Log.d(TAG, "Received new friends: "+new_friends);
+            Log.d(TAG, "Received new friends: " + new_friends);
         }
         if (new_messages > 0) {
             assert hist != null;
             ApiCheckingKit.m_histChanges.prevUnreadMessNum = hist.getMessagesCount();
-        	Log.d(TAG, "Received new messages: "+new_messages);
+            Log.d(TAG, "Received new messages: " + new_messages);
         }
         if (new_tags > 0) {
             assert hist != null;
             ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum = hist.getPhotosCount();
-        	Log.d(TAG, "Received new phototags: "+new_friends);
+            Log.d(TAG, "Received new phototags: " + new_friends);
         }
-        
+
         if ((new_friends | new_messages | new_tags) != 0) {
-        	UpdatesNotifier.notifyHistoryMessages(getApplicationContext(), new_friends, new_messages, new_tags);
+            UpdatesNotifier.notifyHistoryMessages(getApplicationContext(), new_friends, new_messages, new_tags);
         }
     }
 
     protected void updateStatuses(int start, int end) throws IOException, JSONException {
-        Log.d(TAG, "updating statuses "+start+" to "+end);
+        Log.d(TAG, "updating statuses " + start + " to " + end);
         VkontakteAPI api = ApiCheckingKit.getApi();
         List<Status> statuses = null;
         try {
@@ -277,9 +284,9 @@ public class CheckingService extends Service {
         }
         StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);
     }
- 
+
     protected void updateStatuses(int start, int end, long id) throws IOException, JSONException {
-        Log.d(TAG, "updating statuses for user:"+id+"/"+start+" to "+end);
+        Log.d(TAG, "updating statuses for user:" + id + "/" + start + " to " + end);
         VkontakteAPI api = ApiCheckingKit.getApi();
         List<Status> statuses = null;
         try {
@@ -297,8 +304,9 @@ public class CheckingService extends Service {
         }
         StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);
     }
- 
+
     //todo: use 'partial' lock for instead of synchronized(?)
+
     private synchronized void refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         boolean firstUpdate = false;
         Cursor cursor = getContentResolver().query(UserapiProvider.USERS_URI, new String[]{UserapiDatabaseHelper.KEY_USER_ROWID}, null, null, null);
@@ -328,7 +336,7 @@ public class CheckingService extends Service {
                 notIn.append(user.getUserId()).append(",");
                 Uri useruri = userDao.saveOrUpdate(this);
                 if (!firstUpdate) {  //special hack for photo update - load it when needed
-                      //userDao.updatePhoto(this, user, useruri);
+                    //userDao.updatePhoto(this, user, useruri);
                 }
                 if (counter++ == 10) {
                     getContentResolver().notifyChange(useruri, null);
@@ -344,15 +352,16 @@ public class CheckingService extends Service {
                 UserapiDatabaseHelper.KEY_USER_IS_FRIEND + "=1", null);
 
     }
-   
+
 
     //todo: use 'partial' lock for instead of synchronized(?)
+
     private synchronized void refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
         List<User> friends = null;
         try {
             friends = api.getMyNewFriends();
         } catch (UserapiLoginException e) {
-            e.printStackTrace(); 
+            e.printStackTrace();
         }
         if (friends != null) {
             Log.d(TAG, "got new users: " + friends.size());
@@ -396,7 +405,7 @@ public class CheckingService extends Service {
 
     @Override
     public void onDestroy() {
-    	super.onDestroy();
+        super.onDestroy();
         Log.d(TAG, "service stopped");
 
         // stop all running threads
@@ -413,11 +422,9 @@ public class CheckingService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-    	launchScheduledUpdates();
+        launchScheduledUpdates();
         return m_binder;
     }
-
-	
 
 
 }

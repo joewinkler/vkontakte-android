@@ -3,7 +3,6 @@ package org.googlecode.vkontakte_android.download;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.AbstractHttpClient;
-import org.googlecode.vkontakte_android.CGuiTest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,15 +26,15 @@ public class ContactsDownloader {
     }
 
     public List<VkRecord> download() throws IOException {
-    	
-    	//TODO repair
+
+        //TODO repair
         final AbstractHttpClient client = null; //CGuiTest.api.getHttpClient();
 
         List<ContactsDownloader.VkRecord> records = new ArrayList<ContactsDownloader.VkRecord>(600);
 
         for (int page = 1; page < 100; page++) {
             final HttpGet get = new HttpGet("http://pda.vkontakte.ru/friends" + page);
-            final HttpResponse response =  client.execute(get);
+            final HttpResponse response = client.execute(get);
 
             final List<VkRecord> chunk = parse(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
             if (chunk.isEmpty()) break;

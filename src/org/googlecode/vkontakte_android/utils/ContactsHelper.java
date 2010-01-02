@@ -1,4 +1,4 @@
-package org.googlecode.vkontakte_android.contacts;
+package org.googlecode.vkontakte_android.utils;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;

@@ -1,18 +1,18 @@
 package org.googlecode.vkontakte_android;
 
-import android.widget.TextView;
-import android.widget.TabWidget;
-import android.widget.RelativeLayout;
-import android.widget.ImageView;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.RectF;
-import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TabWidget;
+import android.widget.TextView;
 
 /**
  * Created by Ildar Karimov

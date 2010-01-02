@@ -8,26 +8,18 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.RemoteException;
+import android.os.*;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
+import android.view.*;
 import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService;
-import org.googlecode.vkontakte_android.service.IVkontakteService;
 import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
+import org.googlecode.vkontakte_android.service.IVkontakteService;
 
 public class CGuiTest extends TabActivity {
 
@@ -81,9 +73,9 @@ public class CGuiTest extends TabActivity {
 
 
             public void onClick(View view) {
-            	if (! ld.checkCorrectInput(ld.getLogin(), ld.getPass())) {
-                	return;
-            	} 
+                if (!ld.checkCorrectInput(ld.getLogin(), ld.getPass())) {
+                    return;
+                }
                 ld.showProgress();
                 String login = ld.getLogin();
                 String pass = ld.getPass();
@@ -279,7 +271,6 @@ public class CGuiTest extends TabActivity {
 
     /**
      * Makes Service to refresh given content
-     *
      */
     private void refresh(CheckingService.contentToUpdate what) {
         Log.d(TAG, "request to refresh");
@@ -298,16 +289,15 @@ public class CGuiTest extends TabActivity {
     public static void fatalError(String text) {
         Toast.makeText(CGuiTest.s_instance, text, Toast.LENGTH_SHORT).show();
     }
- 
-    @Override
-	protected void onDestroy() {
-		Log.d(TAG, "unbinding servide");
-    	unbindService(m_connection);
-		super.onDestroy();
-	}
 
-     
-    
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "unbinding servide");
+        unbindService(m_connection);
+        super.onDestroy();
+    }
+
+
     // =========  RPC stuff ====================
 
     /**
@@ -321,7 +311,7 @@ public class CGuiTest extends TabActivity {
     }
 
 
-	class VkontakteServiceConnection implements ServiceConnection {
+    class VkontakteServiceConnection implements ServiceConnection {
         public void onServiceConnected(ComponentName className,
                                        IBinder boundService) {
             m_vkService = IVkontakteService.Stub.asInterface(boundService);

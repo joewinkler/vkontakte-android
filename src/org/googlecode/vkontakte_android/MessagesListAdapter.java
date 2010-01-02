@@ -9,8 +9,9 @@ import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.UserDao;
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_USER_USERID;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
+
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_USER_USERID;
 
 
 public class MessagesListAdapter extends ResourceCursorAdapter {
@@ -23,7 +24,7 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         MessageDao messageDao = new MessageDao(cursor);
-        
+
         //TODO optimize
         String header = "From ";
         MessageDao md = new MessageDao(cursor);
@@ -39,7 +40,7 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
         TextView name = (TextView) view.findViewById(R.id.name);
         name.setText(header);
         TextView message = (TextView) view.findViewById(R.id.message);
-        
+
         //warning! setting spanned text causes StackOverflow
         message.setText(Html.fromHtml(messageDao.text).toString());
         View indicator = view.findViewById(R.id.unread_indicator);
@@ -48,20 +49,20 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
     }
 
     private String getNameById(Context context, Long userid) {
-    	
-    	String username = userid.toString(); 
-    	if (userid.equals(CSettings.myId)) {
-    		return "me";
-    	}
-    	
+
+        String username = userid.toString();
+        if (userid.equals(CSettings.myId)) {
+            return "me";
+        }
+
         Cursor sc = context.getContentResolver().query(
                 UserapiProvider.USERS_URI, null, KEY_USER_USERID + "=?",
                 new String[]{userid.toString()}, null);
         if (sc.moveToNext()) {
-            UserDao ud = new UserDao(sc); 
+            UserDao ud = new UserDao(sc);
             if (ud.userName != null) {
-            	username = ud.userName;	
-            } 
+                username = ud.userName;
+            }
         } else {
             Log.e(TAG, "No such user in DB ");
             username = userid.toString();

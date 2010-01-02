@@ -62,10 +62,10 @@
                     <!--</TableRow>-->
                     <!--current city-->
                     <!--<TableRow android:id="@+id/city_row" android:visibility="gone">-->
-                        <!--<TextView android:layout_column="1" android:text="@string/info_city"-->
-                                  <!--android:padding="3dip"/>-->
-                        <!--<TextView android:id="@+id/city" android:padding="3dip"-->
-                                  <!--android:gravity="left" android:textColor="@android:color/black"/>-->
+                    <!--<TextView android:layout_column="1" android:text="@string/info_city"-->
+                    <!--android:padding="3dip"/>-->
+                    <!--<TextView android:id="@+id/city" android:padding="3dip"-->
+                    <!--android:gravity="left" android:textColor="@android:color/black"/>-->
                     <!--</TableRow>-->
                 </TableLayout>
                 <LinearLayout android:id="@+id/pw" android:layout_height="wrap_content"

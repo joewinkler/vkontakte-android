@@ -22,12 +22,12 @@
               android:layout_width="wrap_content"
               android:text="11:00" android:layout_height="wrap_content"
               android:layout_alignParentTop="true"
-              />
+            />
     <TextView android:id="@+id/status"
               android:layout_width="fill_parent"
               android:layout_toRightOf="@id/photo"
               android:layout_alignParentRight="true"
-              android:text="s" android:layout_height="wrap_content" android:layout_below="@+id/name"  android:lines="4" />
+              android:text="s" android:layout_height="wrap_content" android:layout_below="@+id/name" android:lines="4"/>
 
 
 </RelativeLayout>
