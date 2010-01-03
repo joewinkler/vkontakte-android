@@ -1,19 +1,36 @@
-<TabHost android:id="@android:id/tabhost" android:layout_width="fill_parent" android:layout_height="fill_parent"
+<TabHost android:id="@+id/ProfileTabHost" android:layout_width="fill_parent" android:layout_height="fill_parent"
          xmlns:android="http://schemas.android.com/apk/res/android">
-    <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-        <FrameLayout
-                android:id="@android:id/tabcontent"
+    <FrameLayout android:layout_width="fill_parent"
+                 android:layout_height="fill_parent">
+        <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" android:layout_weight="1">
-        </FrameLayout>
-        <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" android:gravity="bottom"/>
-    </LinearLayout>
+                android:layout_height="fill_parent">
+            <TabWidget
+                    android:id="@android:id/tabs"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" android:gravity="top"
+                    android:paddingTop="60dip"
+                    android:background="#406D95"/>
 
+            <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" android:layout_weight="1">
+
+            </FrameLayout>
+
+        </LinearLayout>
+        <LinearLayout android:layout_height="70dip" android:layout_width="fill_parent"
+                      android:background="#EEE5B8" android:orientation="horizontal">
+            <ImageView android:layout_height="wrap_content" android:layout_width="wrap_content"
+                       android:src="@drawable/icon" android:paddingLeft="10dip"
+                       android:layout_gravity="left|center_vertical"/>
+            <TextView android:layout_height="wrap_content" android:layout_width="wrap_content"
+                      android:paddingLeft="10dip" android:textColor="@android:color/black" android:textStyle="bold"
+                      android:gravity="center_vertical|center" android:layout_gravity="center_vertical"
+                      android:text="FirstName LastName" android:textSize="17dp"/>
+        </LinearLayout>
+    </FrameLayout>
 </TabHost>
 

@@ -32,13 +32,12 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
     private ProfileDao friendProfile;
     private Menu menuToRefresh; //menu is disabled until we haven't friend data
     private static final int SEX_FEMALE = 1;
-    private static final int SEX_MALE = 2;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.profile_view);
+        setContentView(R.layout.friends_view);
 
         initTabHost();
         initInfoTab();
@@ -129,7 +128,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
     private void showProfileInfo(ProfileDao profile) {
         friendProfile = profile;
-        setTitle(getTitle() + ": " + friendProfile.firstname + " " + friendProfile.surname);
+//        setTitle(getTitle() + ": " + friendProfile.firstname + " " + friendProfile.surname);
         ((ImageButton) findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, friendProfile.id));
         if (friendProfile.status != null) {
             TextView status = ((TextView) findViewById(R.id.InfoStatusText));

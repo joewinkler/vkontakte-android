@@ -128,7 +128,7 @@ public class CGuiTest extends TabActivity {
     private void initializeActivity() {
         //refresh(contentToUpdate.ALL);
         // load icons from the files
-
+        setContentView(R.layout.profile_view);
         final TabHost tabHost = getTabHost();
         tabHost.addTab(tabHost.newTabSpec("My Profile").setIndicator(
                 getResources().getString(R.string.i)).setContent(

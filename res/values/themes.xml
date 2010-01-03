@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <style name="vk" parent="@android:style/Theme.Light">
+        <item name="android:windowTitleBackgroundStyle">@style/vk_bcgr</item>
+    </style>
+    <style name="vk_bcgr">
+        <item name="android:background">#21507C</item>
+    </style>
+</resources>

@@ -97,7 +97,7 @@ public class CMeTab extends Activity {
         Cursor c = managedQuery(UserapiProvider.PROFILES_URI, null, KEY_PROFILE_USERID + "=?",
                 new String[]{CSettings.myId.toString()}, null);
 
-        ProfileDao pd = null;
+        ProfileDao pd;
         if (c != null && c.moveToFirst()) {
             pd = new ProfileDao(c);
         } else {

@@ -37,8 +37,8 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
 
         if (CSettings.shouldLoadPics(context)) {
             Bitmap bm = UserHelper.getPhotoByUserId(context, status.getUserId());
+            ImageView photo = (ImageView) view.findViewById(R.id.photo);
             if (bm != null && view.findViewById(R.id.photo) != null) {
-                ImageView photo = (ImageView) view.findViewById(R.id.photo);
                 int srcWidth = bm.getWidth();
                 int srcHeight = bm.getHeight();
                 int dstWidth = PHOTO_SIZE;
@@ -48,6 +48,7 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
                 photo.setImageBitmap(croppedBitmap);
             } else {
                 Log.e(TAG, "Can't get photo for status " + status.getStatusId());
+//                photo.setImageBitmap(null);
             }
         } else {
             ImageView photo = (ImageView) view.findViewById(R.id.photo);
