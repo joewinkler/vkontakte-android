@@ -9,7 +9,9 @@ import android.os.RemoteException;
 import android.provider.Contacts;
 import android.util.Log;
 import android.view.*;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.TabHost;
+import android.widget.Toast;
 import org.googlecode.vkontakte_android.AutoLoadList.Loader;
 import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;
@@ -18,6 +20,7 @@ import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.utils.Phone;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_DATE;
@@ -127,30 +130,27 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
     }
 
     private void showProfileInfo(ProfileDao profile) {
+        ArrayList<ProfileInfoAdapter.PropertiesHolder> DATA = new ArrayList<ProfileInfoAdapter.PropertiesHolder>();
+
         friendProfile = profile;
-//        setTitle(getTitle() + ": " + friendProfile.firstname + " " + friendProfile.surname);
-        ((ImageButton) findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, friendProfile.id));
-        if (friendProfile.status != null) {
-            TextView status = ((TextView) findViewById(R.id.InfoStatusText));
-            status.setText(friendProfile.status);
-            status.setVisibility(View.VISIBLE);
-        }
+//        ((ImageButton) findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, friendProfile.id));
+//        if (friendProfile.status != null) {
+//            TextView status = ((TextView) findViewById(R.id.InfoStatusText));
+//            status.setText(friendProfile.status);
+//            status.setVisibility(View.VISIBLE);
+//        }
 
         if (friendProfile.birthday != null && friendProfile.birthday != 0) {
-            findViewById(R.id.birthday_row).setVisibility(View.VISIBLE);
             SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy");
-            ((TextView) findViewById(R.id.birthday)).setText(format.format(new Date(friendProfile.birthday)));
+            DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_birthday), format.format(new Date(friendProfile.birthday))));
         }
         if (friendProfile.sex != 0) {
-            findViewById(R.id.sex_row).setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R.id.user_sex)).setText(friendProfile.sex == SEX_FEMALE ? R.string.sex_female : R.string.sex_male);
+            DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_sex), getString(friendProfile.sex == SEX_FEMALE ? R.string.sex_female : R.string.sex_male)));
         }
         if (friendProfile.phone != null) {
-            findViewById(R.id.phone_row).setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R.id.phone)).setText(friendProfile.phone);
+            DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_phone), friendProfile.phone));
         }
         if (friendProfile.politicalViews != 0) {
-            findViewById(R.id.pw).setVisibility(View.VISIBLE);
             int id;
             switch (friendProfile.politicalViews) {
                 case 1:
@@ -180,15 +180,13 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
                 default:
                     id = -1; // should never happen
             }
-            TextView politViews = ((TextView) findViewById(R.id.views));
             if (id != -1) {
-                politViews.setText(id);
+                DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_views), getString(id)));
             } else {
-                politViews.setText("");
+               DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_views), ""));
             }
         }
         if (friendProfile.familyStatus != 0) {
-            findViewById(R.id.family_status_row).setVisibility(View.VISIBLE);
             int id;
             switch (friendProfile.familyStatus) {
                 case 1:
@@ -225,17 +223,18 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
                     id = -1;
                     break;
             }
-            TextView status = ((TextView) findViewById(R.id.status));
             if (friendProfile.familyStatus != -1) {
-                status.setText(id);
+                DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_status), getString(id)));
             } else {
-                status.setText("");
+                DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_status), ""));
             }
         }
         if (friendProfile.currentCity != null) {
-            findViewById(R.id.current_city).setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R.id.city)).setText(friendProfile.currentCity);
+            DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_city), friendProfile.currentCity));
         }
+
+        android.widget.ListView listView = (android.widget.ListView) findViewById(R.id.my_info);
+        listView.setAdapter(new ProfileInfoAdapter(this, DATA));
         refreshMenu();  //TODO: avoid unnecessary calls
     }
 
@@ -296,7 +295,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         View tv = new View(this);
 
         if (tag.equals("info_tab")) {
-            tv = getLayoutInflater().inflate(R.layout.profile_view_info, null);
+            tv = getLayoutInflater().inflate(R.layout.profile_info, null);
         } else if (tag.equals("updates_tab")) {
 
             final AutoLoadList arl = new AutoLoadList(this);
