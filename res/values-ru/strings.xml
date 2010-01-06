@@ -73,6 +73,7 @@
     <string name="fs_as">В активном поиске</string>
     <string name="fs_complicated">Всё сложно</string>
     <string name="fs_relationship">Встречается</string>
+    <string name="send_by_me">Я</string>
     <!--political views-->
     <string name="pv_apathetic">Индиффирентные</string>
     <string name="pv_communist">Коммунистические</string>

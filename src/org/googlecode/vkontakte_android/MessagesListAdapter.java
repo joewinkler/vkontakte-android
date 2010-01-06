@@ -56,7 +56,7 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
 
         String username = userid.toString();
         if (userid.equals(CSettings.myId)) {
-            return "Me";
+            return context.getString(R.string.send_by_me);
         }
 
         Cursor sc = context.getContentResolver().query(
