@@ -3,6 +3,7 @@ package org.googlecode.vkontakte_android;
 import android.content.Context;
 import android.database.Cursor;
 import android.text.Html;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ResourceCursorAdapter;
@@ -26,16 +27,19 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
         MessageDao messageDao = new MessageDao(cursor);
 
         //TODO optimize
-        String header = "From ";
+        String header = "";
         MessageDao md = new MessageDao(cursor);
 
         Long senderid = md.getSenderId();
         Long receiverid = md.getReceiverId();
+        
+        Long receivedate =md.date;
 
         header += getNameById(context, senderid);
         header += " to ";
         header += getNameById(context, receiverid);
-
+        
+        header += "\n("+DateFormat.format("MMM dd, yyyy h:mmaa", receivedate)+")";
 
         TextView name = (TextView) view.findViewById(R.id.name);
         name.setText(header);
