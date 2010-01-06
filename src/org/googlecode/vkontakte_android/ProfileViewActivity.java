@@ -18,6 +18,8 @@ import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.utils.Phone;
+import org.googlecode.vkontakte_android.utils.ProfileInfoHelper;
+import org.googlecode.vkontakte_android.utils.PropertiesHolder;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -130,7 +132,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
     }
 
     private void showProfileInfo(ProfileDao profile) {
-        ArrayList<ProfileInfoAdapter.PropertiesHolder> DATA = new ArrayList<ProfileInfoAdapter.PropertiesHolder>();
+        ArrayList<PropertiesHolder> DATA = new ArrayList<PropertiesHolder>();
 
         friendProfile = profile;
 //        ((ImageButton) findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, friendProfile.id));
@@ -142,95 +144,35 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
         if (friendProfile.birthday != null && friendProfile.birthday != 0) {
             SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy");
-            DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_birthday), format.format(new Date(friendProfile.birthday))));
+            DATA.add(new PropertiesHolder(getString(R.string.info_birthday), format.format(new Date(friendProfile.birthday))));
         }
         if (friendProfile.sex != 0) {
-            DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_sex), getString(friendProfile.sex == SEX_FEMALE ? R.string.sex_female : R.string.sex_male)));
+            DATA.add(new PropertiesHolder(getString(R.string.info_sex), getString(friendProfile.sex == SEX_FEMALE ? R.string.sex_female : R.string.sex_male)));
         }
         if (friendProfile.phone != null) {
-            DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_phone), friendProfile.phone));
+            DATA.add(new PropertiesHolder(getString(R.string.info_phone), friendProfile.phone));
         }
         if (friendProfile.politicalViews != 0) {
-            int id;
-            switch (friendProfile.politicalViews) {
-                case 1:
-                    id = R.string.pv_communist;
-                    break;
-                case 2:
-                    id = R.string.pv_socialist;
-                    break;
-                case 3:
-                    id = R.string.pv_moderate;
-                    break;
-                case 4:
-                    id = R.string.pv_liberal;
-                    break;
-                case 5:
-                    id = R.string.pv_conservative;
-                    break;
-                case 6:
-                    id = R.string.pv_monarchist;
-                    break;
-                case 7:
-                    id = R.string.pv_ultraconservative;
-                    break;
-                case 8:
-                    id = R.string.pv_apathetic;
-                    break;
-                default:
-                    id = -1; // should never happen
-            }
+            int id = ProfileInfoHelper.getPoliticalViewId(friendProfile.politicalViews);
+            String politicalViews = getString(R.string.info_views);
             if (id != -1) {
-                DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_views), getString(id)));
+                DATA.add(new PropertiesHolder(politicalViews, getString(id)));
             } else {
-               DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_views), ""));
+                DATA.add(new PropertiesHolder(politicalViews, ""));
             }
         }
         if (friendProfile.familyStatus != 0) {
-            int id;
-            switch (friendProfile.familyStatus) {
-                case 1:
-                    if (friendProfile.sex == SEX_FEMALE) {
-                        id = R.string.fs_single_female;
-                    } else {
-                        id = R.string.fs_single_male;
-                    }
-                    break;
-                case 2:
-                    id = R.string.fs_relationship;
-                    break;
-                case 3:
-                    if (friendProfile.sex == SEX_FEMALE) {
-                        id = R.string.fs_engaged_female;
-                    } else {
-                        id = R.string.fs_engaged_male;
-                    }
-                    break;
-                case 4:
-                    if (friendProfile.sex == SEX_FEMALE) {
-                        id = R.string.fs_married_female;
-                    } else {
-                        id = R.string.fs_married_male;
-                    }
-                    break;
-                case 5:
-                    id = R.string.fs_complicated;
-                    break;
-                case 6:
-                    id = R.string.fs_as;
-                    break;
-                default:
-                    id = -1;
-                    break;
-            }
-            if (friendProfile.familyStatus != -1) {
-                DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_status), getString(id)));
+            int id = ProfileInfoHelper.getFamilyStatusId(friendProfile.familyStatus, friendProfile.sex);
+            String status = getString(R.string.info_status);
+            if (id != -1) {
+                DATA.add(new PropertiesHolder(status, getString(id)));
+                DATA.add(new PropertiesHolder(status, getString(id)));
             } else {
-                DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_status), ""));
+                DATA.add(new PropertiesHolder(status, ""));
             }
         }
         if (friendProfile.currentCity != null) {
-            DATA.add(new ProfileInfoAdapter.PropertiesHolder(getString(R.string.info_city), friendProfile.currentCity));
+            DATA.add(new PropertiesHolder(getString(R.string.info_city), friendProfile.currentCity));
         }
 
         android.widget.ListView listView = (android.widget.ListView) findViewById(R.id.my_info);

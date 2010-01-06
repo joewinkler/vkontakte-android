@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import org.googlecode.vkontakte_android.utils.PropertiesHolder;
 
 import java.util.ArrayList;
 
@@ -42,21 +43,4 @@ public class ProfileInfoAdapter extends BaseAdapter {
         return v;
     }
 
-    public static class PropertiesHolder {
-        String property;
-        String meaning;
-
-        PropertiesHolder(String property, String meaning) {
-            this.property = property;
-            this.meaning = meaning;
-        }
-
-        public String getProperty() {
-            return property;
-        }
-
-        public String getMeaning() {
-            return meaning;
-        }
-    }
 }
