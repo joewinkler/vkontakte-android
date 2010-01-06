@@ -36,10 +36,10 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
         Long receivedate =md.date;
 
         header += getNameById(context, senderid);
-        header += " to ";
+        header += "->";
         header += getNameById(context, receiverid);
         
-        header += "\n("+DateFormat.format("MMM dd, yyyy h:mmaa", receivedate)+")";
+        header += " ("+DateFormat.format("MMM dd, yyyy h:mmaa", receivedate)+")";
 
         TextView name = (TextView) view.findViewById(R.id.name);
         name.setText(header);
@@ -56,7 +56,7 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
 
         String username = userid.toString();
         if (userid.equals(CSettings.myId)) {
-            return "me";
+            return "Me";
         }
 
         Cursor sc = context.getContentResolver().query(
