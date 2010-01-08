@@ -65,7 +65,7 @@ public class LoginDialog extends Dialog {
                         try {
                             return ServiceHelper.getService().login(params[0], params[1]);
                         } catch (RemoteException e) {
-                            CGuiTest.fatalError("RemoteException");
+                          
                             stopProgress();
                             e.printStackTrace();
                             return false;

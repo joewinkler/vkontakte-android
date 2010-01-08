@@ -2,16 +2,12 @@ package org.googlecode.vkontakte_android;
 
 
 import android.app.TabActivity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.*;
 import android.util.Log;
 import android.view.*;
-import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,17 +15,12 @@ import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
-import org.googlecode.vkontakte_android.service.IVkontakteService;
+
 
 public class CGuiTest extends TabActivity {
 
-    public static CGuiTest s_instance; //TODO refactor
-
     private static String TAG = "VK-Gui ";
-    public IVkontakteService m_vkService;
-
-    private VkontakteServiceConnection m_connection = new VkontakteServiceConnection();
-
+   
     //todo: use map(?)
     public static final int MY_PAGE = 0;
     public static final int MY_FRIENDS = 1;
@@ -44,87 +35,16 @@ public class CGuiTest extends TabActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        s_instance = this;
+  
         initializeActivity();
-        bindService();
+        initializeUserStuff();
+   
         // For calls from HomeGrid
         if (getIntent().hasExtra("tabToShow")) {
             getTabHost().setCurrentTabByTag(getIntent().getStringExtra("tabToShow"));
         }
 
     }
-
-
-    private void login() throws RemoteException {
-        // TODO handle JSONException in api methods
-
-        if (m_vkService.loginAuth()) {
-            Log.d(TAG, "Already authorized");
-            initializeUserStuff();
-            return;
-        }
-
-        final LoginDialog ld = new LoginDialog(this);
-        ld.setTitle(R.string.please_login);
-        ((EditText) ld.findViewById(R.id.login)).setText("fake4test@gmail.com");
-        ((EditText) ld.findViewById(R.id.pass)).setText("qwerty");
-        ld.show();
-        ld.setOnLoginClick(new View.OnClickListener() {
-
-
-            public void onClick(View view) {
-                if (!ld.checkCorrectInput(ld.getLogin(), ld.getPass())) {
-                    return;
-                }
-                ld.showProgress();
-                String login = ld.getLogin();
-                String pass = ld.getPass();
-                Log.i(TAG, login + ":" + pass);
-
-                new AsyncTask<String, Void, Boolean>() {
-                    @Override
-                    protected void onPostExecute(Boolean result) {
-                        ld.stopProgress();
-                        if (result) {
-                            ld.dismiss();
-                            initializeUserStuff();
-                        } else {
-                            ld.showErrorMessage("Cannot login");
-                        }
-                    }
-
-                    @Override
-                    protected Boolean doInBackground(String... params) {
-                        try {
-                            return m_vkService.login(params[0], params[1]);
-                        } catch (RemoteException e) {
-                            CGuiTest.fatalError("RemoteException");
-                            ld.stopProgress();
-                            e.printStackTrace();
-                            return false;
-                        }
-                    }
-
-                }.execute(login, pass);
-            }
-        });
-
-        ld.setOnCancelClick(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                try {
-                    m_vkService.stop();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                ld.dismiss();
-                finish();
-            }
-        });
-    }
-
-
     private void initializeActivity() {
         //refresh(contentToUpdate.ALL);
         // load icons from the files
@@ -209,21 +129,6 @@ public class CGuiTest extends TabActivity {
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-//    	if (intent.hasExtra("error")) {
-//    		GuiUtils.error(intent);
-//    	} else if (intent.hasExtra("message")) {
-//    		GuiUtils.message(intent);
-//    	} else if (intent.hasExtra("tabToShow")) {
-//    		String tag = intent.getStringExtra("tabToShow");
-//    		Log.d(TAG, "onNewIntent:: " + tag);
-//    		getTabHost().setCurrentTabByTag(tag);
-//    	}
-
-        super.onNewIntent(intent);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
@@ -248,23 +153,6 @@ public class CGuiTest extends TabActivity {
                         refresh(contentToUpdate.ALL);
                 }
                 return true;
-            case R.id.settings:
-                startActivity(new Intent(this, CSettings.class));
-                return true;
-            case R.id.about:
-                AboutDialog.makeDialog(this).show();
-
-                return true;
-            case R.id.logout:
-                try {
-                    m_vkService.logout();
-                    m_vkService.stop();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                unbindService(m_connection);
-                finish();
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -278,7 +166,7 @@ public class CGuiTest extends TabActivity {
         setProgressBarIndeterminateVisibility(true);
 
         try {
-            m_vkService.update(what.ordinal(), false);
+        	ServiceHelper.getService().update(what.ordinal(), false);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -286,46 +174,8 @@ public class CGuiTest extends TabActivity {
 
     }
 
-    public static void fatalError(String text) {
-        Toast.makeText(CGuiTest.s_instance, text, Toast.LENGTH_SHORT).show();
+    public  void fatalError(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
-
-    @Override
-    protected void onDestroy() {
-        Log.d(TAG, "unbinding servide");
-        unbindService(m_connection);
-        super.onDestroy();
-    }
-
-
-    // =========  RPC stuff ====================
-
-    /**
-     * Binds the service
-     */
-    private void bindService() {
-        Intent i = new Intent();
-        i.setClassName(this, CheckingService.class.getName());
-        bindService(i, m_connection, Context.BIND_AUTO_CREATE);
-        Log.d(TAG, "Binding the service");
-    }
-
-
-    class VkontakteServiceConnection implements ServiceConnection {
-        public void onServiceConnected(ComponentName className,
-                                       IBinder boundService) {
-            m_vkService = IVkontakteService.Stub.asInterface(boundService);
-            Log.d(TAG, "Service has been connected");
-            try {
-                login();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            m_vkService = null;
-            Log.d(TAG, "Service has been disconnected");
-        }
-    }
+   
 }
