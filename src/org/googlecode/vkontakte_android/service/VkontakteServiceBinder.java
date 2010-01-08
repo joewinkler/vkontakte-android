@@ -147,7 +147,14 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     	m_service.stopSelf();
         
     }
-
+   
+    public void restartSheduledUpdates()
+    {
+      m_service.restartSheduledUpdates();
+      
+    }
+    
+    
     @Override
     public boolean loadPrivateMessages(int type, int first, int last)
             throws RemoteException {

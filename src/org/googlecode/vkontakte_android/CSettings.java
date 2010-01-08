@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.preference.*;
 import org.googlecode.userapi.Credentials;
 
@@ -14,8 +15,6 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        
         PreferenceScreen scr = getPreferenceScreen();
         
         Preference ps = scr.findPreference("sound");
@@ -27,6 +26,7 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         ListPreference list = (ListPreference)scr.findPreference("period");
         list.setOnPreferenceChangeListener(this);
         list.setSummary(list.getEntry());
+        
         
 
         
@@ -42,9 +42,12 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
             ListPreference pr = ((ListPreference) arg0);
             int pos = pr.findIndexOfValue((String) arg1);
             pr.setSummary(pr.getEntries()[pos]);
+            setResult(RESULT_OK);
         }
         return true;
     }
+    
+    
 
     public static boolean shouldLoadPics(Context ctx) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);

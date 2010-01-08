@@ -25,6 +25,8 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
 
     private final static String TAG = "org.googlecode.vkontakte_android.HomeGridActivity";
 
+    private final static int SETTINGS_ACTIVITY =1;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,13 +116,32 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     */
 
     @Override
+    protected void  onActivityResult  (int requestCode, int resultCode, Intent data)  
+    {
+    	super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+        
+        case SETTINGS_ACTIVITY:
+            if (resultCode == RESULT_OK) {
+                try {
+					ServiceHelper.getService().restartSheduledUpdates();
+				} catch (RemoteException e) {e.printStackTrace();}
+            }
+        default:
+            break;
+        }
+    }
+    
+    
+    @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
         setProgressBarIndeterminateVisibility(true);
 
         changeTitle(arg1.getTag().toString());
         
         if (arg1.getTag().equals("Settings")) {
-            startActivity(new Intent(this, CSettings.class));
+            startActivityForResult(new Intent(this, CSettings.class),SETTINGS_ACTIVITY);
         } else if (arg1.getTag().equals("Requests")) {
            // showRequests();
         } else if (arg1.getTag().equals("Help")) {

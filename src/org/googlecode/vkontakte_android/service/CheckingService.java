@@ -155,15 +155,17 @@ public class CheckingService extends Service {
     }
 
   public void cancelSheduledUpdates(){
-	  
-	  
 	  m_timer.cancel();
 	  m_timer.purge();
-	  
-	  
   }
   
-    
+  public void restartSheduledUpdates(){
+	  cancelSheduledUpdates();
+	  m_timer= new Timer();
+	  launchScheduledUpdates();
+  }
+  
+     
     
 
     // =============== updating methods
