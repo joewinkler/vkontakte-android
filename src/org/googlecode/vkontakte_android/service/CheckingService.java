@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import org.googlecode.userapi.*;
+import org.googlecode.vkontakte_android.CSettings;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.StatusDao;
 import org.googlecode.vkontakte_android.database.UserDao;
@@ -31,7 +32,6 @@ public class CheckingService extends Service {
     public static final int STATUS_NUM_LOAD = 6;
 
     private Timer m_timer = new Timer();
-    private static boolean s_timerHasStarted = false;
     private static SharedPreferences s_prefs;
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
 
@@ -123,11 +123,11 @@ public class CheckingService extends Service {
      * Starts a thread checking api periodically
      */
     private void launchScheduledUpdates() {
-        if (CheckingService.s_timerHasStarted) {
-            return;
-        }
-        CheckingService.s_timerHasStarted = true;
-
+    	int period = CSettings.getPeriod(getApplicationContext());
+    	if (period==0){ 
+    		return;
+    	}
+    	
         class CheckingTask extends TimerTask {
             @Override
             public void run() {
@@ -149,14 +149,18 @@ public class CheckingService extends Service {
 //                }
             }
         }
-        int period = 10000;//CSettings.getPeriod(getApplicationContext());
+        
         m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, period);
         Log.d(TAG, "Timer with period: " + period);
     }
 
   public void cancelSheduledUpdates(){
 	  
+	  
 	  m_timer.cancel();
+	  m_timer.purge();
+	  
+	  
   }
   
     
