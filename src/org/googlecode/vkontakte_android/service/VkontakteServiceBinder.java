@@ -143,7 +143,9 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
     @Override
     public void stop() throws RemoteException {
-        m_service.stopSelf();
+    	m_service.cancelSheduledUpdates();
+    	m_service.stopSelf();
+        
     }
 
     @Override

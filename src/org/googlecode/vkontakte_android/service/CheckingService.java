@@ -154,6 +154,13 @@ public class CheckingService extends Service {
         Log.d(TAG, "Timer with period: " + period);
     }
 
+  public void cancelSheduledUpdates(){
+	  
+	  m_timer.cancel();
+  }
+  
+    
+    
 
     // =============== updating methods
 
@@ -402,10 +409,13 @@ public class CheckingService extends Service {
         return s_prefs.getInt("period", 30);
     }
 
+    
+       
+      
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "service stopped");
+        Log.d(TAG, "service stopped/destroyed");
 
         // stop all running threads
         for (Thread t : threads) {

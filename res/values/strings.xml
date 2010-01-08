@@ -2,11 +2,9 @@
 <resources>
     <string name="exit">Exit</string>
     <string name="logout">Logout</string>
-    <string name="hello">Hello World, CVkontakteGui!</string>
     <string name="app_name"> VK</string>
     <string name="legal">Legal Information</string>
-    <string name="copyright">© 2009 Ildar Karimov, Evgeny Balandin, Serg Podtynnyi, Anastasia Dremina and others.
-    </string>
+    <string name="copyright">© 2009-2010 Ildar Karimov, Evgeny Balandin, Serg Podtynnyi, Anastasia Dremina and others.</string>
 
     <string name="set_status">Change Status</string>
     <string name="ok">Ok</string>
@@ -47,7 +45,7 @@
     <string name="build">, build</string>
     <string name="version">Version</string>
     <!--status messages-->
-    <string name="status_online">On-line</string>
+    <string name="status_online">Online</string>
     <string name="status_offline">Offline</string>
     <!--error messages-->
     <string name="err_msg_check_connection">Cannot send the message. Check connection.</string>
@@ -58,7 +56,7 @@
     <string name="status_update_err">Update failed</string>
     <!--login message-->
     <string name="login_err">Login/pass incorrect</string>
-    <string name="view_and_reply">View mesage thread/reply</string>
+    <string name="view_and_reply">View message thread/reply</string>
     <string name="reply">Reply</string>
     <string name="delete_message">Delete message</string>
     <string name="please_login">Please enter your login/pass</string>
@@ -69,7 +67,7 @@
     <!--user info-->
     <string name="info_sex">Sex:</string>
     <string name="info_birthday">Birthday:</string>
-    <string name="info_status">Marital status:</string>
+    <string name="info_status">Maritial status:</string>
     <string name="info_views">Political views:</string>
     <string name="info_location">Location:</string>
     <string name="info_phone">Phone:</string>

@@ -38,10 +38,9 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         mHomeGrid.setNumColumns(3);
         mHomeGrid.setAdapter(new HomeGridAdapter(this));
         mHomeGrid.setOnItemClickListener(this);
-        this.setTitle(getResources().getString(R.string.app_name) + " > " + "Home");
+        backToHome();
         initStatus();
     }
-
 
     private void initStatus() {
 
@@ -91,16 +90,21 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     }
 
     private void backToHome() {
-        this.setTitle(getResources().getString(R.string.app_name) + " > " + "Home");
+        this.setTitle(" "+getResources().getString(R.string.app_name) + " > " + "Home");
         setProgressBarIndeterminateVisibility(false);
     }
-
-    private void showRequests() {
-        Intent i = new Intent(this, FriendListActivity.class);
-//        i.putExtra(FriendsListTabActivity.SHOW_ONLY_NEW, true);
-        startActivity(i);
+    
+    private void changeTitle(String uiComponent){
+    	this.setTitle(" "+getResources().getString(R.string.app_name) + " > " + uiComponent);
     }
 
+    /*
+    private void showRequests() {
+        Intent i = new Intent(this, FriendListActivity.class);
+        i.putExtra(FriendsListTabActivity.SHOW_ONLY_NEW, true);
+        startActivity(i);
+    }
+    */
     /*
     private void showFriends() {
         Intent i = new Intent(this, FriendsListTabActivity.class);
@@ -112,12 +116,13 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
         setProgressBarIndeterminateVisibility(true);
-        this.setTitle(getResources().getString(R.string.app_name) + " > " + arg1.getTag());
 
+        changeTitle(arg1.getTag().toString());
+        
         if (arg1.getTag().equals("Settings")) {
             startActivity(new Intent(this, CSettings.class));
         } else if (arg1.getTag().equals("Requests")) {
-            showRequests();
+           // showRequests();
         } else if (arg1.getTag().equals("Help")) {
             AboutDialog.makeDialog(this).show();
             backToHome();
@@ -146,7 +151,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     public void onStop() {
         super.onStop();
         Log.d(TAG, "Activity Stopped");
-        //try {m_vkService.stop();} catch (RemoteException e) {e.printStackTrace();}
     }
 
     @Override
@@ -197,7 +201,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
             Log.d(TAG, "Already authorized");
             return;
         }
-
         final LoginDialog ld = new LoginDialog(this);
         ld.setTitle(R.string.please_login);
         ld.setCancelable(false);
