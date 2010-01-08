@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="period">
-        <item>10 секунд</item>
-        <item>30 секунд</item>
-        <item>1 минута</item>
-        <item>2 минуты</item>
-        <item>5 минут</item>
+        <item>Never</item>
+        <item>10 seconds</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
     </string-array>
     <string-array name="period_val">
+        <item>0</item>
         <item>10</item>
         <item>30</item>
         <item>60</item>

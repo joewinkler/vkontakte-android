@@ -14,17 +14,22 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        
         PreferenceScreen scr = getPreferenceScreen();
+        
         Preference ps = scr.findPreference("sound");
         ps.setOnPreferenceChangeListener(this);
 
         Preference pn = scr.findPreference("notif");
         pn.setOnPreferenceChangeListener(this);
 
-        Preference list = scr.findPreference("period");
+        ListPreference list = (ListPreference)scr.findPreference("period");
         list.setOnPreferenceChangeListener(this);
+        list.setSummary(list.getEntry());
+        
 
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        
         //Log.d("pr",prefs.getString("period", " "));
 
     }
@@ -101,6 +106,6 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
     }
 
     public static int getPeriod(Context ctx) {
-        return Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(ctx).getString("period", "60"));
+        return Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(ctx).getString("period", "60"))*1000;
     }
 }
