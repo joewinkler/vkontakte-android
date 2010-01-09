@@ -128,6 +128,15 @@ public class MessagesListActivity extends AutoLoadActivity {
             	changeAdapter(new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.OUTCOMING)));
             	return true;
 
+            case R.id.refresh:
+			try {
+				ServiceHelper.getService().update(CheckingService.contentToUpdate.MESSAGES_ALL.ordinal(), false);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            	return true;
+            	
             default:
                 return super.onContextItemSelected(item);
         }

@@ -3,4 +3,5 @@
   xmlns:android="http://schemas.android.com/apk/res/android">
 <item android:id="@+id/inbox" android:title="@string/inbox"></item>
 <item android:id="@+id/sent" android:title="@string/sent"></item>
+<item android:id="@+id/refresh" android:title="@string/refresh" android:icon="@drawable/ic_menu_refresh"></item>
 </menu>

@@ -33,18 +33,31 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
         Long receiverid = messageDao.getReceiverId();
         Long receivedate = messageDao.date;
 
-        if (receiverid.equals(Settings.myId)){
-        	strName=getNameById(context, senderid);
-        }
-        else{
-        	strName= getNameById(context, receiverid);
-        }
-        	
-        TextView name = (TextView) view.findViewById(R.id.name);
-        name.setText(strName);
+        
+		if (view.findViewById(R.id.name) != null) {
+
+			if (receiverid.equals(Settings.myId)) {
+				strName = getNameById(context, senderid);
+			} else {
+				strName = getNameById(context, receiverid);
+			}
+
+			TextView name = (TextView) view.findViewById(R.id.name);
+			name.setText(strName);
+			strDate = DateFormat.getMediumDateFormat(context).format( receivedate);
+			
+		} else {
+			TextView name = (TextView) view.findViewById(R.id.sendername);
+			strName = getNameById(context, senderid);
+			name.setText(strName);
+			strDate = DateFormat.getMediumDateFormat(context).format( receivedate);
+			strDate +=" ("+DateFormat.getTimeFormat(context).format(receivedate)+")";
+		}        	
+        
+        
 
         
-        strDate= (String) DateFormat.getMediumDateFormat(context).format( receivedate);
+        
         //Date recdate= new Date();
         
         
