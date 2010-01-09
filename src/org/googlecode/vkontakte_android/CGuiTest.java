@@ -20,13 +20,13 @@ import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 public class CGuiTest extends TabActivity {
 
-    private static String TAG = "VK-Gui ";
+    private static String TAG = "VK:Old UI";
    
     //todo: use map(?)
     public static final int MY_PAGE = 0;
     public static final int MY_FRIENDS = 1;
-    public static final int MY_MESSAGES = 2;
-    public static final int MY_UPDATES = 3;
+   // public static final int MY_MESSAGES = 2;
+   // public static final int MY_UPDATES = 3;
 
 
     /**
@@ -60,20 +60,23 @@ public class CGuiTest extends TabActivity {
                 getResources().getDrawable(R.drawable.ic_menu_friendslist))
                 .setContent(new Intent(CGuiTest.this, FriendsListTabActivity.class)));
 
+      /*
         tabHost.addTab(tabHost.newTabSpec("Messages").setIndicator(
                 getResources().getString(R.string.messages)).setContent(
                 new Intent(CGuiTest.this, MessagesListTabActivity.class)));
-
+*/
+        /*
         tabHost.addTab(tabHost.newTabSpec("Updates").setIndicator(
                 getResources().getString(R.string.updates)).setContent(
                 new Intent(CGuiTest.this, UpdatesListTabActivity.class)));
+                */
     }
 
 
     private void initializeUserStuff() {
         // todo: possibly move to tabs activities itself
         final TextView friendsCounter = TabHelper.injectTabCounter(getTabWidget(), 1, getApplicationContext());
-        final TextView messagesCounter = TabHelper.injectTabCounter(getTabWidget(), 0, getApplicationContext());
+        //final TextView messagesCounter = TabHelper.injectTabCounter(getTabWidget(), 0, getApplicationContext());
 
         // todo: register/unregister onResume/onPause
         // users content
@@ -93,6 +96,8 @@ public class CGuiTest extends TabActivity {
         });
         getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
 
+        
+        /*
         //messages content
         getContentResolver().registerContentObserver(UserapiProvider.MESSAGES_URI, false, new ContentObserver(new Handler()) {
             @Override
@@ -111,8 +116,9 @@ public class CGuiTest extends TabActivity {
             }
         });
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
+*/
 
-
+        /*
         //statuses content
         getContentResolver().registerContentObserver(UserapiProvider.STATUSES_URI, false, new ContentObserver(new Handler()) {
             @Override
@@ -121,6 +127,8 @@ public class CGuiTest extends TabActivity {
             }
         });
         getContentResolver().notifyChange(UserapiProvider.STATUSES_URI, null);
+        
+        */
 
         try {
             CMeTab.s_instance.loadProfile();
@@ -144,12 +152,18 @@ public class CGuiTest extends TabActivity {
                     case MY_FRIENDS:
                         refresh(contentToUpdate.FRIENDS);
                         break;
+                    /*
                     case MY_MESSAGES:
                         refresh(contentToUpdate.MESSAGES_ALL);
                         break;
+                        */
+                  
+                    /*    
                     case MY_UPDATES:
                         refresh(contentToUpdate.STATUSES);
                         break;
+                        */
+                        
                     default:
                         refresh(contentToUpdate.ALL);
                 }

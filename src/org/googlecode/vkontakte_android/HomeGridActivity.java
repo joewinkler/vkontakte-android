@@ -149,6 +149,13 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
             AboutDialog.makeDialog(this).show();
             backToHome();
         }
+        else if (arg1.getTag().equals("Messages")){
+        	startActivity(new Intent(this, MessagesListActivity.class));
+        }
+        else if (arg1.getTag().equals("Updates")){
+        	startActivity(new Intent(this, UpdatesListActivity.class));
+        }
+        	
         // Not implemented
         else if (arg1.getTag().equals("Help")
                 || arg1.getTag().equals("Search")

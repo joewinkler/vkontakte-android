@@ -20,7 +20,7 @@ import org.googlecode.vkontakte_android.utils.ServiceHelper;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
 
 
-public class MessagesListTabActivity extends AutoLoadActivity {
+public class MessagesListActivity extends AutoLoadActivity {
     private static final String TAG = "org.googlecode.vkontakte_android.MessagesListTabActivity";
 
     enum MessagesCursorType {
@@ -41,7 +41,7 @@ public class MessagesListTabActivity extends AutoLoadActivity {
                             m_adapter.getCount(), m_adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
                 } catch (RemoteException e) {
                     e.printStackTrace();
-                    AppHelper.showFatalError(MessagesListTabActivity.this, "While trying to load messages");
+                    AppHelper.showFatalError(MessagesListActivity.this, "While trying to load messages");
                     Log.e(TAG, "Loading messages failed");
                 }
                 return false;

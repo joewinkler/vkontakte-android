@@ -21,7 +21,7 @@
         <activity android:name="FriendListActivity"
                   android:label="@string/app_name">
         </activity>
-        <activity android:name="MessagesListTabActivity"
+        <activity android:name="MessagesListActivity"
                   android:label="@string/app_name">
         </activity>
         <activity android:name=".ComposeMessageActivity"
@@ -44,7 +44,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="UpdatesListTabActivity"
+        <activity android:name="UpdatesListActivity"
                   android:label="@string/app_name">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER"/>

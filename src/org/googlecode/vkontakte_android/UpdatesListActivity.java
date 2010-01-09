@@ -17,7 +17,7 @@ import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KE
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_PERSONAL;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.STATUSES_URI;
 
-public class UpdatesListTabActivity extends AutoLoadActivity implements AdapterView.OnItemClickListener {
+public class UpdatesListActivity extends AutoLoadActivity implements AdapterView.OnItemClickListener {
     private static final String TAG = "org.googlecode.vkontakte_android.UpdatesListTabActivity";
 
     @Override
@@ -26,7 +26,7 @@ public class UpdatesListTabActivity extends AutoLoadActivity implements AdapterV
         setContentView(R.layout.status_list);
         final Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_PERSONAL + "=0", null, KEY_STATUS_DATE + " DESC ");
 
-        setupLoader(new UpdatesListTabActivity.Loader() {
+        setupLoader(new UpdatesListActivity.Loader() {
             @Override
             public Boolean load() {
                 try {
@@ -34,7 +34,7 @@ public class UpdatesListTabActivity extends AutoLoadActivity implements AdapterV
                             m_adapter.getCount() + CheckingService.STATUS_NUM_LOAD);
                 } catch (RemoteException e) {
                     e.printStackTrace();
-                    AppHelper.showFatalError(UpdatesListTabActivity.this, "While trying to load statuses");
+                    AppHelper.showFatalError(UpdatesListActivity.this, "While trying to load statuses");
                     Log.e(TAG, "Loading statuses failed");
                 }
                 return false;
