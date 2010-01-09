@@ -141,7 +141,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         changeTitle(arg1.getTag().toString());
         
         if (arg1.getTag().equals("Settings")) {
-            startActivityForResult(new Intent(this, CSettings.class),SETTINGS_ACTIVITY);
+            startActivityForResult(new Intent(this, Settings.class),SETTINGS_ACTIVITY);
         } else if (arg1.getTag().equals("Requests")) {
            // showRequests();
         } else if (arg1.getTag().equals("Help")) {

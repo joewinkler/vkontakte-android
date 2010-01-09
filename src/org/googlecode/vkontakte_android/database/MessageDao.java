@@ -5,7 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import org.googlecode.userapi.Message;
-import org.googlecode.vkontakte_android.CSettings;
+import org.googlecode.vkontakte_android.Settings;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 
@@ -164,7 +164,7 @@ public class MessageDao extends Message {
         if (user == null) {
             return false;
         }
-        if (user.getUserId() != CSettings.myId) {
+        if (user.getUserId() != Settings.myId) {
             user.saveOrUpdate(ctx);
         }
         return true;

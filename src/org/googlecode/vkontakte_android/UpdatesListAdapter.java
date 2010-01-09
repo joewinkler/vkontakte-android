@@ -35,7 +35,7 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         TextView timeLine = (TextView) view.findViewById(R.id.time);
         timeLine.setText(weektimeFormat.format(status.getDate()));
 
-        if (CSettings.shouldLoadPics(context)) {
+        if (Settings.shouldLoadPics(context)) {
             Bitmap bm = UserHelper.getPhotoByUserId(context, status.getUserId());
             ImageView photo = (ImageView) view.findViewById(R.id.photo);
             if (bm != null && view.findViewById(R.id.photo) != null) {

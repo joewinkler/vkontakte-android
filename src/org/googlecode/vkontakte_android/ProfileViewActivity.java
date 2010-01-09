@@ -67,7 +67,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
 
     private void initInfoTab() {
-        profileId = CSettings.myId;
+        profileId = Settings.myId;
         if (getIntent().getExtras() != null)
             profileId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_PROFILE_USERID, profileId);
 

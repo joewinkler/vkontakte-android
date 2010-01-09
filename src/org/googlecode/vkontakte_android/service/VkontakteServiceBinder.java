@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 import org.googlecode.userapi.*;
-import org.googlecode.vkontakte_android.CSettings;
+import org.googlecode.vkontakte_android.Settings;
 import org.googlecode.vkontakte_android.R;
 //import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.ProfileDao;
@@ -44,7 +44,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             try {
                 api.login(cred);
                 Log.d(TAG, "Successful log with login/pass");
-                CSettings.saveLogin(ctx, cred);
+                Settings.saveLogin(ctx, cred);
                 result = true;
             } catch (UserapiLoginException e) {
                 e.printStackTrace();
@@ -62,19 +62,19 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         Context ctx = m_context;
         VkontakteAPI api = ApiCheckingKit.getApi();
         boolean result = false;
-        if (CSettings.isLogged(ctx)) {
+        if (Settings.isLogged(ctx)) {
             try {
-                Credentials credentials = new Credentials(CSettings.getLogin(ctx),
-                        CSettings.getPass(ctx), CSettings.getRemixPass(ctx));
+                Credentials credentials = new Credentials(Settings.getLogin(ctx),
+                        Settings.getPass(ctx), Settings.getRemixPass(ctx));
                 api.login(credentials);
                 result = true;
                 Log.d(TAG, "Logged in");
-                CSettings.saveLogin(ctx, credentials);
+                Settings.saveLogin(ctx, credentials);
             } catch (IOException ex) {
-                CSettings.clearPrivateInfo(ctx);
+                Settings.clearPrivateInfo(ctx);
                 UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
             } catch (UserapiLoginException e) {
-                CSettings.clearPrivateInfo(ctx);
+                Settings.clearPrivateInfo(ctx);
                 e.printStackTrace();
             }
         } else {
@@ -132,7 +132,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         try {
             Log.d(TAG, "Logout");
             ApiCheckingKit.getApi().logout();
-            CSettings.clearPrivateInfo(m_context);
+            Settings.clearPrivateInfo(m_context);
         } catch (IOException e) {
             UpdatesNotifier.showError(m_context, R.string.err_msg_connection_problem);
             e.printStackTrace();
@@ -205,7 +205,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             }
 
             if (setMe) if (pr != null) {
-                CSettings.myId = pr.getId();
+                Settings.myId = pr.getId();
             }
             ProfileDao dao = null;
             if (pr != null) {

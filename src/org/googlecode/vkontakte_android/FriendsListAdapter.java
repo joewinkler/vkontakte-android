@@ -35,7 +35,7 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         status.setText(statusText);
 
         ImageView photo = (ImageView) view.findViewById(R.id.photo);
-        if (CSettings.shouldLoadPics(context)) {
+        if (Settings.shouldLoadPics(context)) {
             if (userDao.getUserPhotoUrl() != null) {
                 Bitmap bm = UserHelper.getPhotoByUserId(context, userDao.userId);
                 if (bm == null) {

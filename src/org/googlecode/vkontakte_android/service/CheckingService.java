@@ -11,7 +11,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import org.googlecode.userapi.*;
-import org.googlecode.vkontakte_android.CSettings;
+import org.googlecode.vkontakte_android.Settings;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.StatusDao;
 import org.googlecode.vkontakte_android.database.UserDao;
@@ -126,7 +126,7 @@ public class CheckingService extends Service {
      * Starts a thread checking api periodically
      */
     private void launchScheduledUpdates() {
-    	int period = CSettings.getPeriod(getApplicationContext());
+    	int period = Settings.getPeriod(getApplicationContext());
     	if (period==0){ 
     		return;
     	}
@@ -236,7 +236,7 @@ public class CheckingService extends Service {
         int changes = prevChangesHistory.compareTo(changesHistory);
 
         // if there were changes
-        if (changes != 0 && CSettings.getNotifications(getApplicationContext())) {
+        if (changes != 0 && Settings.getNotifications(getApplicationContext())) {
             prevChangesHistory = changesHistory;
 
             boolean newEvents = changes == -1;

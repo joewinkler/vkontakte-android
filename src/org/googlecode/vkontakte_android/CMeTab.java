@@ -89,7 +89,7 @@ public class CMeTab extends Activity {
             return false;
         }
         Cursor c = managedQuery(UserapiProvider.PROFILES_URI, null, KEY_PROFILE_USERID + "=?",
-                new String[]{CSettings.myId.toString()}, null);
+                new String[]{Settings.myId.toString()}, null);
 
         ProfileDao pd;
         if (c != null && c.moveToFirst()) {

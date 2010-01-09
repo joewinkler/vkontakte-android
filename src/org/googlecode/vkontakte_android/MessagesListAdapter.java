@@ -53,7 +53,7 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
     private String getNameById(Context context, Long userid) {
 
         String username = userid.toString();
-        if (userid.equals(CSettings.myId)) {
+        if (userid.equals(Settings.myId)) {
             return context.getString(R.string.send_by_me);
         }
 
