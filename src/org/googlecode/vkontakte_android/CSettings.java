@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.preference.*;
 import org.googlecode.userapi.Credentials;
 
@@ -26,12 +25,6 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
         ListPreference list = (ListPreference)scr.findPreference("period");
         list.setOnPreferenceChangeListener(this);
         list.setSummary(list.getEntry());
-        
-        
-
-        
-        //Log.d("pr",prefs.getString("period", " "));
-
     }
 
     @Override

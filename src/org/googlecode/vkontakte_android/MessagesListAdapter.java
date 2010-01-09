@@ -28,12 +28,10 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
 
         //TODO optimize
         String header = "";
-        MessageDao md = new MessageDao(cursor);
 
-        Long senderid = md.getSenderId();
-        Long receiverid = md.getReceiverId();
-        
-        Long receivedate =md.date;
+        Long senderid = messageDao.getSenderId();
+        Long receiverid = messageDao.getReceiverId();
+        Long receivedate = messageDao.date;
 
         header += getNameById(context, senderid);
         header += "->";
@@ -64,9 +62,7 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
                 new String[]{userid.toString()}, null);
         if (sc.moveToNext()) {
             UserDao ud = new UserDao(sc);
-            if (ud.userName != null) {
-                username = ud.userName;
-            }
+            if (ud.userName != null) { username = ud.userName; }
         } else {
             Log.e(TAG, "No such user in DB ");
             username = userid.toString();

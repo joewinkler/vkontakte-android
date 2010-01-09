@@ -9,7 +9,7 @@ import android.util.Log;
 import org.googlecode.userapi.*;
 import org.googlecode.vkontakte_android.CSettings;
 import org.googlecode.vkontakte_android.R;
-import org.googlecode.vkontakte_android.database.MessageDao;
+//import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
@@ -95,7 +95,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             } catch (UserapiLoginException e) {
                 e.printStackTrace();
             }
-            MessageDao md = new MessageDao(0, new Date(), text, 0, id, true);
+            //MessageDao md = new MessageDao(0, new Date(), text, 0, id, true);
             //don't save it to DB, TODO refresh last out message instead
             m_service.doCheck(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal(), new Bundle(), false);
         } catch (IOException e) {

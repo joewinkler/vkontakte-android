@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="period">
-        <item>Never</item>
+        <item>Manual</item>
         <item>10 seconds</item>
         <item>30 seconds</item>
         <item>1 minute</item>
