@@ -7,15 +7,24 @@ import android.content.Context;
 import android.content.Intent;
 /*import android.os.Looper;
 import android.widget.Toast;*/
-import org.googlecode.vkontakte_android.CGuiTest;
-import org.googlecode.vkontakte_android.ComposeMessageActivity;
-import org.googlecode.vkontakte_android.HomeGridActivity;
-import org.googlecode.vkontakte_android.R;
+import android.content.res.Resources;
+import android.util.Log;
+import org.googlecode.userapi.ChangesHistory;
+import org.googlecode.vkontakte_android.*;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 
 //TODO toast => notifier
-class UpdatesNotifier {
+public class UpdatesNotifier {
+
+    private static final String TAG = "VK-notifier";
+
+    private static final int HISTORY_ID = 1;
+
+    /**
+     * State of notification in the status bar. True if it is active now.
+     */
+    public static boolean notificationActive = false;
 
     public static void showError(final Context ctx, final int error) {
         // I don't think it's a good idea to use toast notification about errors from services. Normally that should be
@@ -34,48 +43,65 @@ class UpdatesNotifier {
         }.start();*/
     }
 
-    public static void notifyHistoryMessages(final Context ctx, final long friends, final long mess, final long tags) {
-        NotificationManager mNotificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        String titleText = "You have received: ";
+    public static void notifyChangesHistory(Context ctx, ChangesHistory changesHistory, boolean newEvents) {
+        Log.v(TAG, "Updating notification info: " + changesHistory);
 
-        String f = (friends != 0) ? "Fr: " + friends : "";
-        String m = (mess != 0) ? " Mess: " + mess : "";
-        String t = (tags != 0) ? " Tags: " + tags : "";
+        // If user has cleared notification, we should create new one only if there were new events
+        if (!notificationActive && !newEvents)
+            return;
 
-        String text = f + m + t;
+        NotificationManager manager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Notification notification = new Notification(R.drawable.my_help, "VKontakte: updates", System.currentTimeMillis());
+        int friends = changesHistory.getFriendsCount();
+        int messages = changesHistory.getMessagesCount();
+        int photos = changesHistory.getPhotosCount();
+
+        String notificationText;
+
+        if (friends == 0 && messages == 0 && photos == 0) {
+            manager.cancel(HISTORY_ID);
+            return;
+        }
+        else if (friends > 0 && messages == 0 && photos == 0) {
+            notificationText = friends > 1
+                    ? ctx.getString(R.string.notif_new_friends)
+                    : ctx.getString(R.string.notif_new_friend);
+        }
+        else if (friends == 0 && messages > 0 && photos == 0) {
+            notificationText = messages > 1
+                    ? ctx.getString(R.string.notif_new_messages)
+                    : ctx.getString(R.string.notif_new_message);
+        }
+        else if (friends == 0 && messages == 0 && photos > 0) {
+            notificationText = photos > 1
+                    ? ctx.getString(R.string.notif_new_photos)
+                    : ctx.getString(R.string.notif_new_photo);
+        }
+        else {
+            notificationText = ctx.getString(R.string.notif_new_events);
+        }
+
+        StringBuilder text = new StringBuilder();
+        if (friends > 0)
+            text.append(ctx.getString(R.string.notif_friends)).append(" ").append(friends).append("; ");
+        if (messages > 0)
+            text.append(ctx.getString(R.string.notif_messages)).append(" ").append(messages).append("; ");
+        if (photos > 0)
+            text.append(ctx.getString(R.string.notif_photos)).append(" ").append(photos).append("; ");
+
+        Notification notification = new Notification(R.drawable.vkontakte_icon_48, notificationText, System.currentTimeMillis());
+        // This intent will be thrown if user clears all notifications
+        Intent deleteIntent = new Intent(AppHelper.ACTION_NOTIFICATION_CLEARED);
+        notification.deleteIntent = PendingIntent.getBroadcast(ctx, 0, deleteIntent, 0);
+
         Intent notificationIntent = new Intent(ctx, HomeGridActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
-        notification.setLatestEventInfo(ctx, titleText, text, contentIntent);
-        final int VK_ID = 42;
-        mNotificationManager.notify(VK_ID, notification);
-    }
 
-    public static void notifyMessages(final Context ctx, final long num, final MessageDao mess) {
-        if (num < 1) return;
+        notification.setLatestEventInfo(ctx, notificationText, text, contentIntent);
 
-        NotificationManager mNotificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        String tickerText = "VKontakte updates";
-        Notification notification = new Notification(R.drawable.icon, tickerText, System.currentTimeMillis());
-        String contentTitle;
-        String contentText = "";
-        Intent notificationIntent;
-        if (num == 1) {
-            contentTitle = "New message from " + mess.getSender(ctx).userName;
-            contentText = mess.text;
-            notificationIntent = new Intent(ctx, ComposeMessageActivity.class)
-                    .putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, mess.senderId);
-        } else {
-            contentTitle = num + " new messages.";
-            notificationIntent = new Intent(ctx, CGuiTest.class).putExtra("tabToShow", "Messages").setFlags(
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        }
-        PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
-        notification.setLatestEventInfo(ctx, contentTitle, contentText, contentIntent);
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        final int HELLO_ID = 2;
-        mNotificationManager.notify(HELLO_ID, notification);
+        manager.notify(HISTORY_ID, notification);
+
+        notificationActive = true;
     }
 
 }

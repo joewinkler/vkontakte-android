@@ -83,4 +83,15 @@
     <string name="pv_conservative">Консервативные</string>
     <string name="pv_monarchist">Монахрические</string>
     <string name="pv_ultraconservative">Ультраконсервативные</string>
+    <!-- Notifications -->
+    <string name="notif_new_events">Новые события</string>
+    <string name="notif_new_friend">Новый друг</string>
+    <string name="notif_new_friends">Новые друзья</string>
+    <string name="notif_new_message">Новое сообщение</string>
+    <string name="notif_new_messages">Новые сообщения</string>
+    <string name="notif_new_photo">Новое фото</string>
+    <string name="notif_new_photos">Новые фото</string>
+    <string name="notif_friends">Друзей:</string>
+    <string name="notif_messages">Сообщений:</string>
+    <string name="notif_photos">Фото:</string>
 </resources>

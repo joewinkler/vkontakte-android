@@ -10,22 +10,15 @@ import java.io.IOException;
  * @author bea
  */
 public class ApiCheckingKit {
-    private ApiCheckingKit() throws IOException {
-    }
 
     private static final int SITE_ID = 2;
-    private static final VkontakteAPI s_api = new VkontakteAPI(SITE_ID);
+
+    private static final VkontakteAPI api = new VkontakteAPI(SITE_ID);
+
+    private ApiCheckingKit() {}
 
     public static VkontakteAPI getApi() {
-        return s_api;
+        return api;
     }
 
-    public static final HistoryChanges m_histChanges = new HistoryChanges();
-
-}
-
-class HistoryChanges {
-    public long prevUnreadMessNum = 0;
-    public long prevFriendshipRequestsNum = 0;
-    public long prevNewPhotoTagsNum = 0;
 }

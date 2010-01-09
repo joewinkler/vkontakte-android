@@ -35,6 +35,7 @@ public class CheckingService extends Service {
     private static SharedPreferences s_prefs;
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
 
+    private ChangesHistory prevChangesHistory = new ChangesHistory();
 
     public enum contentToUpdate {
         FRIENDS, MESSAGES_ALL, MESSAGES_IN, MESSAGES_OUT, WALL, HISTORY, STATUSES, ALL, PROFILE
@@ -116,6 +117,8 @@ public class CheckingService extends Service {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (UserapiLoginException e) {
+            e.printStackTrace();
         }
     }
 
@@ -131,22 +134,13 @@ public class CheckingService extends Service {
         class CheckingTask extends TimerTask {
             @Override
             public void run() {
-                Log.d(TAG, "checking by timer");
+                Log.v(TAG, "Checking by timer");
                 try {
                     updateHistory();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    //TODO: more correct exception handling
+                    Log.e(TAG, "Error while updating history", e);
                 }
-//                catch (OutOfMemoryError error) {
-//                    try {
-//                        Thread.sleep(1000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                    }
-//                    onLowMemory();
-//                }
             }
         }
         
@@ -193,8 +187,7 @@ public class CheckingService extends Service {
 
             }
         }
-        if (countNew > 0)
-            UpdatesNotifier.notifyMessages(this, countNew, single);
+        
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
         //TODO get real counter from provider
     }
@@ -235,45 +228,19 @@ public class CheckingService extends Service {
         // todo: implement
     }
 
-    private void updateHistory() throws IOException, JSONException {
-        Log.d(TAG, "updating history");
-        ChangesHistory hist = null;
-        try {
-            hist = ApiCheckingKit.getApi().getChangesHistory();
-        } catch (UserapiLoginException e) {
-            e.printStackTrace();
-        }
-        long new_friends = 0;
-        if (hist != null) {
-            new_friends = hist.getFriendsCount() - ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum;
-        }
-        long new_messages = 0;
-        if (hist != null) {
-            new_messages = hist.getMessagesCount() - ApiCheckingKit.m_histChanges.prevUnreadMessNum;
-        }
-        long new_tags = 0;
-        if (hist != null) {
-            new_tags = hist.getPhotosCount() - ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum;
-        }
+    private void updateHistory() throws IOException, JSONException, UserapiLoginException {
+        Log.v(TAG, "Updating history");
 
-        if (new_friends > 0) {
-            assert hist != null;
-            ApiCheckingKit.m_histChanges.prevFriendshipRequestsNum = hist.getFriendsCount();
-            Log.d(TAG, "Received new friends: " + new_friends);
-        }
-        if (new_messages > 0) {
-            assert hist != null;
-            ApiCheckingKit.m_histChanges.prevUnreadMessNum = hist.getMessagesCount();
-            Log.d(TAG, "Received new messages: " + new_messages);
-        }
-        if (new_tags > 0) {
-            assert hist != null;
-            ApiCheckingKit.m_histChanges.prevNewPhotoTagsNum = hist.getPhotosCount();
-            Log.d(TAG, "Received new phototags: " + new_friends);
-        }
+        ChangesHistory changesHistory = ApiCheckingKit.getApi().getChangesHistory();
 
-        if ((new_friends | new_messages | new_tags) != 0) {
-            UpdatesNotifier.notifyHistoryMessages(getApplicationContext(), new_friends, new_messages, new_tags);
+        int changes = prevChangesHistory.compareTo(changesHistory);
+
+        // if there were changes
+        if (changes != 0) {
+            prevChangesHistory = changesHistory;
+
+            boolean newEvents = changes == -1;
+            UpdatesNotifier.notifyChangesHistory(getApplicationContext(), changesHistory, newEvents);
         }
     }
 
@@ -415,9 +382,6 @@ public class CheckingService extends Service {
         return s_prefs.getInt("period", 30);
     }
 
-    
-       
-      
     @Override
     public void onDestroy() {
         super.onDestroy();

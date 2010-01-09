@@ -84,7 +84,7 @@
     <string name="fs_married_female">Married</string>
     <string name="fs_married_male">Married</string>
     <string name="fs_as">Actively searching</string>
-    <string name="fs_complicated">It's complicated</string>
+    <string name="fs_complicated">It\'s complicated</string>
     <string name="fs_relationship">In a relationship</string>
     <!--political views-->
     <string name="pv_apathetic">Apathetic</string>
@@ -95,4 +95,15 @@
     <string name="pv_conservative">Conservative</string>
     <string name="pv_monarchist">Monarchist</string>
     <string name="pv_ultraconservative">Ultraconservative</string>
+    <!-- Notifications -->
+    <string name="notif_new_events">New events</string>
+    <string name="notif_new_friend">New friend</string>
+    <string name="notif_new_friends">New friends</string>
+    <string name="notif_new_message">New message</string>
+    <string name="notif_new_messages">New messages</string>
+    <string name="notif_new_photo">New photo</string>
+    <string name="notif_new_photos">New photos</string>
+    <string name="notif_friends">Friends:</string>
+    <string name="notif_messages">Messages:</string>
+    <string name="notif_photos">Photo:</string>
 </resources>

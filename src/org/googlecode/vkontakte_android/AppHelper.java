@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 
 public class AppHelper {
 
+    public static final String ACTION_NOTIFICATION_CLEARED = "org.googlecode.vkontakte_android.action.NOTIFICATION_CLEARED";
+
     public static void showFatalError(final Activity act, String text) {
         AlertDialog.Builder builder = new AlertDialog.Builder(act);
         AlertDialog dialog = builder.setPositiveButton(R.string.exit,
