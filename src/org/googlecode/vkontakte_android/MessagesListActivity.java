@@ -13,14 +13,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 
-import org.googlecode.vkontakte_android.R.id;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService;
-import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
-
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
 
 
@@ -100,15 +97,6 @@ public class MessagesListActivity extends AutoLoadActivity {
         menuInflater.inflate(R.menu.message_context_menu, menu);
     }
 
-    /*
-    private Cursor getChatCursor(Long userid) {
-        return managedQuery(UserapiProvider.MESSAGES_URI, null,
-                UserapiDatabaseHelper.KEY_MESSAGE_RECEIVERID + "=? OR " +
-                        UserapiDatabaseHelper.KEY_MESSAGE_SENDERID + "=?",
-                new String[]{userid.toString(), userid.toString()},
-                KEY_MESSAGE_DATE + " DESC");
-    }
-    */
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

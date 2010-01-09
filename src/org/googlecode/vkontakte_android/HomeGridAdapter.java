@@ -62,6 +62,14 @@ public class HomeGridAdapter extends BaseAdapter {
             return "title not found";
         }
     }
+    
+    public Object getItemResourceId(int position) {
+        if (position < getCount()) {
+            return this.mCellTitles.get(position);
+        } else {
+            return "title not found";
+        }
+    }
 
     @Override
     public long getItemId(int position) {
@@ -79,7 +87,7 @@ public class HomeGridAdapter extends BaseAdapter {
         ImageView iv = (ImageView) ly.getChildAt(0);
         iv.setImageResource(mCellImages.get(position));
 
-        ly.setTag(getItem(position));
+        ly.setTag(getItemResourceId(position));
 
         return ly;
     }

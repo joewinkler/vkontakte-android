@@ -139,32 +139,31 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
         setProgressBarIndeterminateVisibility(true);
 
-        changeTitle(arg1.getTag().toString());
+        changeTitle(getResources().getString((Integer) arg1.getTag()));
         
-        if (arg1.getTag().equals("Settings")) {
+        if (arg1.getTag().equals(R.string.settings)) {
             startActivityForResult(new Intent(this, Settings.class),SETTINGS_ACTIVITY);
-        } else if (arg1.getTag().equals("Requests")) {
+        } else if (arg1.getTag().equals(R.string.requests)) {
            // showRequests();
-        } else if (arg1.getTag().equals("Help")) {
+        } else if (arg1.getTag().equals(R.string.help)) {
             AboutDialog.makeDialog(this).show();
             backToHome();
         }
-        else if (arg1.getTag().equals("Messages")){
+        else if (arg1.getTag().equals(R.string.messages)){
         	startActivity(new Intent(this, MessagesListActivity.class));
         }
-        else if (arg1.getTag().equals("Updates")){
+        else if (arg1.getTag().equals(R.string.updates)){
         	startActivity(new Intent(this, UpdatesListActivity.class));
         }
         	
         // Not implemented
-        else if (arg1.getTag().equals("Help")
-                || arg1.getTag().equals("Search")
-                || arg1.getTag().equals("Photos")) {
+        else if (arg1.getTag().equals(R.string.search)
+                || arg1.getTag().equals(R.string.photos)) {
             Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
             backToHome();
         } else {
             Intent i = new Intent(this, CGuiTest.class);
-            i.putExtra("tabToShow", (String) arg1.getTag());
+            i.putExtra("tabToShow", getResources().getString((Integer) arg1.getTag()));
             startActivity(i);
         }
     }
