@@ -24,7 +24,7 @@ import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 public class HomeGridActivity extends Activity implements OnItemClickListener, ServiceConnection {
 
-    private final static String TAG = "org.googlecode.vkontakte_android.HomeGridActivity";
+    private final static String TAG = "VK:HomeGridActivity";
 
     private final static int SETTINGS_ACTIVITY =1;
     

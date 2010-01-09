@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 public class LoginDialog extends Dialog {
-    public static final String TAG = "LoginDialog";
+    public static final String TAG = "VK:LoginDialog";
 
     private Button button;
     private Button cancel;

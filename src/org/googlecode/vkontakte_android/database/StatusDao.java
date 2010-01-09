@@ -15,7 +15,7 @@ import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.STATUSES_URI;
 
 public class StatusDao {
-    private static final String TAG = "org.googlecode.vkontakte_android.database.StatusDao";
+    private static final String TAG = "VK:StatusDao";
 
     private long rowId = -1;
     private long statusId;

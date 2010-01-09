@@ -17,7 +17,7 @@ import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
 
 public class UserDao {
-    private static final String TAG = "org.googlecode.vkontakte_android.database.UserDao";
+    private static final String TAG = "VK:UserDao";
 
     public long rowId = -1;
     public long userId;

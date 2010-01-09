@@ -17,7 +17,7 @@ import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.MESSAGES_URI;
 
 public class MessageDao extends Message {
-    private static final String TAG = "org.googlecode.vkontakte_android.database.MessageDao";
+    private static final String TAG = "VK:MessageDao";
 
     public long rowId;
     public long id;

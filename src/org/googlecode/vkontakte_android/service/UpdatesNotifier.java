@@ -11,7 +11,7 @@ import org.googlecode.vkontakte_android.*;
 
 public class UpdatesNotifier {
 
-    private static final String TAG = "VK-notifier";
+    private static final String TAG = "VK:Notifier";
 
     private static final int HISTORY_ID = 1;
 

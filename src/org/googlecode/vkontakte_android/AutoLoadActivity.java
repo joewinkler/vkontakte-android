@@ -28,7 +28,7 @@ public class AutoLoadActivity extends ListActivity implements AbsListView.OnScro
     public static int ACTION_ON_SCROLL = 4;
     public static int ACTION_ON_START = 8;
 
-    private static String TAG = "AutoLoadActivity";
+    private static String TAG = "VK:AutoLoadActivity";
     protected ListAdapter m_adapter;
     private Loader m_loader;
 

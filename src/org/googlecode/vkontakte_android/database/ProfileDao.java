@@ -15,7 +15,7 @@ import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.PROFILES_URI;
 
 public class ProfileDao {
-    private static final String TAG = "ProfileDao";
+    private static final String TAG = "VK:ProfileDao";
 
     public long rowid;
     public long id;

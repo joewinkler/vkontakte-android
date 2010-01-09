@@ -24,7 +24,7 @@ import java.util.*;
 
 public class CheckingService extends Service {
 
-    private static final String TAG = "VK-Service";
+    private static final String TAG = "VK:CheckingService";
 
     public static final int MESSAGE_NUM_LOAD = 10;
     public static final int STATUS_NUM_LOAD = 6;

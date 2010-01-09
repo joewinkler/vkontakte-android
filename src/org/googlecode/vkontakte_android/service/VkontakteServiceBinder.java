@@ -24,7 +24,7 @@ import java.util.List;
 
 public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
-    private static final String TAG = "Service-Iface";
+    private static final String TAG = "VK:Service-Iface";
 
     private Context m_context;
     private CheckingService m_service;

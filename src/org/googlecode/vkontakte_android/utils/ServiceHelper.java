@@ -6,7 +6,7 @@ import org.googlecode.vkontakte_android.service.IVkontakteService;
 
 public class ServiceHelper {
 
-    private final static String TAG = "org.googlecode.vkontakte_android.ServiceHelper";
+    private final static String TAG = "VK:ServiceHelper";
 
     private static IVkontakteService mVKService;
 

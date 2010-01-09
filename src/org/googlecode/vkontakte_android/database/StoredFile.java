@@ -7,7 +7,7 @@ import java.io.*;
 import java.net.URLEncoder;
 
 public class StoredFile {
-    private static final String TAG = "org.googlecode.vkontakte_android.database.StoredFile";
+    private static final String TAG = "VK:StoredFile";
     private static final byte[] buffer = new byte[1024];
 
     //not thread safe!
