@@ -6,15 +6,19 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
+
+import org.googlecode.vkontakte_android.R.id;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService;
+import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
@@ -47,7 +51,7 @@ public class MessagesListActivity extends AutoLoadActivity {
                 return false;
             }
 
-        }, new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.ALL)));
+        }, new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.INCOMING)));
 
         registerForContextMenu(getListView());
 
@@ -105,7 +109,29 @@ public class MessagesListActivity extends AutoLoadActivity {
                 KEY_MESSAGE_DATE + " DESC");
     }
     */
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.messages_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.inbox:
+            	changeAdapter(new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.INCOMING)));
+                return true;
+                
+            case R.id.sent:
+            	changeAdapter(new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.OUTCOMING)));
+            	return true;
 
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
     private Cursor getCursor(MessagesCursorType type) {
         switch (type) {
             case INCOMING:

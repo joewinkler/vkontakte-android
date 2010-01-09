@@ -26,25 +26,37 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         MessageDao messageDao = new MessageDao(cursor);
 
-        //TODO optimize
-        String header = "";
+        String strName = "";
+        String strDate = "";
 
         Long senderid = messageDao.getSenderId();
         Long receiverid = messageDao.getReceiverId();
         Long receivedate = messageDao.date;
 
-        header += getNameById(context, senderid);
-        header += "->";
-        header += getNameById(context, receiverid);
-        
-        header += " ("+DateFormat.format("MMM dd, yyyy h:mmaa", receivedate)+")";
-
+        if (receiverid.equals(Settings.myId)){
+        	strName=getNameById(context, senderid);
+        }
+        else{
+        	strName= getNameById(context, receiverid);
+        }
+        	
         TextView name = (TextView) view.findViewById(R.id.name);
-        name.setText(header);
-        TextView message = (TextView) view.findViewById(R.id.message);
+        name.setText(strName);
 
+        
+        strDate= (String) DateFormat.getMediumDateFormat(context).format( receivedate);
+        //Date recdate= new Date();
+        
+        
+
+        TextView date = (TextView) view.findViewById(R.id.date);
+        date.setText(strDate);
+        
+        
+        TextView message = (TextView) view.findViewById(R.id.message);
         //warning! setting spanned text causes StackOverflow
         message.setText(Html.fromHtml(messageDao.text).toString());
+
         View indicator = view.findViewById(R.id.unread_indicator);
         if (!messageDao.read) indicator.setVisibility(View.VISIBLE);
         else indicator.setVisibility(View.INVISIBLE);

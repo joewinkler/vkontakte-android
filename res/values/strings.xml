@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="sent">Sent</string>
+    <string name="inbox">Inbox</string>
     <string name="exit">Exit</string>
     <string name="logout">Logout</string>
     <string name="app_name"> VK</string>

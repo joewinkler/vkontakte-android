@@ -48,6 +48,11 @@ public class AutoLoadActivity extends ListActivity implements AbsListView.OnScro
         }
     }
 
+    protected void changeAdapter(ListAdapter ad) {
+    	m_adapter=ad;
+    	setListAdapter(m_adapter);
+    }
+    
     /**
      * Call it only after child performs setContentView()
      *

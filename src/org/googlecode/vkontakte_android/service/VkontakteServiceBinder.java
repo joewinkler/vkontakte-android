@@ -45,6 +45,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 api.login(cred);
                 Log.d(TAG, "Successful log with login/pass");
                 Settings.saveLogin(ctx, cred);
+                loadMyProfile();
                 restartScheduledUpdates();
                 result = true;
             } catch (UserapiLoginException e) {
@@ -71,6 +72,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 result = true;
                 Log.d(TAG, "Logged in");
                 Settings.saveLogin(ctx, credentials);
+                loadMyProfile();
                 restartScheduledUpdates();
             } catch (IOException ex) {
                 Settings.clearPrivateInfo(ctx);

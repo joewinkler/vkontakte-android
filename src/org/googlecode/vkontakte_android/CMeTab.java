@@ -10,7 +10,6 @@ import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.utils.ProfileInfoHelper;
 import org.googlecode.vkontakte_android.utils.PropertiesHolder;
-import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -83,10 +82,6 @@ public class CMeTab extends Activity {
 
     boolean loadProfile() throws RemoteException {
 
-        if (!ServiceHelper.getService().loadMyProfile()) {
-            Log.e(TAG, "Cannot load profile");
-            return false;
-        }
         Cursor c = managedQuery(UserapiProvider.PROFILES_URI, null, KEY_PROFILE_USERID + "=?",
                 new String[]{Settings.myId.toString()}, null);
 
