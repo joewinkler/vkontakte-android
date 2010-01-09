@@ -13,6 +13,8 @@ import android.widget.TextView;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.googlecode.vkontakte_android.utils.ServiceHelper;
+
 public class LoginDialog extends Dialog {
     public static final String TAG = "LoginDialog";
 

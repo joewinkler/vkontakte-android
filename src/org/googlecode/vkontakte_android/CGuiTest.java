@@ -15,6 +15,7 @@ import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
+import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 
 public class CGuiTest extends TabActivity {

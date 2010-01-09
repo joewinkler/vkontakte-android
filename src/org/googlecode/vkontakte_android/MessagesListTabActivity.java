@@ -15,6 +15,7 @@ import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService;
+import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
 

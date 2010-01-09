@@ -20,6 +20,7 @@ import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.utils.Phone;
 import org.googlecode.vkontakte_android.utils.ProfileInfoHelper;
 import org.googlecode.vkontakte_android.utils.PropertiesHolder;
+import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

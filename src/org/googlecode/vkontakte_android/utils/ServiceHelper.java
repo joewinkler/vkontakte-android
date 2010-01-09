@@ -1,4 +1,4 @@
-package org.googlecode.vkontakte_android;
+package org.googlecode.vkontakte_android.utils;
 
 import android.os.IBinder;
 import android.util.Log;

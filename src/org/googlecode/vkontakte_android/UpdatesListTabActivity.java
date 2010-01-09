@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import org.googlecode.vkontakte_android.database.StatusDao;
 import org.googlecode.vkontakte_android.service.CheckingService;
+import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_DATE;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_STATUS_PERSONAL;
