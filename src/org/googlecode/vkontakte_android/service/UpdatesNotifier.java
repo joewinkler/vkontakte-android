@@ -44,8 +44,6 @@ public class UpdatesNotifier {
         if (!notificationActive && !newEvents)
             return;
 
-        NotificationManager manager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-
         int friends = changesHistory.getFriendsCount();
         int messages = changesHistory.getMessagesCount();
         int photos = changesHistory.getPhotosCount();
@@ -53,7 +51,7 @@ public class UpdatesNotifier {
         String notificationText;
 
         if (friends == 0 && messages == 0 && photos == 0) {
-            manager.cancel(HISTORY_ID);
+            clearNotification(ctx);
             return;
         }
         else if (friends > 0 && messages == 0 && photos == 0) {
@@ -93,9 +91,16 @@ public class UpdatesNotifier {
 
         notification.setLatestEventInfo(ctx, notificationText, text, contentIntent);
 
+        NotificationManager manager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(HISTORY_ID, notification);
 
         notificationActive = true;
+    }
+
+    public static void clearNotification(Context ctx) {
+        NotificationManager manager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancel(HISTORY_ID);
+        notificationActive = false;
     }
 
 }
