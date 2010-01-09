@@ -45,6 +45,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 api.login(cred);
                 Log.d(TAG, "Successful log with login/pass");
                 Settings.saveLogin(ctx, cred);
+                restartScheduledUpdates();
                 result = true;
             } catch (UserapiLoginException e) {
                 e.printStackTrace();
@@ -70,6 +71,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 result = true;
                 Log.d(TAG, "Logged in");
                 Settings.saveLogin(ctx, credentials);
+                restartScheduledUpdates();
             } catch (IOException ex) {
                 Settings.clearPrivateInfo(ctx);
                 UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
@@ -143,14 +145,14 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
     @Override
     public void stop() throws RemoteException {
-    	m_service.cancelSheduledUpdates();
+    	m_service.cancelScheduledUpdates();
     	m_service.stopSelf();
         
     }
    
-    public void restartSheduledUpdates()
+    public void restartScheduledUpdates()
     {
-      m_service.restartSheduledUpdates();
+      m_service.restartScheduledUpdates();
       
     }
     

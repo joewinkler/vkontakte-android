@@ -123,6 +123,7 @@ public class CheckingService extends Service {
     private void launchScheduledUpdates() {
     	int period = Settings.getPeriod(getApplicationContext());
     	if (period==0){ 
+    		Log.d(TAG, "Scheduled updates disabled by user");
     		return;
     	}
     	
@@ -140,16 +141,18 @@ public class CheckingService extends Service {
         }
         
         m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, period);
-        Log.d(TAG, "Timer with period: " + period);
+        Log.d(TAG, "Scheduled updates started with period: " + period/1000+" secs");
     }
 
-  public void cancelSheduledUpdates(){
+  public void cancelScheduledUpdates(){
 	  m_timer.cancel();
 	  m_timer.purge();
+	  Log.d(TAG, "Scheduled updates canceled");
   }
   
-  public void restartSheduledUpdates(){
-	  cancelSheduledUpdates();
+  public void restartScheduledUpdates(){
+	  Log.d(TAG, "Scheduled updates restarting");
+	  cancelScheduledUpdates();
 	  m_timer= new Timer(); 
 	  launchScheduledUpdates();
   }
@@ -375,7 +378,6 @@ public class CheckingService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        launchScheduledUpdates();
         return m_binder;
     }
 

@@ -126,7 +126,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         case SETTINGS_ACTIVITY:
             if (resultCode == RESULT_OK) {
                 try {
-					ServiceHelper.getService().restartSheduledUpdates();
+					ServiceHelper.getService().restartScheduledUpdates();
 				} catch (RemoteException e) {e.printStackTrace();}
             }
         default:

@@ -69,7 +69,7 @@ public class UserapiProvider extends ContentProvider {
         String table;
         String column = null;
         String mySort;
-        Log.d(TAG,"URI requested: "+uri.toString());
+        
         switch (uriMatcher.match(uri)) {
             case ALL_USERS:
                 table = DATABASE_USERS_TABLE;
@@ -341,7 +341,9 @@ public class UserapiProvider extends ContentProvider {
             if (values == null) continue;
             long result = database.insert(table, column, values);
             if (result != -1) count++;
+            
         }
+        Log.d(TAG,"Inseted in:"+table+" rows:"+count);
         database.setTransactionSuccessful();
         database.endTransaction();
 //        getContext().getContentResolver().notifyChange(uri, null);
