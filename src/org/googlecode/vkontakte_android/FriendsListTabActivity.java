@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -57,6 +58,7 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
                 } catch (RemoteException e) {
                     e.printStackTrace();
                     AppHelper.showFatalError(FriendsListTabActivity.this, "While trying to load friends photos");
+                    Log.e(TAG,"Can not load friends photos" );
                 }
 
                 return false;
@@ -85,6 +87,7 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
      *
      * @return list
      */
+    /*
     private List<String> getScreenVisibleUsers() {
         List<String> us = new LinkedList<String>();
 
@@ -100,6 +103,7 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
         }
         return us;
     }
+    */
 
 
     private Cursor makeCursor(FriendsCursorType type) {

@@ -2,7 +2,6 @@ package org.googlecode.vkontakte_android.service;
 
 import org.googlecode.userapi.VkontakteAPI;
 
-import java.io.IOException;
 
 /**
  * Some helping functions and variables

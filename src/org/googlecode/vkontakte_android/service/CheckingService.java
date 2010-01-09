@@ -3,12 +3,10 @@ package org.googlecode.vkontakte_android.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import org.googlecode.userapi.*;
 import org.googlecode.vkontakte_android.Settings;
@@ -32,7 +30,6 @@ public class CheckingService extends Service {
     public static final int STATUS_NUM_LOAD = 6;
 
     private Timer m_timer = new Timer();
-    private static SharedPreferences s_prefs;
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
 
     private ChangesHistory prevChangesHistory = new ChangesHistory();
@@ -45,8 +42,6 @@ public class CheckingService extends Service {
     public void onCreate() {
         super.onCreate();
         m_binder = new VkontakteServiceBinder(this);
-
-        s_prefs = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     @Override
@@ -155,7 +150,7 @@ public class CheckingService extends Service {
   
   public void restartSheduledUpdates(){
 	  cancelSheduledUpdates();
-	  m_timer= new Timer();
+	  m_timer= new Timer(); 
 	  launchScheduledUpdates();
   }
   
@@ -235,7 +230,7 @@ public class CheckingService extends Service {
 
         int changes = prevChangesHistory.compareTo(changesHistory);
 
-        // if there were changes
+        // if there were changes and notifcations are enabled in settings
         if (changes != 0 && Settings.getNotifications(getApplicationContext())) {
             prevChangesHistory = changesHistory;
 
@@ -264,7 +259,7 @@ public class CheckingService extends Service {
         StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);
     }
 
-    protected void updateStatuses(int start, int end, long id) throws IOException, JSONException {
+    protected void updateStatusesForUser(int start, int end, long id) throws IOException, JSONException {
         Log.d(TAG, "updating statuses for user:" + id + "/" + start + " to " + end);
         VkontakteAPI api = ApiCheckingKit.getApi();
         List<Status> statuses = null;

@@ -3,6 +3,7 @@ package org.googlecode.vkontakte_android;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,6 +34,7 @@ public class UpdatesListTabActivity extends AutoLoadActivity implements AdapterV
                 } catch (RemoteException e) {
                     e.printStackTrace();
                     AppHelper.showFatalError(UpdatesListTabActivity.this, "While trying to load statuses");
+                    Log.e(TAG, "Loading statuses failed");
                 }
                 return false;
             }

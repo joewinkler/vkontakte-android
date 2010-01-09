@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+//import android.widget.ImageButton;
+//import android.widget.ImageView;
 import android.widget.TextView;
 
 public class CMessageFactory {
@@ -24,11 +24,11 @@ public class CMessageFactory {
         vmess.setText(message);
 
 
-        ImageView photo = (ImageView) v.findViewById(R.id.sender_photo);
+        //ImageView photo = (ImageView) v.findViewById(R.id.sender_photo);
         //photo.setImageBitmap( bm==null ? CImagesManager.getBitmap("stub"):bm);
 
 
-        ImageButton b = (ImageButton) v.findViewById(R.id.answer_btn);
+     //   ImageButton b = (ImageButton) v.findViewById(R.id.answer_btn);
         //b.setImageDrawable(new BitmapDrawable(CImagesManager.getBitmap("reply")));
 
         return v;

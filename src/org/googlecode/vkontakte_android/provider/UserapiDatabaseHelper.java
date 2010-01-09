@@ -128,6 +128,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(DATABASE_MESSAGES_CREATE);
         db.execSQL(DATABASE_PROFILE_CREATE);
         db.execSQL(DATABASE_STATUS_CREATE);
+        db.execSQL(DATABASE_WALL_CREATE);
     }
 
     @Override
@@ -138,6 +139,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_MESSAGES_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_PROFILE_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_STATUS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_WALL_TABLE);
         onCreate(db);
     }
 }

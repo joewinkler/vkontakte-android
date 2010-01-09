@@ -5,16 +5,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-/*import android.os.Looper;
-import android.widget.Toast;*/
-import android.content.res.Resources;
 import android.util.Log;
 import org.googlecode.userapi.ChangesHistory;
 import org.googlecode.vkontakte_android.*;
-import org.googlecode.vkontakte_android.database.MessageDao;
-import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 
-//TODO toast => notifier
 public class UpdatesNotifier {
 
     private static final String TAG = "VK-notifier";

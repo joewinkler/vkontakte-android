@@ -259,7 +259,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
     public boolean loadStatusesByUser(int start, int end, long userId) throws RemoteException {
         try {
-            m_service.updateStatuses(start, end, userId);
+            m_service.updateStatusesForUser(start, end, userId);
             return true;
         } catch (IOException e) {
             // TODO Auto-generated catch block

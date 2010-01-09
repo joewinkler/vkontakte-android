@@ -1,9 +1,9 @@
 package org.googlecode.vkontakte_android;
 
-import android.app.Activity;
+//import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-import android.view.LayoutInflater;
+//import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -22,7 +22,7 @@ public class PhotoListAdapter extends BaseAdapter {
 
     private List<Photo> photos = new LinkedList<Photo>();
     private Context context;
-    private boolean loading = false;
+    //private boolean loading = false;
 
     public int getCount() {
         return photos.size();
@@ -38,8 +38,8 @@ public class PhotoListAdapter extends BaseAdapter {
 
     public PhotoListAdapter(Context context, int layout, VkontakteAPI api) {
         this.context = context;
-        int layout1 = layout;
-        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+//        int layout1 = layout;
+  //      LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
         try {
             try {

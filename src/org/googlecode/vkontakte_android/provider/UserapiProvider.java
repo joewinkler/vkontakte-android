@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -68,6 +69,7 @@ public class UserapiProvider extends ContentProvider {
         String table;
         String column = null;
         String mySort;
+        Log.d(TAG,"URI requested: "+uri.toString());
         switch (uriMatcher.match(uri)) {
             case ALL_USERS:
                 table = DATABASE_USERS_TABLE;

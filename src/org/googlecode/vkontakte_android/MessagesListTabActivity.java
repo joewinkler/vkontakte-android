@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,6 +41,7 @@ public class MessagesListTabActivity extends AutoLoadActivity {
                 } catch (RemoteException e) {
                     e.printStackTrace();
                     AppHelper.showFatalError(MessagesListTabActivity.this, "While trying to load messages");
+                    Log.e(TAG, "Loading messages failed");
                 }
                 return false;
             }
@@ -93,6 +95,7 @@ public class MessagesListTabActivity extends AutoLoadActivity {
         menuInflater.inflate(R.menu.message_context_menu, menu);
     }
 
+    /*
     private Cursor getChatCursor(Long userid) {
         return managedQuery(UserapiProvider.MESSAGES_URI, null,
                 UserapiDatabaseHelper.KEY_MESSAGE_RECEIVERID + "=? OR " +
@@ -100,6 +103,7 @@ public class MessagesListTabActivity extends AutoLoadActivity {
                 new String[]{userid.toString(), userid.toString()},
                 KEY_MESSAGE_DATE + " DESC");
     }
+    */
 
     private Cursor getCursor(MessagesCursorType type) {
         switch (type) {

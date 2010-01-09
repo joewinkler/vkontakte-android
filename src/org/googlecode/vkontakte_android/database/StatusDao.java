@@ -4,6 +4,8 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
+
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 
 import java.util.Date;
@@ -45,6 +47,7 @@ public class StatusDao {
             updated += status.saveOrUpdate(context);
         }
         context.getContentResolver().notifyChange(UserapiProvider.STATUSES_URI, null);
+        Log.d(TAG, "Statuses updated:"+updated);
         return updated;
     }
 

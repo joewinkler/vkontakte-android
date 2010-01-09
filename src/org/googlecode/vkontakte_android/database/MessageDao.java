@@ -4,6 +4,8 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
+
 import org.googlecode.userapi.Message;
 import org.googlecode.vkontakte_android.Settings;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
@@ -131,7 +133,7 @@ public class MessageDao extends Message {
         insertValues.put(KEY_MESSAGE_RECEIVERID, this.receiverId);
         insertValues.put(KEY_MESSAGE_READ, this.isRead() ? 0 : 1);
 
-        //Log.d(TAG, "saving "+sender.userId+"("+sender.userName+") and "+ receiver.userId);
+        Log.d(TAG, "saving "+sender.userId+"("+sender.userName+") and "+ receiver.userId);
         saveUserIfNeed(context, sender);
         saveUserIfNeed(context, receiver);
 
