@@ -236,7 +236,7 @@ public class CheckingService extends Service {
         int changes = prevChangesHistory.compareTo(changesHistory);
 
         // if there were changes
-        if (changes != 0) {
+        if (changes != 0 && CSettings.getNotifications(getApplicationContext())) {
             prevChangesHistory = changesHistory;
 
             boolean newEvents = changes == -1;
@@ -360,28 +360,7 @@ public class CheckingService extends Service {
         getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=1" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
     }
 
-    // ========= preferences
-
-    static boolean useSound() {
-
-        return s_prefs.getBoolean("sound", true);
-    }
-
-    static boolean usePics() {
-
-        return s_prefs.getBoolean("pics", true);
-    }
-
-    static boolean useNotifications() {
-
-        return s_prefs.getBoolean("notif", true);
-    }
-
-    static int getRefreshTime() {
-
-        return s_prefs.getInt("period", 30);
-    }
-
+  
     @Override
     public void onDestroy() {
         super.onDestroy();

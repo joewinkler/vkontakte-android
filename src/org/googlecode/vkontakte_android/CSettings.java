@@ -104,4 +104,9 @@ public class CSettings extends PreferenceActivity implements Preference.OnPrefer
     public static int getPeriod(Context ctx) {
         return Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(ctx).getString("period", "60"))*1000;
     }
+    
+    public static boolean getNotifications(Context ctx){
+    	return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean("notif", true);
+    }
+    
 }
