@@ -35,13 +35,13 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         status.setText(statusText);
 
         ImageView photo = (ImageView) view.findViewById(R.id.photo);
+        
         if (Settings.shouldLoadPics(context)) {
             if (userDao.getUserPhotoUrl() != null) {
-                Bitmap bm = UserHelper.getPhotoByUserId(context, userDao.userId);
+            	Bitmap bm=UserHelper.getPhotoByUser(context, userDao);
                 if (bm == null) {
                     photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
                 } else {
-                    photo = (ImageView) view.findViewById(R.id.photo);
                     photo.setImageBitmap(bm);
                 }
             } else {
@@ -52,5 +52,7 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
             photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
             photo.setVisibility(View.GONE);
         }
+        
+        
     }
 }

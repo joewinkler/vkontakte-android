@@ -45,6 +45,8 @@ public class UserHelper {
         Uri uri = ContentUris.withAppendedId(USERS_URI, rowId);
         InputStream is = null;
         Bitmap bitmap = null;
+        
+        
         try {
             is = context.getContentResolver().openInputStream(uri);
             bitmap = BitmapFactory.decodeStream(is);
@@ -60,6 +62,7 @@ public class UserHelper {
                 }
             }
         }
+        
         return bitmap;
     }
 
@@ -73,4 +76,18 @@ public class UserHelper {
         }
      
     }
+   
+    public static Bitmap getPhotoByUser(Context context, UserDao user) {
+    	
+    	if ( user._data == null || !UserapiProvider.isExists(user._data) ){
+    		return null;	
+    	}else{
+    		return getPhoto(context, user.getRowId());
+    	}
+    		
+    	
+    }
+        
+    
+    
 }
