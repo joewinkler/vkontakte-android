@@ -10,6 +10,7 @@ import android.provider.Contacts;
 import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -135,9 +136,10 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
     private void showProfileInfo(ProfileDao profile) {
         ArrayList<PropertiesHolder> DATA = new ArrayList<PropertiesHolder>();
-
+        
+        
         profileDao = profile;
-//        ((ImageButton) findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, friendProfile.id));
+        ((ImageView) findViewById(R.id.photo)).setImageBitmap(UserHelper.getPhotoByUserId(this, profileDao.id));
 //        if (friendProfile.status != null) {
 //            TextView status = ((TextView) findViewById(R.id.InfoStatusText));
 //            status.setText(friendProfile.status);
