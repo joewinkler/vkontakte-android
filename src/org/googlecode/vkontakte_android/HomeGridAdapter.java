@@ -34,7 +34,7 @@ public class HomeGridAdapter extends BaseAdapter {
         intent = new Intent(context, ProfileViewActivity.class);
         items.add(new Item(ItemType.PROFILE, context.getString(R.string.my_profile), R.drawable.my_profile,intent));
 
-        intent = new Intent(context, FriendListActivity.class);
+        intent = new Intent(context, FriendListActivity.class).putExtra("type", FriendListActivity.ALL);
         items.add(new Item(ItemType.FRIENDS, context.getString(R.string.friends), R.drawable.my_friends,intent));
 
         intent = new Intent(context, MessagesListActivity.class);
@@ -45,7 +45,7 @@ public class HomeGridAdapter extends BaseAdapter {
         intent = new Intent(context, UpdatesListActivity.class);
         items.add(new Item(ItemType.UPDATES, context.getString(R.string.updates), R.drawable.my_updates, intent));
 
-        intent = new Intent(context, FriendListActivity.class);
+        intent = new Intent(context, FriendListActivity.class).putExtra("type", FriendListActivity.REQUESTS);
         items.add(new Item(ItemType.REQUESTS, context.getString(R.string.requests), R.drawable.my_requests,intent));
 
         items.add(new Item(ItemType.SEARCH, context.getString(R.string.search), R.drawable.my_search));

@@ -42,6 +42,13 @@ public class FriendListActivity extends TabActivity {
                 requestFriends));
 
 
+        int type= ONLINE;
+        
+        if (getIntent().getExtras()!=null){
+        	type=getIntent().getExtras().getInt("type");
+        }
+        
+        tabHost.setCurrentTab(type-1);
     }
 
 
