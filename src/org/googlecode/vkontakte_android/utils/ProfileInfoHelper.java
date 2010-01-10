@@ -43,9 +43,9 @@ public final class ProfileInfoHelper {
         switch (id) {
             case 1:
                 if (sex == SEX_FEMALE) {
-                    stringId = R.string.fs_single_female;
-                } else {
                     stringId = R.string.fs_single_male;
+                } else {
+                    stringId = R.string.fs_single_female;
                 }
                 break;
             case 2:
