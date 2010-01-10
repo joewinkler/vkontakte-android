@@ -203,7 +203,9 @@ public class UserDao {
             OutputStream os = ctx.getContentResolver().openOutputStream(uri);
             os.write(photo);
             os.close();
+            ctx.getContentResolver().notifyChange(uri, null);
         }
+        
     }
 
 
@@ -224,6 +226,7 @@ public class UserDao {
                 OutputStream os = ctx.getContentResolver().openOutputStream(uri);
                 os.write(photo);
                 os.close();
+                ctx.getContentResolver().notifyChange(uri, null);
             }
         }
     }

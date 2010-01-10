@@ -41,8 +41,8 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
         }
 
         if(type==FriendListActivity.ALL){
-        	//cursor=makeCursor(FriendsCursorType.ALL);
-        	cursor=makeCursor(FriendsCursorType.ONLINE);
+        	cursor=makeCursor(FriendsCursorType.ALL);
+        	//cursor=makeCursor(FriendsCursorType.ONLINE);
         }else if(type==FriendListActivity.ONLINE){
         	cursor=makeCursor(FriendsCursorType.ONLINE);
         }else if(type==FriendListActivity.REQUESTS){
@@ -92,7 +92,9 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
         List<String> us = new LinkedList<String>();
         for (int i = 0; i < adapter.getCount(); ++i) {
             UserDao ud = new UserDao((Cursor) adapter.getItem(i));
-            us.add(String.valueOf(ud.userId));
+            if (ud.rowId!=-1){
+            	us.add(String.valueOf(ud.userId));
+            }
         }
         return us;
     }
