@@ -17,6 +17,8 @@ import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService;
+import org.googlecode.vkontakte_android.service.UpdatesNotifier;
+import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
 
@@ -64,6 +66,12 @@ public class MessagesListActivity extends AutoLoadActivity {
         });
 
         getListView().setOnScrollListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        UpdatesNotifier.clearNotification(getApplicationContext());
     }
 
     public boolean onContextItemSelected(MenuItem item) {

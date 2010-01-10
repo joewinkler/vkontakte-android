@@ -12,7 +12,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
+import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
+import org.googlecode.vkontakte_android.utils.UserHelper;
 
 import java.util.LinkedList;
 import java.util.List;

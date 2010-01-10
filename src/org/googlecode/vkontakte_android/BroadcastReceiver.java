@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import org.googlecode.vkontakte_android.service.UpdatesNotifier;
+import org.googlecode.vkontakte_android.utils.AppHelper;
 
 /**
  * Currently receiver can handle only AppHelper.ACTION_NOTIFICATION_CLEARED intent (when user clears all notifications

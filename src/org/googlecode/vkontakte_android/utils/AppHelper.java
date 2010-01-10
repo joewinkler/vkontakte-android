@@ -1,10 +1,13 @@
-package org.googlecode.vkontakte_android;
+package org.googlecode.vkontakte_android.utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import org.googlecode.vkontakte_android.R;
 
 public class AppHelper {
+
+    public static final String AUTHORITY = "org.googlecode.vkontakte_android";
 
     public static final String ACTION_NOTIFICATION_CLEARED = "org.googlecode.vkontakte_android.action.NOTIFICATION_CLEARED";
 

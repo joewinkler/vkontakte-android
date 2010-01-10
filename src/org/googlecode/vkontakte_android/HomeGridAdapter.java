@@ -3,12 +3,15 @@ package org.googlecode.vkontakte_android;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import org.googlecode.vkontakte_android.database.MessageDao;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +40,7 @@ public class HomeGridAdapter extends BaseAdapter {
         intent = new Intent(context, FriendListActivity.class).putExtra("type", FriendListActivity.ALL);
         items.add(new Item(ItemType.FRIENDS, context.getString(R.string.friends), R.drawable.my_friends,intent));
 
-        intent = new Intent(context, MessagesListActivity.class);
+        intent = new Intent(Intent.ACTION_VIEW, UserapiProvider.MESSAGES_URI);
         items.add(new Item(ItemType.MESSAGES, context.getString(R.string.messages), R.drawable.my_messages, intent));
 
         items.add(new Item(ItemType.PHOTOS, context.getString(R.string.photos), R.drawable.my_photos));

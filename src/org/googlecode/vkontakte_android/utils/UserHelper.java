@@ -1,4 +1,4 @@
-package org.googlecode.vkontakte_android;
+package org.googlecode.vkontakte_android.utils;
 
 import android.content.ContentUris;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 
+import org.googlecode.vkontakte_android.ComposeMessageActivity;
+import org.googlecode.vkontakte_android.ProfileViewActivity;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 
@@ -45,8 +47,6 @@ public class UserHelper {
         Uri uri = ContentUris.withAppendedId(USERS_URI, rowId);
         InputStream is = null;
         Bitmap bitmap = null;
-        
-        
         try {
             is = context.getContentResolver().openInputStream(uri);
             bitmap = BitmapFactory.decodeStream(is);
@@ -62,7 +62,6 @@ public class UserHelper {
                 }
             }
         }
-        
         return bitmap;
     }
 
@@ -71,23 +70,16 @@ public class UserHelper {
         if (user == null || user._data == null || !UserapiProvider.isExists(user._data)){
         	Log.w(TAG,"User:"+userId+" not found");
         	return null;//todo: not yet loaded
-        }else{
+        } else {
             return getPhoto(context, user.getRowId());   	
         }
-     
     }
-   
+
     public static Bitmap getPhotoByUser(Context context, UserDao user) {
-    	
-    	if ( user._data == null || !UserapiProvider.isExists(user._data) ){
-    		return null;	
-    	}else{
-    		return getPhoto(context, user.getRowId());
-    	}
-    		
-    	
+        if (user._data == null || !UserapiProvider.isExists(user._data)) {
+            return null;
+        } else {
+            return getPhoto(context, user.getRowId());
+        }
     }
-        
-    
-    
 }

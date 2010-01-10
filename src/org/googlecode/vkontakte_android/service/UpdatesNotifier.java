@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.util.Log;
 import org.googlecode.userapi.ChangesHistory;
 import org.googlecode.vkontakte_android.*;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.vkontakte_android.utils.AppHelper;
 
 public class UpdatesNotifier {
 
@@ -49,6 +51,7 @@ public class UpdatesNotifier {
         int photos = changesHistory.getPhotosCount();
 
         String notificationText;
+        Intent notificationIntent = null;
 
         if (friends == 0 && messages == 0 && photos == 0) {
             clearNotification(ctx);
@@ -63,6 +66,7 @@ public class UpdatesNotifier {
             notificationText = messages > 1
                     ? ctx.getString(R.string.notif_new_messages)
                     : ctx.getString(R.string.notif_new_message);
+            notificationIntent = new Intent(Intent.ACTION_VIEW, UserapiProvider.MESSAGES_URI);
         }
         else if (friends == 0 && messages == 0 && photos > 0) {
             notificationText = photos > 1
@@ -86,7 +90,8 @@ public class UpdatesNotifier {
         Intent deleteIntent = new Intent(AppHelper.ACTION_NOTIFICATION_CLEARED);
         notification.deleteIntent = PendingIntent.getBroadcast(ctx, 0, deleteIntent, 0);
 
-        Intent notificationIntent = new Intent(ctx, HomeGridActivity.class);
+        if (notificationIntent == null)
+            notificationIntent = new Intent(ctx, HomeGridActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
 
         notification.setLatestEventInfo(ctx, notificationText, text, contentIntent);

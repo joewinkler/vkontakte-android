@@ -26,6 +26,9 @@ public class UserapiProvider extends ContentProvider {
     public static final Uri PROFILES_URI = Uri.parse("content://org.googlecode.vkontakte_android/profiles");
     public static final Uri STATUSES_URI = Uri.parse("content://org.googlecode.vkontakte_android/statuses");
 
+    public static final String MESSAGES_TYPE = "vnd.android.cursor.dir/vnd.org.googlecode.vkontakte_android.message";
+    public static final String MESSAGES_ITEM_TYPE = "vnd.android.cursor.item/vnd.org.googlecode.vkontakte_android.message";
+
     private static final int ALL_USERS = 1;
     private static final int SINGLE_USER = 2;
     private static final int ALL_MESSAGES = 3;
@@ -36,7 +39,6 @@ public class UserapiProvider extends ContentProvider {
     private static final int SINGLE_PROFILE = 10;
     private static final int ALL_STATUSES = 11;
     private static final int SINGLE_STATUS = 12;
-
 
     private static UriMatcher uriMatcher;
     private SQLiteDatabase database;
@@ -144,9 +146,9 @@ public class UserapiProvider extends ContentProvider {
             case SINGLE_USER:
                 return "vnd.android.cursor.item/vnd.org.googlecode.vkontakte_android.user";
             case ALL_MESSAGES:
-                return "vnd.android.cursor.dir/vnd.org.googlecode.vkontakte_android.message";
+                return MESSAGES_TYPE;
             case SINGLE_MESSAGE:
-                return "vnd.android.cursor.item/vnd.org.googlecode.vkontakte_android.message";
+                return MESSAGES_ITEM_TYPE;
 //            case ALL_FILES:
 //                return "vnd.android.cursor.dir/vnd.org.googlecode.vkontakte_android.file";
 //            case SINGLE_FILE:

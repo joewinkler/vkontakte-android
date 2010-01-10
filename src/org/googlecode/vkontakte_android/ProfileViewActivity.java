@@ -19,10 +19,7 @@ import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.service.CheckingService;
-import org.googlecode.vkontakte_android.utils.Phone;
-import org.googlecode.vkontakte_android.utils.ProfileInfoHelper;
-import org.googlecode.vkontakte_android.utils.PropertiesHolder;
-import org.googlecode.vkontakte_android.utils.ServiceHelper;
+import org.googlecode.vkontakte_android.utils.*;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

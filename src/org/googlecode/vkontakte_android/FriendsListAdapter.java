@@ -13,6 +13,7 @@ import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import org.googlecode.vkontakte_android.CImagesManager.Icons;
 import org.googlecode.vkontakte_android.database.UserDao;
+import org.googlecode.vkontakte_android.utils.UserHelper;
 
 
 public class FriendsListAdapter extends ResourceCursorAdapter {
