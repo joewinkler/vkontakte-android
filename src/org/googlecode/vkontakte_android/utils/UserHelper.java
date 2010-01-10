@@ -8,14 +8,18 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 
+import org.googlecode.vkontakte_android.CImagesManager;
 import org.googlecode.vkontakte_android.ComposeMessageActivity;
 import org.googlecode.vkontakte_android.ProfileViewActivity;
+import org.googlecode.vkontakte_android.CImagesManager.Icons;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.SoftReference;
+import java.util.HashMap;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_SENDERID;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_PROFILE_USERID;
@@ -28,6 +32,9 @@ import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_UR
 public class UserHelper {
 
 	private static final String TAG = "VK:UserHelper";
+	
+    private static HashMap<Long, SoftReference<Bitmap>> bitmapCache = new HashMap<Long, SoftReference<Bitmap>>();
+    private static final int PHOTO_SIZE = 90;
 	
     public static void viewProfile(Context context, long userId) {
         Intent intent = new Intent(context, ProfileViewActivity.class);
@@ -66,20 +73,61 @@ public class UserHelper {
     }
 
     public static Bitmap getPhotoByUserId(Context context, long userId) {
-        UserDao user = UserDao.findByUserId(context, userId);
-        if (user == null || user._data == null || !UserapiProvider.isExists(user._data)){
-        	Log.w(TAG,"User:"+userId+" not found");
-        	return null;//todo: not yet loaded
-        } else {
-            return getPhoto(context, user.getRowId());   	
-        }
+
+    	Bitmap bm=null;
+    	SoftReference<Bitmap> photoRef = bitmapCache.get(userId);
+    	if (photoRef != null) {
+    	    bm = photoRef.get();
+    	    if(bm==null){
+    	    	bitmapCache.remove(userId);
+    	    }
+    	}
+    	if (bm==null){
+    		UserDao user = UserDao.findByUserId(context, userId);
+    		if (user!=null){
+    			return getPhotoByUser(context, user);
+    		}
+    		return CImagesManager.getBitmap(context, Icons.STUB);
+    	}else{
+        	return bm;    		
+    	}
+    	
+
     }
 
     public static Bitmap getPhotoByUser(Context context, UserDao user) {
-        if (user._data == null || !UserapiProvider.isExists(user._data)) {
-            return null;
-        } else {
-            return getPhoto(context, user.getRowId());
-        }
+
+    	Bitmap bm=null;
+    	SoftReference<Bitmap> photoRef = bitmapCache.get(user.userId);
+    	if (photoRef != null) {
+    	    bm = photoRef.get();
+    	    if(bm==null){
+    	    	bitmapCache.remove(user.userId);
+    	    }
+    	}
+    	if (bm==null){
+    		if (user._data != null && UserapiProvider.isExists(user._data)) {
+    			bm=getPhoto(context, user.rowId);
+    			if (bm!=null){
+    				
+                    int srcWidth = bm.getWidth();
+                    int srcHeight = bm.getHeight();
+                    int dstWidth = PHOTO_SIZE;
+                    int dstHeight = srcHeight * PHOTO_SIZE / srcWidth;
+
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,dstWidth,dstHeight,true);
+                    Bitmap croppedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight));
+
+    				bitmapCache.put(user.userId, new SoftReference<Bitmap>(croppedBitmap));
+    				return bitmapCache.get(user.userId).get();
+    			}else{
+    				return CImagesManager.getBitmap(context, Icons.STUB);
+    			}
+    		}else{
+    			return CImagesManager.getBitmap(context, Icons.STUB);
+    		}
+    	}else{
+    		return bm;
+    	}
     }
 }

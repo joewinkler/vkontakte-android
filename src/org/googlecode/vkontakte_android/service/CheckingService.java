@@ -345,6 +345,7 @@ public class CheckingService extends Service {
         }
         StringBuilder notIn = new StringBuilder(" ");
         boolean isNew = true;
+        /*
         if (friends != null) {
             for (User user : friends) {
                 UserDao userDao = new UserDao(user, isNew, false);
@@ -356,6 +357,7 @@ public class CheckingService extends Service {
         }
         notIn.deleteCharAt(notIn.length() - 1);//remove last ','
         getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=1" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
+        */
     }
 
   

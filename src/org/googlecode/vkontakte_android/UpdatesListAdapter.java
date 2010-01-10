@@ -37,10 +37,18 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         timeLine.setText(weektimeFormat.format(status.getDate()));
         
         ImageView photo = (ImageView) view.findViewById(R.id.photo);
+
         
+        if (Settings.shouldLoadPics(context)) {
+        	photo.setImageBitmap(UserHelper.getPhotoByUserId(context, status.getUserId()));
+        } else {
+            photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
+            photo.setVisibility(View.GONE);
+        }
+        
+        /*        
         if (Settings.shouldLoadPics(context)&& photo!=null) {
             Bitmap bm = UserHelper.getPhotoByUserId(context, status.getUserId());
-            
             if (bm != null) {
                 int srcWidth = bm.getWidth();
                 int srcHeight = bm.getHeight();
@@ -60,7 +68,7 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
             }
         	
         }
-
+         */
 
     }
 }
