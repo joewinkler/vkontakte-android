@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
 import org.googlecode.vkontakte_android.service.CheckingService;
+import org.googlecode.vkontakte_android.service.UpdatesNotifier;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 public class HomeGridActivity extends Activity implements OnItemClickListener, ServiceConnection {
@@ -36,7 +37,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         setContentView(R.layout.homegrid);
         bindService(new Intent(this, CheckingService.class), this, Context.BIND_AUTO_CREATE);
 
-
         GridView mHomeGrid = (GridView) findViewById(R.id.HomeGrid);
         mHomeGrid.setNumColumns(3);
         mHomeGrid.setAdapter(new HomeGridAdapter(this));
@@ -46,7 +46,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     }
 
     private void initStatus() {
-
         final EditText statusEdit = (EditText) findViewById(R.id.StatusEditText);
         statusEdit.setInputType(InputType.TYPE_NULL);
 
@@ -117,8 +116,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     */
 
     @Override
-    protected void  onActivityResult  (int requestCode, int resultCode, Intent data)  
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
@@ -171,20 +169,22 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "Activity Resumed");
+        Log.v(TAG, "Activity resumed");
+        // Here user doesn't need notifications anymore
+        UpdatesNotifier.clearNotification(getApplicationContext());
         backToHome();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "Activity Stopped");
+        Log.v(TAG, "Activity stopped");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "Activity Destroyed");
+        Log.v(TAG, "Activity destroyed");
         unbindService(this);
     }
 

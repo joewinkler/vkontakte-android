@@ -98,9 +98,11 @@ public class UpdatesNotifier {
     }
 
     public static void clearNotification(Context ctx) {
-        NotificationManager manager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.cancel(HISTORY_ID);
-        notificationActive = false;
+        if (notificationActive) {
+            NotificationManager manager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancel(HISTORY_ID);
+            notificationActive = false;
+        }    
     }
 
 }
