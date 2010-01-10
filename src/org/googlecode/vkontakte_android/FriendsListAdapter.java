@@ -13,7 +13,7 @@ import org.googlecode.vkontakte_android.database.UserDao;
 
 
 public class FriendsListAdapter extends ResourceCursorAdapter {
-    private static final String TAG = "org.googlecode.vkontakte_android.FriendsListAdapter";
+    private static final String TAG = "VK:FriendsListAdapter";
 
     public FriendsListAdapter(Context context, int layout, Cursor cursor) {
         super(context, layout, cursor);
@@ -26,8 +26,8 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
         TextView status = (TextView) view.findViewById(R.id.status);
         name.setText(userDao.userName);
         String statusText = "";
-        if (userDao.newFriend) {
-            view.findViewById(R.id.indicator).setVisibility(View.VISIBLE);
+        
+        if (userDao.newFriend) {view.findViewById(R.id.indicator).setVisibility(View.VISIBLE);
         } else view.findViewById(R.id.indicator).setVisibility(View.INVISIBLE);
 
         if (userDao.online) statusText += context.getResources().getString(R.string.status_online);

@@ -27,7 +27,7 @@
               android:layout_alignParentRight="true"
               android:singleLine="true"
               android:ellipsize="marquee"
-              android:text="Simple application that shows how to use RelativeLayout"/>
+              android:text="Online"/>
 
     <TextView android:id="@+id/name"
               android:layout_width="fill_parent"
@@ -38,6 +38,6 @@
               android:layout_above="@id/status"
               android:layout_alignWithParentIfMissing="true"
               android:gravity="center_vertical"
-              android:text="My Application"/>
+              android:text="FirstName LastName"/>
 
 </RelativeLayout>

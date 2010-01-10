@@ -19,7 +19,7 @@
         <EditText android:layout_height="fill_parent"
                   android:layout_width="wrap_content"
                   android:layout_weight="1.0"
-                  android:id="@+id/mess_to_send"/>
+                  android:id="@+id/mess_to_send" android:imeOptions="actionSend" android:inputType="textLongMessage"/>
         <Button android:layout_width="wrap_content"
                 android:text="@string/send"
                 android:id="@+id/send_reply"

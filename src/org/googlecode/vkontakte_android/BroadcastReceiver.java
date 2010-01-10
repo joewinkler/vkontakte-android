@@ -13,7 +13,7 @@ import org.googlecode.vkontakte_android.service.UpdatesNotifier;
  */
 public class BroadcastReceiver extends android.content.BroadcastReceiver {
 
-    private static final String TAG = "VK-BReceiver";
+    private static final String TAG = "VK:BReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {

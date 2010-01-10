@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.Toast;
 import org.googlecode.vkontakte_android.AutoLoadList.Loader;
 import org.googlecode.vkontakte_android.database.ProfileDao;
@@ -35,7 +36,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
     private static final String TAG = "org.googlecode.vkontakte_android.ProfileViewActivity";
     private long profileId;
-    private ProfileDao friendProfile;
+    private ProfileDao profileDao;
     private Menu menuToRefresh; //menu is disabled until we haven't friend data
     private static final int SEX_FEMALE = 1;
 
@@ -43,7 +44,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.friends_view);
+        setContentView(R.layout.profile_view);
 
         initTabHost();
         initInfoTab();
@@ -135,7 +136,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
     private void showProfileInfo(ProfileDao profile) {
         ArrayList<PropertiesHolder> DATA = new ArrayList<PropertiesHolder>();
 
-        friendProfile = profile;
+        profileDao = profile;
 //        ((ImageButton) findViewById(R.id.InfoPhoto)).setImageBitmap(UserHelper.getPhotoByUserId(this, friendProfile.id));
 //        if (friendProfile.status != null) {
 //            TextView status = ((TextView) findViewById(R.id.InfoStatusText));
@@ -143,18 +144,23 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 //            status.setVisibility(View.VISIBLE);
 //        }
 
-        if (friendProfile.birthday != null && friendProfile.birthday != 0) {
+        
+        TextView userName= ((TextView)findViewById(R.id.firstname_lastname));
+         userName.setText(profileDao.firstname+" "+profileDao.surname);       
+        
+        
+        if (profileDao.birthday != null && profileDao.birthday != 0) {
             SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy");
-            DATA.add(new PropertiesHolder(getString(R.string.info_birthday), format.format(new Date(friendProfile.birthday))));
+            DATA.add(new PropertiesHolder(getString(R.string.info_birthday), format.format(new Date(profileDao.birthday))));
         }
-        if (friendProfile.sex != 0) {
-            DATA.add(new PropertiesHolder(getString(R.string.info_sex), getString(friendProfile.sex == SEX_FEMALE ? R.string.sex_female : R.string.sex_male)));
+        if (profileDao.sex != 0) {
+            DATA.add(new PropertiesHolder(getString(R.string.info_sex), getString(profileDao.sex == SEX_FEMALE ? R.string.sex_female : R.string.sex_male)));
         }
-        if (friendProfile.phone != null) {
-            DATA.add(new PropertiesHolder(getString(R.string.info_phone), friendProfile.phone));
+        if (profileDao.phone != null) {
+            DATA.add(new PropertiesHolder(getString(R.string.info_phone), profileDao.phone));
         }
-        if (friendProfile.politicalViews != 0) {
-            int id = ProfileInfoHelper.getPoliticalViewId(friendProfile.politicalViews);
+        if (profileDao.politicalViews != 0) {
+            int id = ProfileInfoHelper.getPoliticalViewId(profileDao.politicalViews);
             String politicalViews = getString(R.string.info_views);
             if (id != -1) {
                 DATA.add(new PropertiesHolder(politicalViews, getString(id)));
@@ -162,21 +168,20 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
                 DATA.add(new PropertiesHolder(politicalViews, ""));
             }
         }
-        if (friendProfile.familyStatus != 0) {
-            int id = ProfileInfoHelper.getFamilyStatusId(friendProfile.familyStatus, friendProfile.sex);
+        if (profileDao.familyStatus != 0) {
+            int id = ProfileInfoHelper.getFamilyStatusId(profileDao.familyStatus, profileDao.sex);
             String status = getString(R.string.info_status);
             if (id != -1) {
-                DATA.add(new PropertiesHolder(status, getString(id)));
                 DATA.add(new PropertiesHolder(status, getString(id)));
             } else {
                 DATA.add(new PropertiesHolder(status, ""));
             }
         }
-        if (friendProfile.currentCity != null) {
-            DATA.add(new PropertiesHolder(getString(R.string.info_city), friendProfile.currentCity));
+        if (profileDao.currentCity != null) {
+            DATA.add(new PropertiesHolder(getString(R.string.info_city), profileDao.currentCity));
         }
 
-        android.widget.ListView listView = (android.widget.ListView) findViewById(R.id.my_info);
+        android.widget.ListView listView = (android.widget.ListView) findViewById(R.id.profile_info_list);
         listView.setAdapter(new ProfileInfoAdapter(this, DATA));
         refreshMenu();  //TODO: avoid unnecessary calls
     }
@@ -192,8 +197,8 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         //TODO add mail and other
         Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
         intent.setType("vnd.android.cursor.item/person");
-        intent.putExtra(Contacts.Intents.Insert.PHONE, Phone.formatPhoneNumber(friendProfile.phone));
-        intent.putExtra(Contacts.Intents.Insert.NAME, friendProfile.firstname + " " + friendProfile.surname);
+        intent.putExtra(Contacts.Intents.Insert.PHONE, Phone.formatPhoneNumber(profileDao.phone));
+        intent.putExtra(Contacts.Intents.Insert.NAME, profileDao.firstname + " " + profileDao.surname);
         startActivity(intent);
     }
 
@@ -271,7 +276,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (friendProfile == null) {
+        if (profileDao == null) {
             menu.setGroupEnabled(0, false); // can't add friend as contact without data
         } else {
             menu.setGroupEnabled(0, true);

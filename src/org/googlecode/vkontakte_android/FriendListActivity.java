@@ -24,22 +24,23 @@ public class FriendListActivity extends TabActivity {
         final TabHost tabHost = getTabHost();
         Intent allFriends = new Intent(this, FriendsListTabActivity.class);
         allFriends.putExtra("type", ALL);
-        Intent onlineFriends = new Intent(this, FriendsListTabActivity.class);
-        onlineFriends.putExtra("type", ONLINE);
         Intent requestFriends = new Intent(this, FriendsListTabActivity.class);
         requestFriends.putExtra("type", REQUESTS);
+        Intent onlineFriends = new Intent(this, FriendsListTabActivity.class);
+        onlineFriends.putExtra("type", ONLINE);
 
         tabHost.addTab(tabHost.newTabSpec("All").setIndicator(
                 "All").setContent(
                 allFriends));
 
+        tabHost.addTab(tabHost.newTabSpec("Online").setIndicator(
+        		"Online").setContent(
+        		onlineFriends));
+        
         tabHost.addTab(tabHost.newTabSpec("Requests").setIndicator(
                 "Requests").setContent(
-                onlineFriends));
-
-        tabHost.addTab(tabHost.newTabSpec("Online").setIndicator(
-                "Online").setContent(
                 requestFriends));
+
 
     }
 

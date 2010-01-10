@@ -1,7 +1,6 @@
 package org.googlecode.vkontakte_android;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -31,9 +30,12 @@ public class HomeGridAdapter extends BaseAdapter {
         items = new ArrayList<Item>();
 
         Intent intent;
-        items.add(new Item(ItemType.PROFILE, context.getString(R.string.my_profile), R.drawable.my_profile));
+        
+        intent = new Intent(context, ProfileViewActivity.class);
+        items.add(new Item(ItemType.PROFILE, context.getString(R.string.my_profile), R.drawable.my_profile,intent));
 
-        items.add(new Item(ItemType.FRIENDS, context.getString(R.string.friends), R.drawable.my_friends));
+        intent = new Intent(context, FriendListActivity.class);
+        items.add(new Item(ItemType.FRIENDS, context.getString(R.string.friends), R.drawable.my_friends,intent));
 
         intent = new Intent(context, MessagesListActivity.class);
         items.add(new Item(ItemType.MESSAGES, context.getString(R.string.messages), R.drawable.my_messages, intent));
@@ -43,7 +45,8 @@ public class HomeGridAdapter extends BaseAdapter {
         intent = new Intent(context, UpdatesListActivity.class);
         items.add(new Item(ItemType.UPDATES, context.getString(R.string.updates), R.drawable.my_updates, intent));
 
-        items.add(new Item(ItemType.REQUESTS, context.getString(R.string.requests), R.drawable.my_requests));
+        intent = new Intent(context, FriendListActivity.class);
+        items.add(new Item(ItemType.REQUESTS, context.getString(R.string.requests), R.drawable.my_requests,intent));
 
         items.add(new Item(ItemType.SEARCH, context.getString(R.string.search), R.drawable.my_search));
 

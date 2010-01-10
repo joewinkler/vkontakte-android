@@ -103,20 +103,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     	this.setTitle(" "+getResources().getString(R.string.app_name) + " > " + uiComponent);
     }
 
-    /*
-    private void showRequests() {
-        Intent i = new Intent(this, FriendListActivity.class);
-        i.putExtra(FriendsListTabActivity.SHOW_ONLY_NEW, true);
-        startActivity(i);
-    }
-    */
-    /*
-    private void showFriends() {
-        Intent i = new Intent(this, FriendsListTabActivity.class);
-//        i.putExtra(FriendsListTabActivity.SHOW_ONLY_NEW, false);
-        startActivity(i);
-    }
-    */
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

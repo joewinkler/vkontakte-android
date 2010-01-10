@@ -22,22 +22,36 @@ import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_UR
 
 public class FriendsListTabActivity extends AutoLoadActivity implements AdapterView.OnItemClickListener {
     private FriendsListAdapter adapter;
-    private static String TAG = "FriendsListTabActivity";
+    private static String TAG = "VK:FriendsListTabActivity";
 
     enum FriendsCursorType {
         ALL, NEW, ONLINE
     }
 
-    public static final String SHOW_ONLY_NEW = "SHOW_ONLY_NEW";
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.friend_list);
-        boolean onlyNew = false;
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) onlyNew = extras.getBoolean(SHOW_ONLY_NEW);
-        Cursor cursor = onlyNew ? makeCursor(FriendsCursorType.NEW) : makeCursor(FriendsCursorType.ONLINE);
+    
+        Cursor cursor;
+        int type=FriendListActivity.ONLINE;
+        
+        if (getIntent().getExtras()!=null){
+        	type=getIntent().getExtras().getInt("type");
+        }
+
+        if(type==FriendListActivity.ALL){
+        	//cursor=makeCursor(FriendsCursorType.ALL);
+        	cursor=makeCursor(FriendsCursorType.ONLINE);
+        }else if(type==FriendListActivity.ONLINE){
+        	cursor=makeCursor(FriendsCursorType.ONLINE);
+        }else if(type==FriendListActivity.REQUESTS){
+        	cursor=makeCursor(FriendsCursorType.NEW);
+        }else{
+        	cursor=makeCursor(FriendsCursorType.ONLINE);
+        }
+        	
+        
         adapter = new FriendsListAdapter(this, R.layout.friend_row, cursor);
 
         final Handler handler = new Handler();

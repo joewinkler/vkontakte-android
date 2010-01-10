@@ -23,7 +23,7 @@ public class CGuiTest extends TabActivity {
     private static String TAG = "VK:Old UI";
    
     //todo: use map(?)
-    public static final int MY_PAGE = 0;
+   // public static final int MY_PAGE = 0;
     public static final int MY_FRIENDS = 1;
    // public static final int MY_MESSAGES = 2;
    // public static final int MY_UPDATES = 3;
@@ -49,11 +49,14 @@ public class CGuiTest extends TabActivity {
     private void initializeActivity() {
         //refresh(contentToUpdate.ALL);
         // load icons from the files
-        setContentView(R.layout.profile_view);
+        setContentView(R.layout.friends_view);
         final TabHost tabHost = getTabHost();
+       
+        /*
         tabHost.addTab(tabHost.newTabSpec("My Profile").setIndicator(
                 getResources().getString(R.string.i)).setContent(
                 new Intent(CGuiTest.this, CMeTab.class)));
+                */
 
         tabHost.addTab(tabHost.newTabSpec("Friends").setIndicator(
                 getResources().getString(R.string.friends),
@@ -129,12 +132,13 @@ public class CGuiTest extends TabActivity {
         getContentResolver().notifyChange(UserapiProvider.STATUSES_URI, null);
         
         */
-
+        /* 
         try {
             CMeTab.s_instance.loadProfile();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        */
     }
 
     @Override
