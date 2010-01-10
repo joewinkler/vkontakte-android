@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+
 import org.googlecode.vkontakte_android.database.StatusDao;
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
@@ -43,6 +45,8 @@ public class UpdatesListActivity extends AutoLoadActivity implements AdapterView
 
         registerForContextMenu(getListView());
         getListView().setOnItemClickListener(this);
+        getListView().setOnScrollListener(this);
+
     }
 
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -63,6 +67,31 @@ public class UpdatesListActivity extends AutoLoadActivity implements AdapterView
             case R.id.send_message:
                 UserHelper.sendMessage(this, userId);
                 return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.updates_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }   
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.refresh:
+			try {
+				ServiceHelper.getService().update(CheckingService.contentToUpdate.STATUSES.ordinal(), false);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            	return true;
+            	
             default:
                 return super.onContextItemSelected(item);
         }

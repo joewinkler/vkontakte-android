@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Log;
+
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 
@@ -22,6 +24,9 @@ import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_UR
  * Date: Oct 10, 2009
  */
 public class UserHelper {
+
+	private static final String TAG = "VK:UserHelper";
+	
     public static void viewProfile(Context context, long userId) {
         Intent intent = new Intent(context, ProfileViewActivity.class);
         intent.putExtra(KEY_PROFILE_USERID, userId);
@@ -60,9 +65,12 @@ public class UserHelper {
 
     public static Bitmap getPhotoByUserId(Context context, long userId) {
         UserDao user = UserDao.findByUserId(context, userId);
-        if (user == null || user._data == null || !UserapiProvider.isExists(user._data))
-            return null;//todo: not yet loaded
-        else
-            return getPhoto(context, user.getRowId());
+        if (user == null || user._data == null || !UserapiProvider.isExists(user._data)){
+        	Log.w(TAG,"User:"+userId+" not found");
+        	return null;//todo: not yet loaded
+        }else{
+            return getPhoto(context, user.getRowId());   	
+        }
+     
     }
 }

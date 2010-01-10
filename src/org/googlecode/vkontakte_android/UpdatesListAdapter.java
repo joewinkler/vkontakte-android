@@ -15,7 +15,7 @@ import org.googlecode.vkontakte_android.database.StatusDao;
 import java.text.SimpleDateFormat;
 
 public class UpdatesListAdapter extends ResourceCursorAdapter {
-    private static final String TAG = "org.googlecode.vkontakte_android.UpdatesListAdapter";
+    private static final String TAG = "VK:UpdatesListAdapter";
 
     public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm ");//todo: get rid of extra space by using padding(?)
     public static final SimpleDateFormat weektimeFormat = new SimpleDateFormat("EEE, HH:mm ");
@@ -34,11 +34,12 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         statusLine.setText(Html.fromHtml(status.getText()));
         TextView timeLine = (TextView) view.findViewById(R.id.time);
         timeLine.setText(weektimeFormat.format(status.getDate()));
-
+        ImageView photo = (ImageView) view.findViewById(R.id.photo);
+        
         if (Settings.shouldLoadPics(context)) {
             Bitmap bm = UserHelper.getPhotoByUserId(context, status.getUserId());
-            ImageView photo = (ImageView) view.findViewById(R.id.photo);
-            if (bm != null && view.findViewById(R.id.photo) != null) {
+            
+            if (bm != null) {
                 int srcWidth = bm.getWidth();
                 int srcHeight = bm.getHeight();
                 int dstWidth = PHOTO_SIZE;
@@ -48,10 +49,9 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
                 photo.setImageBitmap(croppedBitmap);
             } else {
                 Log.e(TAG, "Can't get photo for status " + status.getStatusId());
-//                photo.setImageBitmap(null);
+                photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
             }
         } else {
-            ImageView photo = (ImageView) view.findViewById(R.id.photo);
             photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
             photo.setVisibility(View.GONE);
         }
