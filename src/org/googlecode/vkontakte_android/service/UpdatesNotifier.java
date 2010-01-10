@@ -90,6 +90,7 @@ public class UpdatesNotifier {
         PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
 
         notification.setLatestEventInfo(ctx, notificationText, text, contentIntent);
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         NotificationManager manager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(HISTORY_ID, notification);

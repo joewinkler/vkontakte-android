@@ -27,8 +27,10 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
 
     private final static String TAG = "VK:HomeGridActivity";
 
-    private final static int SETTINGS_ACTIVITY =1;
-    
+    private final static int SETTINGS_ACTIVITY = 1;
+
+    private HomeGridAdapter adapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +41,8 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
 
         GridView mHomeGrid = (GridView) findViewById(R.id.HomeGrid);
         mHomeGrid.setNumColumns(3);
-        mHomeGrid.setAdapter(new HomeGridAdapter(this));
+        adapter = new HomeGridAdapter(this);
+        mHomeGrid.setAdapter(adapter);
         mHomeGrid.setOnItemClickListener(this);
         backToHome();
         initStatus();
@@ -134,35 +137,27 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     
     
     @Override
-    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         setProgressBarIndeterminateVisibility(true);
 
-        changeTitle(getResources().getString((Integer) arg1.getTag()));
-        
-        if (arg1.getTag().equals(R.string.settings)) {
-            startActivityForResult(new Intent(this, Settings.class),SETTINGS_ACTIVITY);
-        } else if (arg1.getTag().equals(R.string.requests)) {
-           // showRequests();
-        } else if (arg1.getTag().equals(R.string.help)) {
+        HomeGridAdapter.Item item = (HomeGridAdapter.Item) HomeGridActivity.this.adapter.getItem(position);
+        Intent intent = item.getIntent();
+
+        changeTitle(item.getTitle());
+
+        if (item.getType() == HomeGridAdapter.ItemType.SETTINGS) {
+            startActivityForResult(intent, SETTINGS_ACTIVITY);
+        }
+        else if (item.getType() == HomeGridAdapter.ItemType.HELP) {
             AboutDialog.makeDialog(this).show();
             backToHome();
         }
-        else if (arg1.getTag().equals(R.string.messages)){
-        	startActivity(new Intent(this, MessagesListActivity.class));
+        else if (intent != null) {
+            startActivity(intent);
         }
-        else if (arg1.getTag().equals(R.string.updates)){
-        	startActivity(new Intent(this, UpdatesListActivity.class));
-        }
-        	
-        // Not implemented
-        else if (arg1.getTag().equals(R.string.search)
-                || arg1.getTag().equals(R.string.photos)) {
+        else {
             Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
             backToHome();
-        } else {
-            Intent i = new Intent(this, CGuiTest.class);
-            i.putExtra("tabToShow", getResources().getString((Integer) arg1.getTag()));
-            startActivity(i);
         }
     }
 
