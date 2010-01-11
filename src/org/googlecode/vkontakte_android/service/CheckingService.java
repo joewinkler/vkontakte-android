@@ -48,6 +48,7 @@ public class CheckingService extends Service {
     public void onStart(final Intent intent, int startId) {
         super.onStart(intent, startId);
 
+        
     }
 
     /**
@@ -140,24 +141,21 @@ public class CheckingService extends Service {
             }
         }
         m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, period*1000*60);
-        Log.d(TAG, "Scheduled updates started with period: " + period +" minutes");
+        Log.d(TAG, "Scheduled updates started with period: " + period + " minutes");
     }
 
-  public void cancelScheduledUpdates(){
-	  m_timer.cancel();
-	  m_timer.purge();
-	  Log.d(TAG, "Scheduled updates canceled");
-  }
+    public void cancelScheduledUpdates() {
+        m_timer.cancel();
+        m_timer.purge();
+        Log.d(TAG, "Scheduled updates canceled");
+    }
 
-  public void restartScheduledUpdates(){
-	  Log.d(TAG, "Scheduled updates restarting");
-	  cancelScheduledUpdates();
-	  m_timer= new Timer();
-	  launchScheduledUpdates();
-  }
-
-
-
+    public void restartScheduledUpdates() {
+        Log.d(TAG, "Scheduled updates restarting");
+        cancelScheduledUpdates();
+        m_timer = new Timer();
+        launchScheduledUpdates();
+    }
 
     // =============== updating methods
 

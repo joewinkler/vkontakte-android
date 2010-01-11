@@ -2,10 +2,9 @@
 <resources>
     <string-array name="period">
         <item>Вручную</item>
-        <item>10 секунд</item>
-        <item>30 секунд</item>
         <item>1 минута</item>
-        <item>2 минуты</item>
         <item>5 минут</item>
+        <item>30 минут</item>
+        <item>1 час</item>
     </string-array>
 </resources>
