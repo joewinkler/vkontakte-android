@@ -2,7 +2,6 @@ package org.googlecode.vkontakte_android;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -19,14 +18,23 @@ import java.text.SimpleDateFormat;
 public class UpdatesListAdapter extends ResourceCursorAdapter {
     private static final String TAG = "VK:UpdatesListAdapter";
 
-    public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm ");//todo: get rid of extra space by using padding(?)
+    public static final  SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm ");//todo: get rid of extra space by using padding(?)
     public static final SimpleDateFormat weektimeFormat = new SimpleDateFormat("EEE, HH:mm ");
     private static final int PHOTO_SIZE = 90;
 
     public UpdatesListAdapter(Context context, int layout, Cursor cursor) {
         super(context, layout, cursor);
+        fillPhotoCache(context, cursor);
     }
 
+    private void fillPhotoCache(Context context,Cursor cursor){
+    	while (cursor.moveToNext()){
+    		StatusDao status = new StatusDao(cursor);
+    		UserHelper.getPhotoByUserId2(context, status.getUserId());
+    	}
+    	Log.d(TAG,"photos cached:"+UserHelper.bitmapCache.size());
+    }
+    
     @Override
     public void bindView(View view, Context context, final Cursor cursor) {
         StatusDao status = new StatusDao(cursor);
@@ -37,10 +45,15 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         TextView timeLine = (TextView) view.findViewById(R.id.time);
         timeLine.setText(weektimeFormat.format(status.getDate()));
         
-        ImageView photo = (ImageView) view.findViewById(R.id.photo);
+        String photoViewTag="photoview"+status.getUserId();
+        ImageView photo = (ImageView)view.findViewWithTag(photoViewTag);
+        if (photo==null){
+        	photo = (ImageView) view.findViewById(R.id.photo);
+        	photo.setTag(photoViewTag);
+        }
         
         if (PreferenceHelper.shouldLoadPics(context)) {
-        	photo.setImageBitmap(UserHelper.getPhotoByUserId(context, status.getUserId()));
+        	photo.setImageBitmap(UserHelper.getPhotoByUserId2(context, status.getUserId()));
         } else {
             photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
             photo.setVisibility(View.GONE);

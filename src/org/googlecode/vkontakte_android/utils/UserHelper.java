@@ -33,7 +33,8 @@ public class UserHelper {
 
 	private static final String TAG = "VK:UserHelper";
 	
-    private static HashMap<Long, SoftReference<Bitmap>> bitmapCache = new HashMap<Long, SoftReference<Bitmap>>();
+    public static HashMap<Long, SoftReference<Bitmap>> bitmapCache = new HashMap<Long, SoftReference<Bitmap>>();
+    public static HashMap<Long,Bitmap> bitmapCache2 = new HashMap<Long,Bitmap>();
     private static final int PHOTO_SIZE = 90;
 	
     public static void viewProfile(Context context, long userId) {
@@ -91,10 +92,55 @@ public class UserHelper {
     	}else{
         	return bm;    		
     	}
-    	
-
     }
 
+    public static Bitmap getPhotoByUserId2(Context context, long userId) {
+
+    	Bitmap bm=bitmapCache2.get(userId);
+    	if (bm==null){
+    		UserDao user = UserDao.findByUserId(context, userId);
+    		if (user!=null){
+    			return getPhotoByUser(context, user);
+    		}
+    		return CImagesManager.getBitmap(context, Icons.STUB);
+    	}else{
+        	return bm;    		
+    	}
+    }
+    
+    public static Bitmap getPhotoByUser2(Context context, UserDao user) {
+
+    	Bitmap bm=bitmapCache2.get(user.userId);
+    	if (bm==null){
+    		if (user._data != null && UserapiProvider.isExists(user._data)) {
+    			bm=getPhoto(context, user.rowId);
+    			if (bm!=null){
+    				
+                    int srcWidth = bm.getWidth();
+                    int srcHeight = bm.getHeight();
+                    int dstWidth = PHOTO_SIZE;
+                    int dstHeight = srcHeight * PHOTO_SIZE / srcWidth;
+
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,dstWidth,dstHeight,true);
+                    Bitmap croppedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight));
+
+    				bitmapCache2.put(user.userId, croppedBitmap);
+    				return bitmapCache2.get(user.userId);
+    			}else{
+    				return CImagesManager.getBitmap(context, Icons.STUB);
+    			}
+    		}else{
+    			return CImagesManager.getBitmap(context, Icons.STUB);
+    		}
+    	}else{
+    		return bm;
+    	}
+    }
+
+    
+    
+    
+    
     public static Bitmap getPhotoByUser(Context context, UserDao user) {
 
     	Bitmap bm=null;
