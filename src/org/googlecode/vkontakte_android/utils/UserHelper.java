@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.util.Log;
+
 
 import org.googlecode.vkontakte_android.CImagesManager;
 import org.googlecode.vkontakte_android.ComposeMessageActivity;
@@ -31,6 +31,7 @@ import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_UR
  */
 public class UserHelper {
 
+	@SuppressWarnings("unused")
 	private static final String TAG = "VK:UserHelper";
 	
     public static HashMap<Long, SoftReference<Bitmap>> bitmapCache = new HashMap<Long, SoftReference<Bitmap>>();

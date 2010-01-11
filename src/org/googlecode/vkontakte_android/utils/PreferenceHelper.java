@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import org.googlecode.userapi.Credentials;
 
-import static android.content.Context.MODE_PRIVATE;
 
 public class PreferenceHelper {
     public static final String LOGIN_STATUS = "is_logged";

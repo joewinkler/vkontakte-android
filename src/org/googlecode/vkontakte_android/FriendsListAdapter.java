@@ -1,7 +1,7 @@
 package org.googlecode.vkontakte_android;
 
 
-import java.util.Currency;
+
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
-import org.googlecode.userapi.User;
 import org.googlecode.vkontakte_android.CImagesManager.Icons;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
@@ -34,7 +33,8 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
     }
     
     
-    private void fillPhotoCache(Context context,Cursor cursor){
+    @SuppressWarnings("unused")
+	private void fillPhotoCache(Context context,Cursor cursor){
     	while (cursor.moveToNext()){
     		UserDao userDao = new UserDao(cursor);
     		UserHelper.getPhotoByUser2(context, userDao);

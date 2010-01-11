@@ -340,9 +340,10 @@ public class CheckingService extends Service {
         if (friends != null) {
             Log.d(TAG, "got new users: " + friends.size());
         }
+        /*
+
         StringBuilder notIn = new StringBuilder(" ");
         boolean isNew = true;
-        /*
         if (friends != null) {
             for (User user : friends) {
                 UserDao userDao = new UserDao(user, isNew, false);

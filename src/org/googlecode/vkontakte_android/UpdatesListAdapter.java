@@ -20,14 +20,14 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
 
     public static final  SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm ");//todo: get rid of extra space by using padding(?)
     public static final SimpleDateFormat weektimeFormat = new SimpleDateFormat("EEE, HH:mm ");
-    private static final int PHOTO_SIZE = 90;
-
+    
     public UpdatesListAdapter(Context context, int layout, Cursor cursor) {
         super(context, layout, cursor);
         //fillPhotoCache(context, cursor);
     }
 
-    private void fillPhotoCache(Context context,Cursor cursor){
+    @SuppressWarnings("unused")
+	private void fillPhotoCache(Context context,Cursor cursor){
     	while (cursor.moveToNext()){
     		StatusDao status = new StatusDao(cursor);
     		UserHelper.getPhotoByUserId2(context, status.getUserId());
@@ -44,44 +44,19 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         statusLine.setText(Html.fromHtml(status.getText()));
         TextView timeLine = (TextView) view.findViewById(R.id.time);
         timeLine.setText(weektimeFormat.format(status.getDate()));
-        
+     
+        //caching photoViews for faster access via findViewWithTag 
         String photoViewTag="photoview"+status.getUserId();
         ImageView photo = (ImageView)view.findViewWithTag(photoViewTag);
         if (photo==null){
         	photo = (ImageView) view.findViewById(R.id.photo);
-        	photo.setTag(photoViewTag);
         }
-        
-        if (PreferenceHelper.shouldLoadPics(context)) {
+        if(photo!=null && PreferenceHelper.shouldLoadPics(context)){
+        	photo.setTag(photoViewTag);
         	photo.setImageBitmap(UserHelper.getPhotoByUserId2(context, status.getUserId()));
-        } else {
+        }else if(photo!=null) {
             photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
             photo.setVisibility(View.GONE);
         }
-        
-        /*        
-        if (Settings.shouldLoadPics(context)&& photo!=null) {
-            Bitmap bm = UserHelper.getPhotoByUserId(context, status.getUserId());
-            if (bm != null) {
-                int srcWidth = bm.getWidth();
-                int srcHeight = bm.getHeight();
-                int dstWidth = PHOTO_SIZE;
-                int dstHeight = srcHeight * PHOTO_SIZE / srcWidth;
-                //Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,dstWidth,dstHeight,true);
-                Bitmap croppedBitmap = Bitmap.createBitmap(bm, 0, 0, Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight));
-                photo.setImageBitmap(croppedBitmap);
-            } else {
-                Log.e(TAG, "Can't get photo for status " + status.getStatusId());
-                photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
-            }
-        } else {
-            if (photo!=null){
-            	photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
-                photo.setVisibility(View.GONE);	
-            }
-        	
-        }
-         */
-
-    }
+   }
 }
