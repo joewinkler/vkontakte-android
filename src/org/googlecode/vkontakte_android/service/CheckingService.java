@@ -9,12 +9,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import org.googlecode.userapi.*;
-import org.googlecode.vkontakte_android.Settings;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.StatusDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -121,12 +121,12 @@ public class CheckingService extends Service {
      * Starts a thread checking api periodically
      */
     private void launchScheduledUpdates() {
-    	int period = Settings.getPeriod(getApplicationContext());
-    	if (period==0){ 
+    	int period = PreferenceHelper.getSyncPeriod(getApplicationContext());
+    	if (period==PreferenceHelper.SYNC_INTERVAL_NEVER){
     		Log.d(TAG, "Scheduled updates disabled by user");
     		return;
     	}
-    	
+
         class CheckingTask extends TimerTask {
             @Override
             public void run() {
@@ -139,7 +139,7 @@ public class CheckingService extends Service {
                 }
             }
         }
-        
+
         m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, period);
         Log.d(TAG, "Scheduled updates started with period: " + period/1000+" secs");
     }
@@ -149,16 +149,16 @@ public class CheckingService extends Service {
 	  m_timer.purge();
 	  Log.d(TAG, "Scheduled updates canceled");
   }
-  
+
   public void restartScheduledUpdates(){
 	  Log.d(TAG, "Scheduled updates restarting");
 	  cancelScheduledUpdates();
-	  m_timer= new Timer(); 
+	  m_timer= new Timer();
 	  launchScheduledUpdates();
   }
-  
-     
-    
+
+
+
 
     // =============== updating methods
 
@@ -185,7 +185,7 @@ public class CheckingService extends Service {
 
             }
         }
-        
+
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
         //TODO get real counter from provider
     }
@@ -234,7 +234,7 @@ public class CheckingService extends Service {
         int changes = prevChangesHistory.compareTo(changesHistory);
 
         // if there were changes and notifcations are enabled in settings
-        if (changes != 0 && Settings.getNotifications(getApplicationContext())) {
+        if (changes != 0 && PreferenceHelper.getNotifications(getApplicationContext())) {
             prevChangesHistory = changesHistory;
 
             boolean newEvents = changes == -1;
@@ -360,7 +360,7 @@ public class CheckingService extends Service {
         */
     }
 
-  
+
     @Override
     public void onDestroy() {
         super.onDestroy();

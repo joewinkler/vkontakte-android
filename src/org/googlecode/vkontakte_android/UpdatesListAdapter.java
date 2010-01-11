@@ -11,6 +11,7 @@ import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import org.googlecode.vkontakte_android.CImagesManager.Icons;
 import org.googlecode.vkontakte_android.database.StatusDao;
+import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.googlecode.vkontakte_android.utils.UserHelper;
 
 import java.text.SimpleDateFormat;
@@ -37,9 +38,8 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         timeLine.setText(weektimeFormat.format(status.getDate()));
         
         ImageView photo = (ImageView) view.findViewById(R.id.photo);
-
         
-        if (Settings.shouldLoadPics(context)) {
+        if (PreferenceHelper.shouldLoadPics(context)) {
         	photo.setImageBitmap(UserHelper.getPhotoByUserId(context, status.getUserId()));
         } else {
             photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));

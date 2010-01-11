@@ -1,17 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_height="wrap_content" android:layout_width="250px"
-        android:orientation="vertical" android:gravity="center">
-    <EditText android:id="@+id/login" android:layout_height="wrap_content" android:layout_width="fill_parent"
-              android:lines="1" android:inputType="textEmailAddress" android:hint="@string/email"/>
-    <EditText android:id="@+id/pass" android:layout_height="wrap_content" android:layout_width="fill_parent"
-              android:inputType="textPassword" android:lines="1" android:hint="@string/password"/>
-    
-<LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent"><Button android:id="@+id/button_login" android:layout_height="wrap_content" android:layout_width="fill_parent"
-            android:text="Login" android:layout_weight="50"/><Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="50" android:text="Cancel" android:id="@+id/cancel"></Button>
-</LinearLayout>
-<ProgressBar android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true" android:visibility="gone" android:id="@+id/progress_bar"></ProgressBar>
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:orientation="vertical"
+              android:gravity="center">
+    <TextView android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:text="@string/email"/>
+    <EditText android:id="@+id/login"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:lines="1"
+              android:inputType="textEmailAddress"/>
+    <TextView android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:text="@string/password"/>
+    <EditText android:id="@+id/pass"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:inputType="textPassword"
+              android:lines="1"/>
 
-<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#ff0000" android:text="Error" android:visibility="gone" android:id="@+id/login_error"></TextView>
+    <LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content"
+                  android:layout_width="fill_parent">
+        <Button android:id="@+id/button_login" android:layout_height="wrap_content" android:layout_width="fill_parent"
+                android:text="Login" android:layout_weight="50"/>
+        <Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="50"
+                android:text="Cancel" android:id="@+id/cancel"/>
+    </LinearLayout>
+    <ProgressBar android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true"
+                 android:visibility="gone" android:id="@+id/progress_bar"/>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#ff0000"
+              android:text="Error" android:visibility="gone" android:id="@+id/login_error"/>
 </LinearLayout>

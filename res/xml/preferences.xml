@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/prefs_title">
 
-        <ListPreference android:key="period" android:title="@string/period_title"
+        <ListPreference android:key="sync_period" android:title="@string/period_title"
                         android:entries="@array/period" android:entryValues="@array/period_val"
                         android:defaultValue="60"/>
 

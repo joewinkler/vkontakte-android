@@ -41,7 +41,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         bindService(new Intent(this, CheckingService.class), this, Context.BIND_AUTO_CREATE);
 
         GridView mHomeGrid = (GridView) findViewById(R.id.HomeGrid);
-        mHomeGrid.setNumColumns(3);
+//        mHomeGrid.setNumColumns(3);
         adapter = new HomeGridAdapter(this);
         mHomeGrid.setAdapter(adapter);
         mHomeGrid.setOnItemClickListener(this);

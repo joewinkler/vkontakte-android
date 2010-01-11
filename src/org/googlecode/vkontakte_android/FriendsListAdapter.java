@@ -9,6 +9,7 @@ import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import org.googlecode.vkontakte_android.CImagesManager.Icons;
 import org.googlecode.vkontakte_android.database.UserDao;
+import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.googlecode.vkontakte_android.utils.UserHelper;
 
 
@@ -37,7 +38,7 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
 
         ImageView photo = (ImageView) view.findViewById(R.id.photo);
         
-        if (Settings.shouldLoadPics(context)) {
+        if (PreferenceHelper.shouldLoadPics(context)) {
         	photo.setImageBitmap(UserHelper.getPhotoByUser(context, userDao));
         } else {
             photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
