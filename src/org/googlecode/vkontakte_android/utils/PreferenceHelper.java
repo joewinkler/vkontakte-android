@@ -71,11 +71,11 @@ public class PreferenceHelper {
      * Get sync interval
      *
      * @param context
-     * @return interval in milliseconds
+     * @return interval in minutes
      */
     public static final int getSyncPeriod(final Context context) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        return Integer.parseInt(pref.getString(SYNC_PERIOD, String.valueOf(DEFAULT_SYNC_INTERVAL)))*1000;
+        return Integer.parseInt(pref.getString(SYNC_PERIOD, String.valueOf(DEFAULT_SYNC_INTERVAL)));
     }
 
     public static boolean getNotifications(Context ctx) {

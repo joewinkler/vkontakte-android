@@ -139,9 +139,8 @@ public class CheckingService extends Service {
                 }
             }
         }
-
-        m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, period);
-        Log.d(TAG, "Scheduled updates started with period: " + period/1000+" secs");
+        m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, period*1000*60);
+        Log.d(TAG, "Scheduled updates started with period: " + period +" minutes");
     }
 
   public void cancelScheduledUpdates(){
