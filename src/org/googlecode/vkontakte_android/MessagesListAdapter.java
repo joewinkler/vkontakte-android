@@ -68,7 +68,7 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
         
         TextView message = (TextView) view.findViewById(R.id.message);
         //warning! setting spanned text causes StackOverflow
-        message.setText(Html.fromHtml(messageDao.text).toString());
+        message.setText((messageDao.text).toString());
 
         View indicator = view.findViewById(R.id.unread_indicator);
         if (!messageDao.read) indicator.setVisibility(View.VISIBLE);

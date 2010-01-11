@@ -2,6 +2,7 @@ package org.googlecode.vkontakte_android;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
@@ -10,10 +11,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 
 import org.googlecode.vkontakte_android.database.MessageDao;
+import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService;
@@ -33,6 +36,8 @@ public class MessagesListActivity extends AutoLoadActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        
         setContentView(R.layout.message_list);
         setupLoader(new AutoLoadActivity.Loader() {
 
@@ -66,7 +71,34 @@ public class MessagesListActivity extends AutoLoadActivity {
         });
 
         getListView().setOnScrollListener(this);
+        refreshOnStart();
     }
+    
+    
+    private void refreshOnStart() {
+        new AsyncTask<Object, Object, Object>(){
+        	
+        	@Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                setProgressBarIndeterminateVisibility(true);
+            }
+            @Override
+            protected void onPostExecute(Object result) {
+                setProgressBarIndeterminateVisibility(false);
+            }
+    		@Override
+    		protected Object doInBackground(Object... params) {
+    			try {
+    				ServiceHelper.getService().update(CheckingService.contentToUpdate.MESSAGES_ALL.ordinal(), true);
+    			} catch (RemoteException e) {
+    				e.printStackTrace();
+    			}
+    			return null;
+    		}
+        }.execute();
+    }
+    
 
     @Override
     protected void onResume() {
