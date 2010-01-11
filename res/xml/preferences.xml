@@ -4,7 +4,7 @@
 
         <ListPreference android:key="sync_period" android:title="@string/period_title"
                         android:entries="@array/period" android:entryValues="@array/period_val"
-                        android:defaultValue="1"/>
+                        android:defaultValue="-1"/>
 
         <CheckBoxPreference android:key="notif"
                             android:title="@string/notif_title" android:defaultValue="true"/>
