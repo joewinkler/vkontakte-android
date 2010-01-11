@@ -6,8 +6,9 @@ v0.2.0 alpha:
   *  'Mark as read' and 'delete' implemented im messages 
   *  Fixed F/C due to the incorrect service binding
   *  Fixed login issues
-  *  Profile View now have tabs (Info, Wall, Updates)
-     two of them working (Info, Updates) 	
+  *  Profile View now have tabs (Info, Wall, Updates), two of them works (Info, Updates)
+  *  Known issues:
+        -Message text is truncated to approx. 200 symbols (http://code.google.com/p/vkontakte-android/issues/detail?id=36)
 
 v0.1.1 alpha:
   *  URL encode bugfix
