@@ -48,7 +48,7 @@ public class CheckingService extends Service {
     public void onStart(final Intent intent, int startId) {
         super.onStart(intent, startId);
 
-        
+
     }
 
     /**
@@ -122,11 +122,11 @@ public class CheckingService extends Service {
      * Starts a thread checking api periodically
      */
     private void launchScheduledUpdates() {
-    	int period = PreferenceHelper.getSyncPeriod(getApplicationContext());
-    	if (period==PreferenceHelper.SYNC_INTERVAL_NEVER){
-    		Log.d(TAG, "Scheduled updates disabled by user");
-    		return;
-    	}
+        int period = PreferenceHelper.getSyncPeriod(getApplicationContext());
+        if (period == PreferenceHelper.SYNC_INTERVAL_NEVER) {
+            Log.d(TAG, "Scheduled updates disabled by user");
+            return;
+        }
 
         class CheckingTask extends TimerTask {
             @Override
@@ -140,7 +140,7 @@ public class CheckingService extends Service {
                 }
             }
         }
-        m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, period*1000*60);
+        m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, period * 1000 * 60);
         Log.d(TAG, "Scheduled updates started with period: " + period + " minutes");
     }
 
@@ -339,23 +339,16 @@ public class CheckingService extends Service {
         }
         if (friends != null) {
             Log.d(TAG, "got new users: " + friends.size());
-        }
-        /*
-
-        StringBuilder notIn = new StringBuilder(" ");
-        boolean isNew = true;
-        if (friends != null) {
+            boolean isNew = true;
+            //todo: delete only partial; use date/timestamp
+            getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=1", null);
             for (User user : friends) {
                 UserDao userDao = new UserDao(user, isNew, false);
                 Uri useruri = userDao.saveOrUpdate(context);
-                notIn.append(user.getUserId()).append(",");
                 userDao.updatePhoto(this, user, useruri);
-                getContentResolver().notifyChange(useruri, null);
             }
+            getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
         }
-        notIn.deleteCharAt(notIn.length() - 1);//remove last ','
-        getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=1" + " AND " + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")", null);
-        */
     }
 
 
