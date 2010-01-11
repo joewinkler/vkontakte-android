@@ -90,5 +90,7 @@ public class PreferenceHelper {
         if (credentials.getRemixpass() != null) {
             ed.putString(REMIX, credentials.getRemixpass()).commit();
         }
+        //todo: move from here
+        setLogged(context, true);
     }
 }
