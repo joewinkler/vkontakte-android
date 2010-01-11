@@ -24,7 +24,7 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
 
     public UpdatesListAdapter(Context context, int layout, Cursor cursor) {
         super(context, layout, cursor);
-        fillPhotoCache(context, cursor);
+        //fillPhotoCache(context, cursor);
     }
 
     private void fillPhotoCache(Context context,Cursor cursor){
