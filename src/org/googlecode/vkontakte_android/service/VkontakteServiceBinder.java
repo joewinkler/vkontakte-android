@@ -99,8 +99,6 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             } catch (UserapiLoginException e) {
                 e.printStackTrace();
             }
-            //MessageDao md = new MessageDao(0, new Date(), text, 0, id, true);
-            //don't save it to DB, TODO refresh last out message instead
             m_service.doCheck(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal(), new Bundle(), false);
         } catch (IOException e) {
             UpdatesNotifier.showError(m_context,

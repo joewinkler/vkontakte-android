@@ -42,7 +42,7 @@ public class ComposeMessageActivity extends ListActivity implements AbsListView.
                     ServiceHelper.getService().sendMessage(textView.getText().toString(), finalUserId);
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.message_sent), Toast.LENGTH_SHORT).show();
                     textView.setText("");
-                    ServiceHelper.getService().update(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal(), false);
+                    
                     //todo: scroll
                 } catch (RemoteException e) {
                     e.printStackTrace();
