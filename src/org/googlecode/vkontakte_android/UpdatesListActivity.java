@@ -1,6 +1,7 @@
 package org.googlecode.vkontakte_android;
 
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
@@ -48,8 +49,33 @@ public class UpdatesListActivity extends AutoLoadActivity implements AdapterView
         registerForContextMenu(getListView());
         getListView().setOnItemClickListener(this);
         getListView().setOnScrollListener(this);
+        refreshOnStart();
 
     }
+    private void refreshOnStart() {
+        new AsyncTask<Object, Object, Object>(){
+        	
+        	@Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                setProgressBarIndeterminateVisibility(true);
+            }
+            @Override
+            protected void onPostExecute(Object result) {
+                setProgressBarIndeterminateVisibility(false);
+            }
+    		@Override
+    		protected Object doInBackground(Object... params) {
+    			try {
+    				ServiceHelper.getService().update(CheckingService.contentToUpdate.STATUSES.ordinal(), true);
+    			} catch (RemoteException e) {
+    				e.printStackTrace();
+    			}
+    			return null;
+    		}
+        }.execute();
+    }
+    
 
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);

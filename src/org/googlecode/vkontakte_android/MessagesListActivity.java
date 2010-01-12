@@ -16,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 
 import org.googlecode.vkontakte_android.database.MessageDao;
-import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService;
