@@ -67,10 +67,11 @@ public class UpdatesListActivity extends AutoLoadActivity implements AdapterView
     		@Override
     		protected Object doInBackground(Object... params) {
     			try {
-    				ServiceHelper.getService().update(CheckingService.contentToUpdate.STATUSES.ordinal(), true);
-    			} catch (RemoteException e) {
-    				e.printStackTrace();
-    			}
+					ServiceHelper.getService().update(CheckingService.contentToUpdate.STATUSES.ordinal(), true);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
     			return null;
     		}
         }.execute();
@@ -112,12 +113,7 @@ public class UpdatesListActivity extends AutoLoadActivity implements AdapterView
         switch (item.getItemId()) {
 
             case R.id.refresh:
-			try {
-				ServiceHelper.getService().update(CheckingService.contentToUpdate.STATUSES.ordinal(), false);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            	refreshOnStart();
             	return true;
             	
             default:

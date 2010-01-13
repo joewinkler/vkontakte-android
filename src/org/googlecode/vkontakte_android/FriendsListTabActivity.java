@@ -2,29 +2,23 @@ package org.googlecode.vkontakte_android;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.RemoteException;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import org.googlecode.vkontakte_android.database.UserDao;
-import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
-import org.googlecode.vkontakte_android.utils.AppHelper;
-import org.googlecode.vkontakte_android.utils.ServiceHelper;
 import org.googlecode.vkontakte_android.utils.UserHelper;
 
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
 
 public class FriendsListTabActivity extends AutoLoadActivity implements AdapterView.OnItemClickListener {
     private FriendsListAdapter adapter;
-    private static String TAG = "VK:FriendsListTabActivity";
+    
+    @SuppressWarnings("unused")
+	private static String TAG = "VK:FriendsListTabActivity";
 
     enum FriendsCursorType {
         ALL, NEW, ONLINE
@@ -44,7 +38,6 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
 
         if(type==FriendListActivity.ALL){
         	cursor=makeCursor(FriendsCursorType.ALL);
-        	//cursor=makeCursor(FriendsCursorType.ONLINE);
         }else if(type==FriendListActivity.ONLINE){
         	cursor=makeCursor(FriendsCursorType.ONLINE);
         }else if(type==FriendListActivity.REQUESTS){
@@ -56,74 +49,15 @@ public class FriendsListTabActivity extends AutoLoadActivity implements AdapterV
         
         adapter = new FriendsListAdapter(this, R.layout.friend_row, cursor);
 
-        final Handler handler = new Handler();
-        setupLoader(new AutoLoadActivity.Loader() {
-
-            @Override
-            public Boolean load() {
-                try {
-                    ServiceHelper.getService().update(contentToUpdate.FRIENDS.ordinal(), true);
-                    ServiceHelper.getService().loadUsersPhotos(getVisibleUsers());
-                    handler.post(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
-
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                    AppHelper.showFatalError(FriendsListTabActivity.this, "While trying to load friends photos");
-                    Log.e(TAG,"Can not load friends photos" );
-                }
-
-                return false;
-            }
-
-        }, adapter);
-        ACTION_FLAGS = AutoLoadActivity.ACTION_ON_START;
+      
         registerForContextMenu(getListView());
         getListView().setOnItemClickListener(this);
+        getListView().setAdapter(adapter);
+   
     }
 
-    /**
-     * Get list of ids of shown users
-     */
-    private List<String> getVisibleUsers() {
-        List<String> us = new LinkedList<String>();
-        for (int i = 0; i < adapter.getCount(); ++i) {
-            UserDao ud = new UserDao((Cursor) adapter.getItem(i));
-            if (ud.rowId!=-1){
-            	us.add(String.valueOf(ud.userId));
-            }
-        }
-        return us;
-    }
-
-    /**
-     * Get list of ids of users that appeared on the current screen
-     *
-     * @return list
-     */
-    /*
-    private List<String> getScreenVisibleUsers() {
-        List<String> us = new LinkedList<String>();
-
-        int f = getListView().getFirstVisiblePosition();
-        int l = getListView().getLastVisiblePosition();
-        for (int i = f; i <= l; ++i) {
-            Cursor c = (Cursor) getListView().getItemAtPosition(i);
-            if (c == null || c.isAfterLast()) {
-                break;
-            }
-            UserDao ud = new UserDao(c);
-            us.add(String.valueOf(ud.userId));
-        }
-        return us;
-    }
-    */
-
+   
+    
 
     private Cursor makeCursor(FriendsCursorType type) {
 

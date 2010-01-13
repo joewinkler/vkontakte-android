@@ -156,12 +156,7 @@ public class MessagesListActivity extends AutoLoadActivity {
             	return true;
 
             case R.id.refresh:
-			try {
-				ServiceHelper.getService().update(CheckingService.contentToUpdate.MESSAGES_ALL.ordinal(), false);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            	refreshOnStart();
             	return true;
             	
             default:

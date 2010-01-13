@@ -1,9 +1,17 @@
 package org.googlecode.vkontakte_android;
 
 
+import org.googlecode.vkontakte_android.service.CheckingService;
+import org.googlecode.vkontakte_android.utils.ServiceHelper;
+
 import android.app.TabActivity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.Window;
 import android.widget.TabHost;
 
@@ -49,75 +57,52 @@ public class FriendListActivity extends TabActivity {
         }
         
         tabHost.setCurrentTab(type-1);
+        refreshOnStart();
+    }
+    
+    private void refreshOnStart() {
+        new AsyncTask<Object, Object, Object>(){
+        	
+        	@Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                setProgressBarIndeterminateVisibility(true);
+            }
+            @Override
+            protected void onPostExecute(Object result) {
+                setProgressBarIndeterminateVisibility(false);
+            }
+    		@Override
+    		protected Object doInBackground(Object... params) {
+    			try {
+    				ServiceHelper.getService().update(CheckingService.contentToUpdate.FRIENDS.ordinal(), true);
+    				ServiceHelper.getService().loadAllUsersPhotos();
+    				
+    			} catch (RemoteException e) {
+    				e.printStackTrace();
+    			}
+    			return null;
+    		}
+        }.execute();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.friends_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }   
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
 
-//    private void initializeUserStuff() {
-//        // todo: possibly move to tabs activities itself
-//        final TextView friendsCounter = TabHelper.injectTabCounter(getTabWidget(), 1, getApplicationContext());
-//
-//        // todo: register/unregister onResume/onPause
-//        // users content
-//        getContentResolver().registerContentObserver(UserapiProvider.USERS_URI, false, new ContentObserver(new Handler()) {
-//            @Override
-//            public void onChange(boolean b) {
-//
-//                Cursor cursor = managedQuery(UserapiProvider.USERS_URI, null, UserapiDatabaseHelper.KEY_USER_NEW + "=1", null, null);
-//                if (cursor.getCount() == 0)
-//                    friendsCounter.setVisibility(View.INVISIBLE);
-//                else {
-//                    friendsCounter.setText(String.valueOf(cursor.getCount()));
-//                    friendsCounter.setVisibility(View.VISIBLE);
-//                }
-//                setProgressBarIndeterminateVisibility(false);
-//            }
-//        });
-//        getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
-//    }
-//
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.main_menu, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.refresh:
-//                switch (getTabHost().getCurrentTab()) {
-//                    case MY_FRIENDS:
-//                        refresh(contentToUpdate.FRIENDS);
-//                        break;
-//                    case MY_MESSAGES:
-//                        refresh(contentToUpdate.MESSAGES_ALL);
-//                        break;
-//                    case MY_UPDATES:
-//                        refresh(contentToUpdate.STATUSES);
-//                        break;
-//                    default:
-//                        refresh(contentToUpdate.ALL);
-//                }
-//                return true;
-//            case R.id.settings:
-//                startActivity(new Intent(this, CSettings.class));
-//                return true;
-//            case R.id.about:
-//                AboutDialog.makeDialog(this).show();
-//
-//                return true;
-//            case R.id.logout:
-//                try {
-//                    m_vkService.logout();
-//                    m_vkService.stop();
-//                } catch (RemoteException e) {
-//                    e.printStackTrace();
-//                }
-//                unbindService(m_connection);
-//                finish();
-//                return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+            case R.id.refresh:
+				refreshOnStart();
+            	return true;
+            	
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }    
 }
