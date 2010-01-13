@@ -5,6 +5,7 @@
     <string name="exit">Exit</string>
     <string name="logout">Logout</string>
     <string name="app_name"> VK</string>
+    <string name="app_description">Android client for vk.com social network</string>
     <string name="legal">Legal Information</string>
     <string name="copyright">© 2009-2010 Ildar Karimov, Evgeny Balandin, Serg Podtynnyi, Anastasia Dremina and others.</string>
 
@@ -36,7 +37,6 @@
     <string name="refresh">Refresh</string>
 
     <string name="about">About</string>
-    <string name="logout_and_exit">Logout and exit</string>
     <string name="send_message">Send message</string>
     <string name="remove_from_friends">Remove from friends</string>
     <string name="view_profile">View profile</string>
