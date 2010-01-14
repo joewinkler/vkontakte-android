@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.text.InputType;
@@ -24,6 +25,8 @@ import org.googlecode.vkontakte_android.service.UpdatesNotifier;
 import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
+import com.nullwire.trace.ExceptionHandler;
+
 public class HomeGridActivity extends Activity implements OnItemClickListener, ServiceConnection {
 
     private final static String TAG = "VK:HomeGridActivity";
@@ -35,6 +38,11 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        //move it to logindialog when implemented
+        Handler handler = new Handler();
+        ExceptionHandler.register(this, handler);
+        
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         setContentView(R.layout.homegrid);

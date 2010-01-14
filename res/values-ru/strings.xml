@@ -5,13 +5,15 @@
     <string name="exit">Завершить</string>
     <string name="logout">Выход</string>
     <string name="app_name"> В Контакте</string>
-    <string name="app_description">Андроид-клиент для социальной сети Вконтакте</string>
+    <string name="app_description">Android-клиент для социальной сети Вконтакте</string>
     <string name="legal">Информация о лицензии</string>
     <string name="copyright">© 2009-2010 Ильдар Каримов, Евгений Баландин, Сергей Подтынный, Анастасия Дремина и другие</string>
 
-    <string name="set_status">Редактировать статус</string>
+   <string name="set_status">Редактировать статус</string>
     <string name="ok">Ok</string>
     <string name="send">Отправить</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
     <string name="remove_status">Убрать статус</string>
     <string name="online_only">Только онлайн</string>
     <string name="from">От:</string>
@@ -47,6 +49,7 @@
     <string name="err_msg_check_connection">Нельзя послать сообщение. Проверьте соединение.</string>
     <string name="err_msg_connection_problem">Проблемы соединения</string>
     <string name="err_msg_fatal_error">Ну оооочень плохая ошибка. Соединение с сервисом невозможно</string>
+    <string name="err_msg_offer_report">Приложение неожиданно завершилось в прошлый раз. Отправите сообщение об ошибке? ^_^ </string>
     <!--update statuses-->
     <string name="status_update_ok">Обновление успешно</string>
     <string name="status_update_err">Ошибка при обновлении</string>

@@ -12,6 +12,8 @@
     <string name="set_status">Change Status</string>
     <string name="ok">Ok</string>
     <string name="send">Send</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="remove_status">Delete</string>
     <string name="online_only">Online only</string>
     <string name="from">From:</string>
@@ -53,6 +55,7 @@
     <string name="err_msg_check_connection">Cannot send the message. Check connection.</string>
     <string name="err_msg_connection_problem">Connection problems</string>
     <string name="err_msg_fatal_error">Fatal error. Cannot connect to the service</string>
+    <string name="err_msg_offer_report"> Application had crashed last time. Would you send the error report? </string>
     <!--update statuses-->
     <string name="status_update_ok">Update successful</string>
     <string name="status_update_err">Update failed</string>

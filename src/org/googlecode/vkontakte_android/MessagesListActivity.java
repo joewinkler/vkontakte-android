@@ -62,7 +62,7 @@ public class MessagesListActivity extends AutoLoadActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 MessageDao messageDao = new MessageDao(((CursorAdapter) m_adapter).getCursor());
-                Intent intent = new Intent(getApplicationContext(), ComposeMessageActivity.class);
+                Intent intent = new Intent(MessagesListActivity.this, ComposeMessageActivity.class);
                 boolean isOutgoing = messageDao.getSenderId() == Settings.myId;
                 intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, isOutgoing ? messageDao.getReceiverId() : messageDao.getSenderId());
                 startActivity(intent);

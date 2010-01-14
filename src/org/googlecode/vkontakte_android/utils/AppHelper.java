@@ -2,8 +2,13 @@ package org.googlecode.vkontakte_android.utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+
 import org.googlecode.vkontakte_android.R;
+
+import com.nullwire.trace.ExceptionHandler;
 
 public class AppHelper {
 
@@ -27,5 +32,30 @@ public class AppHelper {
                 .setMessage(text).create();
         dialog.show();
     }
+    
+    /**
+	 * Show dialog offering user to send a report. Used by remote-stacktrace
+	 */
+	public static void showExceptionDialog(Context ctx) {
+		AlertDialog.Builder b = new AlertDialog.Builder(ctx);
+		b.setMessage(ctx.getString(R.string.err_msg_offer_report))
+		    .setCancelable(false)
+		    .setTitle(ctx.getString(R.string.app_name))
+		   	.setPositiveButton(ctx.getString(R.string.yes), new OnClickListener() {
+			
+		   		@Override
+		   		public void onClick(DialogInterface dialog, int which) {
+		   			ExceptionHandler.submitStackTraces();
+		   		}
+		   	})
+		   	.setNegativeButton(ctx.getString(R.string.no), new OnClickListener() {
+			
+		   		@Override
+		   		public void onClick(DialogInterface dialog, int which) {} //do nothing
+		   		
+		   	})
+		   	.create()
+		   	.show();
+	}
 
 }
