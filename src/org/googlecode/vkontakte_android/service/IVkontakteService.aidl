@@ -4,7 +4,6 @@ interface IVkontakteService {
   void update(int what, boolean synchronous);
   
   boolean sendMessage(String mess, long id);
-  boolean deleteMessage(long userId, long messageId);
   boolean sendStatus(String status);
   
   boolean login(String login, String pass);
