@@ -110,6 +110,20 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
+    public boolean deleteMessage(long userId, long messageId) throws RemoteException {
+        try {
+		    ApiCheckingKit.getApi().deleteMessage(userId, messageId);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    return false;
+		}
+		Log.d(TAG,"Messages deleted:"+userId+":"+messageId);
+        return true;
+    }
+    
+    
+    
+    @Override
     public boolean sendStatus(String status) throws RemoteException {
         boolean result = false;
         try {

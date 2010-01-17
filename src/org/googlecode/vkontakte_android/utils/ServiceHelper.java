@@ -8,7 +8,7 @@ public class ServiceHelper {
 
     private final static String TAG = "VK:ServiceHelper";
 
-    private static IVkontakteService mVKService;
+    private static IVkontakteService mVKService = null;
 
     public static IVkontakteService getService() {
         if (ServiceHelper.mVKService == null) {

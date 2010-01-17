@@ -105,30 +105,36 @@ public class MessagesListActivity extends AutoLoadActivity {
         UpdatesNotifier.clearNotification(getApplicationContext());
     }
 
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        long rowId = info.id;
-        MessageDao messageDao = MessageDao.get(this, rowId);
-        switch (item.getItemId()) {
-            case R.id.message_view_and_reply:
-                Intent intent = new Intent(this, ComposeMessageActivity.class);
-                boolean isOutgoing = messageDao.getSenderId() == Settings.myId;
-                intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, isOutgoing ? messageDao.getReceiverId() : messageDao.getSenderId());
-                startActivity(intent);
-                return true;
-            case R.id.message_delete:
-//                VkontakteAPI api = null;
-//                boolean result = api.deleteMessage(messageDao.getSenderId(), messageDao.getId())
-//                todo: handle result - if true delete from db; if false shouw error to user
-                return true;
-            case R.id.message_mark_as_read:
-//                VkontakteAPI api = null;
-//                api.markAsRead(messageDao.getId());
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
+				.getMenuInfo();
+		long rowId = info.id;
+		MessageDao messageDao = MessageDao.get(this, rowId);
+		switch (item.getItemId()) {
+		case R.id.message_view_and_reply:
+			Intent intent = new Intent(this, ComposeMessageActivity.class);
+			boolean isOutgoing = messageDao.getSenderId() == Settings.myId;
+			intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID,
+					isOutgoing ? messageDao.getReceiverId() : messageDao
+							.getSenderId());
+			startActivity(intent);
+			return true;
+		case R.id.message_delete:
+			try {
+				ServiceHelper.getService().deleteMessage(messageDao.getSenderId(), messageDao.id);
+				messageDao.delete(this);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			return true;
+		case R.id.message_mark_as_read:
+			// VkontakteAPI api = null;
+			// api.markAsRead(messageDao.getId());
+			return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
+	}
 
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
