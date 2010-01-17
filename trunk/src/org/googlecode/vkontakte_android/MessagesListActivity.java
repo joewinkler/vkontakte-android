@@ -1,5 +1,7 @@
 package org.googlecode.vkontakte_android;
 
+import java.io.IOException;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -15,13 +17,17 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 
+import org.googlecode.userapi.UserapiLoginException;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.vkontakte_android.service.ApiCheckingKit;
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.service.UpdatesNotifier;
 import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
+import org.json.JSONException;
+
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_MESSAGE_DATE;
 
 
@@ -121,15 +127,24 @@ public class MessagesListActivity extends AutoLoadActivity {
 			return true;
 		case R.id.message_delete:
 			try {
-				ServiceHelper.getService().deleteMessage(messageDao.getSenderId(), messageDao.id);
+				ApiCheckingKit.getApi().deleteMessage(messageDao.getSenderId(), messageDao.id);
 				messageDao.delete(this);
-			} catch (RemoteException e) {
-				e.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (JSONException e1) {
+				e1.printStackTrace();
+			} catch (UserapiLoginException e1) {
+				e1.printStackTrace();
 			}
 			return true;
 		case R.id.message_mark_as_read:
-			// VkontakteAPI api = null;
-			// api.markAsRead(messageDao.getId());
+			try {
+				ApiCheckingKit.getApi().markAsRead(messageDao.id);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (UserapiLoginException e) {
+				e.printStackTrace();
+			}
 			return true;
 		default:
 			return super.onContextItemSelected(item);
