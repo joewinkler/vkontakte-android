@@ -136,7 +136,7 @@ public class MessagesListActivity extends AutoLoadActivity {
 			return true;
 		case R.id.message_delete:
 			try {
-				ApiCheckingKit.getApi().deleteMessage(messageDao.getSenderId(), messageDao.id);
+				ApiCheckingKit.getApi().deleteMessage(messageDao.getSenderId(), messageDao.getId());
 				messageDao.delete(this);
 			} catch (IOException e1) {
 				e1.printStackTrace();
@@ -148,7 +148,7 @@ public class MessagesListActivity extends AutoLoadActivity {
 			return true;
 		case R.id.message_mark_as_read:
 			try {
-				ApiCheckingKit.getApi().markAsRead(messageDao.id);
+				ApiCheckingKit.getApi().markAsRead(messageDao.getId());
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (UserapiLoginException e) {

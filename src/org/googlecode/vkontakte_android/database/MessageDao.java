@@ -146,6 +146,12 @@ public class MessageDao extends Message {
         }
     }
 
+    
+    public long getId(){
+    	return id;
+    }
+    
+    
     public long getSenderId() {
         return senderId;
     }
