@@ -24,6 +24,7 @@ import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.ApiCheckingKit;
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.service.UpdatesNotifier;
+import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
 import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 import org.json.JSONException;
@@ -34,6 +35,8 @@ import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KE
 public class MessagesListActivity extends AutoLoadActivity {
     private static final String TAG = "org.googlecode.vkontakte_android.MessagesListTabActivity";
 
+    
+    
     enum MessagesCursorType {
         ALL, INCOMING, OUTCOMING
     }
@@ -44,23 +47,6 @@ public class MessagesListActivity extends AutoLoadActivity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         
         setContentView(R.layout.message_list);
-        setupLoader(new AutoLoadActivity.Loader() {
-
-            @Override
-            public Boolean load() {
-                try {
-                    return ServiceHelper.getService().loadPrivateMessages(
-                            CheckingService.contentToUpdate.MESSAGES_IN.ordinal(),
-                            m_adapter.getCount(), m_adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                    AppHelper.showFatalError(MessagesListActivity.this, "While trying to load messages");
-                    Log.e(TAG, "Loading messages failed");
-                }
-                return false;
-            }
-
-        }, new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.INCOMING)));
 
         registerForContextMenu(getListView());
 
@@ -74,10 +60,33 @@ public class MessagesListActivity extends AutoLoadActivity {
                 startActivity(intent);
             }
         });
-
-        getListView().setOnScrollListener(this);
         refreshOnStart();
+        setupLoaders(contentToUpdate.MESSAGES_IN, MessagesCursorType.INCOMING);
     }
+
+    
+    
+    private void setupLoaders( final contentToUpdate messagesToUpdate, MessagesCursorType cursorType){
+    	
+        setupLoader(new AutoLoadActivity.Loader() {
+
+            @Override
+            public Boolean load() {
+                try {
+                    return ServiceHelper.getService().loadPrivateMessages(messagesToUpdate.ordinal(),m_adapter.getCount(), 
+                    		m_adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                    AppHelper.showFatalError(MessagesListActivity.this, "While trying to load messages");
+                    Log.e(TAG, "Loading messages failed");
+                }
+                return false;
+            }
+
+        }, new MessagesListAdapter(this, R.layout.message_row, getCursor(cursorType)));
+    }
+    
+    
     
     
     private void refreshOnStart() {
@@ -169,11 +178,11 @@ public class MessagesListActivity extends AutoLoadActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.inbox:
-            	changeAdapter(new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.INCOMING)));
+            	setupLoaders(contentToUpdate.MESSAGES_IN, MessagesCursorType.INCOMING);
                 return true;
                 
             case R.id.sent:
-            	changeAdapter(new MessagesListAdapter(this, R.layout.message_row, getCursor(MessagesCursorType.OUTCOMING)));
+            	setupLoaders(contentToUpdate.MESSAGES_OUT, MessagesCursorType.OUTCOMING);
             	return true;
 
             case R.id.refresh:
