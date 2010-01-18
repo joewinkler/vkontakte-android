@@ -6,7 +6,7 @@ interface IVkontakteService {
   boolean sendMessage(String mess, long id);
   boolean sendStatus(String status);
   
-  boolean login(String login, String pass);
+  boolean login(String login, String pass, String remix);
   boolean loginAuth();
   boolean logout();
   

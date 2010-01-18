@@ -36,15 +36,15 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public boolean login(String login, String pass) throws RemoteException {
+    public boolean login(String login, String pass, String remix) throws RemoteException {
         VkontakteAPI api = ApiCheckingKit.getApi();
         Context ctx = m_context;
         boolean result = false;
         try {
-            Credentials cred = new Credentials(login, pass, null);
+            Credentials cred = new Credentials(login, pass, remix);
             try {
                 api.login(cred);
-                Log.d(TAG, "Successful log with login/pass");
+                Log.d(TAG, "Successful log with login/pass (or remix)");
                 PreferenceHelper.saveLogin(ctx, cred);
                 loadMyProfile();
                 restartScheduledUpdates();
