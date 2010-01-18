@@ -65,7 +65,7 @@ public class LoginDialog extends Dialog {
                     @Override
                     protected Boolean doInBackground(String... params) {
                         try {
-                            return ServiceHelper.getService().login(params[0], params[1]);
+                            return ServiceHelper.getService().login(params[0], params[1], null);
                         } catch (RemoteException e) {
                           
                             stopProgress();
