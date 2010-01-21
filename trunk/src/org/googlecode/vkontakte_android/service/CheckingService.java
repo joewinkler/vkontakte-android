@@ -47,8 +47,6 @@ public class CheckingService extends Service {
     @Override
     public void onStart(final Intent intent, int startId) {
         super.onStart(intent, startId);
-
-
     }
 
     /**
