@@ -14,6 +14,7 @@ import org.googlecode.vkontakte_android.database.StatusDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.json.JSONException;
 
@@ -29,7 +30,6 @@ public class CheckingService extends Service {
     public static final int MESSAGE_NUM_LOAD = 10;
     public static final int STATUS_NUM_LOAD = 6;
 
-    private Timer m_timer = new Timer();
     private List<Thread> threads = Collections.synchronizedList(new LinkedList<Thread>());
 
     private ChangesHistory prevChangesHistory = new ChangesHistory();
@@ -49,6 +49,22 @@ public class CheckingService extends Service {
     public void onStart(final Intent intent, int startId) {
         Log.v(TAG, "Service started");
         super.onStart(intent, startId);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.v(TAG, "Started command: " + intent);
+
+        try {
+            String action = intent.getAction();
+            if (AppHelper.ACTION_CHECK_UPDATES.equals(action))
+                checkUpdates();
+        } catch (Exception e) {
+            Log.e(TAG, "Exception while checking updates", e);
+            //TODO: Need to save that to show for user later...
+        }
+
+        return START_NOT_STICKY;
     }
 
     /**
@@ -93,7 +109,7 @@ public class CheckingService extends Service {
                     updateOutMessages(0, MESSAGE_NUM_LOAD); //should be called when user sends messages
                     break;
                 case HISTORY:
-                    updateHistory();
+                    checkUpdates();
                     break;
                 case STATUSES:
                     updateStatuses(0, STATUS_NUM_LOAD);
@@ -107,7 +123,7 @@ public class CheckingService extends Service {
                     updateMessages();
                     //updateWall();
                     updateFriends();
-                    //updateHistory();
+                    //checkUpdates();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -116,45 +132,6 @@ public class CheckingService extends Service {
         } catch (UserapiLoginException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Starts a thread checking api periodically
-     */
-    private void launchScheduledUpdates() {
-        int period = PreferenceHelper.getSyncPeriod(getApplicationContext());
-        if (period == PreferenceHelper.SYNC_INTERVAL_NEVER) {
-            Log.d(TAG, "Scheduled updates disabled by user");
-            return;
-        }
-
-        class CheckingTask extends TimerTask {
-            @Override
-            public void run() {
-                Log.v(TAG, "Checking by timer");
-                try {
-                    updateHistory();
-                } catch (Exception e) {
-                    //TODO: more correct exception handling
-                    Log.e(TAG, "Error while updating history", e);
-                }
-            }
-        }
-        m_timer.scheduleAtFixedRate(new CheckingTask(), 0L, period * 1000 * 60);
-        Log.d(TAG, "Scheduled updates started with period: " + period + " minutes");
-    }
-
-    public void cancelScheduledUpdates() {
-        m_timer.cancel();
-        m_timer.purge();
-        Log.d(TAG, "Scheduled updates canceled");
-    }
-
-    public void restartScheduledUpdates() {
-        Log.d(TAG, "Scheduled updates restarting");
-        cancelScheduledUpdates();
-        m_timer = new Timer();
-        launchScheduledUpdates();
     }
 
     // =============== updating methods
@@ -223,14 +200,14 @@ public class CheckingService extends Service {
         // todo: implement
     }
 
-    private void updateHistory() throws IOException, JSONException, UserapiLoginException {
-        Log.v(TAG, "Updating history");
+    private void checkUpdates() throws IOException, JSONException, UserapiLoginException {
+        Log.v(TAG, "Checking updates");
 
         ChangesHistory changesHistory = ApiCheckingKit.getApi().getChangesHistory();
 
         int changes = prevChangesHistory.compareTo(changesHistory);
 
-        // if there were changes and notifcations are enabled in settings
+        // if there were changes and notifications are enabled in settings
         if (changes != 0 && PreferenceHelper.getNotifications(getApplicationContext())) {
             prevChangesHistory = changesHistory;
 

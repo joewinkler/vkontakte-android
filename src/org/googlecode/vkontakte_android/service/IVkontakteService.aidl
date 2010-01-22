@@ -26,7 +26,5 @@ interface IVkontakteService {
   
   
   void stop();
-  void restartScheduledUpdates();     
-    
    
 }

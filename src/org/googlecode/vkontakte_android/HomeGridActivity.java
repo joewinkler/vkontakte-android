@@ -20,9 +20,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
+import org.googlecode.vkontakte_android.service.AutoUpdateService;
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.service.UpdatesNotifier;
 import org.googlecode.vkontakte_android.utils.AppHelper;
+import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 import com.nullwire.trace.ExceptionHandler;
@@ -31,23 +33,22 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
 
     private final static String TAG = "VK:HomeGridActivity";
 
-    private final static int SETTINGS_ACTIVITY = 1;
-
     private HomeGridAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        Log.v(TAG, "Activity created");
+
         //move it to logindialog when implemented
         Handler handler = new Handler();
         ExceptionHandler.register(this, handler);
         
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
-        setContentView(R.layout.homegrid);
         bindService(new Intent(this, CheckingService.class), this, Context.BIND_AUTO_CREATE);
 
+        setContentView(R.layout.homegrid);
         GridView mHomeGrid = (GridView) findViewById(R.id.HomeGrid);
 //        mHomeGrid.setNumColumns(3);
         adapter = new HomeGridAdapter(this);
@@ -111,25 +112,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     private void changeTitle(String uiComponent){
     	this.setTitle(" "+getResources().getString(R.string.app_name) + " > " + uiComponent);
     }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-        
-        case SETTINGS_ACTIVITY:
-            if (resultCode == RESULT_OK) {
-                try {
-					ServiceHelper.getService().restartScheduledUpdates();
-				} catch (RemoteException e) {e.printStackTrace();}
-            }
-        default:
-            break;
-        }
-    }
-    
     
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -140,10 +122,7 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
 
         changeTitle(item.getTitle());
 
-        if (item.getType() == HomeGridAdapter.ItemType.SETTINGS) {
-            startActivityForResult(intent, SETTINGS_ACTIVITY);
-        }
-        else if (item.getType() == HomeGridAdapter.ItemType.HELP) {
+        if (item.getType() == HomeGridAdapter.ItemType.HELP) {
             AboutDialog.makeDialog(this).show();
             backToHome();
         }
