@@ -1,6 +1,7 @@
 package org.googlecode.vkontakte_android.service;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
+import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.json.JSONException;
 
@@ -47,7 +49,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 Log.d(TAG, "Successful log with login/pass (or remix)");
                 PreferenceHelper.saveLogin(ctx, cred);
                 loadMyProfile();
-                restartScheduledUpdates();
+                restartScheduledUpdates(ctx);
                 result = true;
             } catch (UserapiLoginException e) {
                 e.printStackTrace();
@@ -73,7 +75,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 Log.d(TAG, "Logged in");
                 PreferenceHelper.saveLogin(ctx, credentials);
                 loadMyProfile();
-                restartScheduledUpdates();
+                restartScheduledUpdates(ctx);
             } catch (IOException ex) {
                 PreferenceHelper.clearPrivateInfo(ctx);
                 UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
@@ -85,6 +87,12 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             Log.d(TAG, "No Login/Password stored");
         }
         return result;
+    }
+
+    private void restartScheduledUpdates(Context ctx) {
+        int period = PreferenceHelper.getSyncPeriod(ctx);
+        if (period != PreferenceHelper.SYNC_INTERVAL_NEVER)
+            ctx.startService(new Intent(AppHelper.ACTION_SET_AUTOUPDATE).putExtra(AppHelper.EXTRA_AUTOUPDATE_PERIOD, period));
     }
 
     @Override
@@ -145,18 +153,9 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
     @Override
     public void stop() throws RemoteException {
-    	m_service.cancelScheduledUpdates();
     	m_service.stopSelf();
-        
     }
    
-    public void restartScheduledUpdates()
-    {
-      m_service.restartScheduledUpdates();
-      
-    }
-    
-    
     @Override
     public boolean loadPrivateMessages(int type, int first, int last)
             throws RemoteException {

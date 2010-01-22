@@ -16,8 +16,9 @@ public class AppHelper {
 
     public static final String ACTION_NOTIFICATION_CLEARED = "org.googlecode.vkontakte_android.action.NOTIFICATION_CLEARED";
     public static final String ACTION_SET_AUTOUPDATE = "org.googlecode.vkontakte_android.action.SET_AUTOUPDATE";
+    public static final String ACTION_CHECK_UPDATES = "org.googlecode.vkontakte_android.action.CHECK_UPDATES";
 
-    public static final String EXTRA_AUTOUPDATE_TIME = "autoupdate_time";
+    public static final String EXTRA_AUTOUPDATE_PERIOD = "autoupdate_period";
 
     public static void showFatalError(final Activity act, String text) {
         AlertDialog.Builder builder = new AlertDialog.Builder(act);

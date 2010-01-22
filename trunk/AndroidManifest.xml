@@ -67,8 +67,17 @@
 
         <provider android:name=".provider.UserapiProvider" android:authorities="org.googlecode.vkontakte_android"/>
 
-        <service android:name=".service.CheckingService"/>
-        <service android:name=".service.AutoUpdateService"/>
+        <service android:name=".service.CheckingService">
+            <intent-filter>
+                <action android:name="org.googlecode.vkontakte_android.action.CHECK_UPDATES"/>
+            </intent-filter>
+        </service>
+
+        <service android:name=".service.AutoUpdateService">
+            <intent-filter>
+                <action android:name="org.googlecode.vkontakte_android.action.SET_AUTOUPDATE"/>
+            </intent-filter>
+        </service>
 
         <receiver android:name=".BroadcastReceiver">
             <intent-filter>
