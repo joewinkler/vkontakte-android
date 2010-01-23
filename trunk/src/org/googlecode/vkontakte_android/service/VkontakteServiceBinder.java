@@ -45,9 +45,13 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             api.login(cred);
             Log.d(TAG, "Successful log with login/pass (or remix)");
             PreferenceHelper.saveLogin(ctx, cred);
-            PreferenceHelper.saveMyId(m_context, api.myId);
-            restartScheduledUpdates(ctx);
+            if (remix == null) {
+                //myId is available only when logging with login/pass but not with remix
+                PreferenceHelper.saveMyId(ctx, api.myId);
+            }
 
+            //todo: is really required here?
+            restartScheduledUpdates(ctx);
 
         } catch (IOException e) {
             throw new MyRemoteException(e);
