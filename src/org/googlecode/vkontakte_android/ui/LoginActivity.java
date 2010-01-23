@@ -7,10 +7,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.View;
 import android.widget.TextView;
-import org.googlecode.userapi.Credentials;
-import org.googlecode.userapi.UserapiLoginException;
 import org.googlecode.vkontakte_android.R;
-import org.googlecode.vkontakte_android.service.LoginResult;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
