@@ -5,11 +5,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
 import org.googlecode.userapi.User;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.ApiCheckingKit;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -198,12 +200,46 @@ public class UserDao {
         insertValues.put(KEY_USER_AVATAR_SMALL, _data);
         Uri uri = Uri.withAppendedPath(UserapiProvider.USERS_URI, String.valueOf(this.rowId));
         if (1 == ctx.getContentResolver().update(uri, insertValues, null, null)) {
-            Log.d(TAG, "Updating photo of " + this.userName + " " + userPhotoUrl);
-            byte[] photo = ApiCheckingKit.getApi().getFileFromUrl(userPhotoUrl);
-            OutputStream os = ctx.getContentResolver().openOutputStream(uri);
-            os.write(photo);
-            os.close();
-            ctx.getContentResolver().notifyChange(uri, null);
+        
+ 			new AsyncTask<Object, Object, Object>(){
+
+				@Override
+				protected Object doInBackground(Object... params) {
+					
+					UserDao user=(UserDao)params[0];
+					Context ctx=(Context)params[1];
+					Uri uri=(Uri)params[2];
+		        	Log.d(TAG, "Updating photo of " + user.userName + " " + user.userPhotoUrl);
+		            byte[] photo = null;
+					try {
+						photo = ApiCheckingKit.getApi().getFileFromUrl(userPhotoUrl);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		            OutputStream os=null;
+					try {
+						os = ctx.getContentResolver().openOutputStream(uri);
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		            try {
+						os.write(photo);
+						os.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		            
+		            ctx.getContentResolver().notifyChange(uri, null);
+					return null;
+				}
+					
+			}.execute(this,ctx,uri);
+
+        	
+        	
         }
         
     }
