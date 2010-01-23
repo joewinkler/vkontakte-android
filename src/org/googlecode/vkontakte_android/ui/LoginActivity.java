@@ -193,4 +193,13 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
     public void onServiceDisconnected(ComponentName componentName) {
         ServiceHelper.disconnect();
     }
+    
+    
+    @Override
+    public void onStop(){
+    	unbindService(this);
+    	super.onStop();
+    }
+    
+    
 }

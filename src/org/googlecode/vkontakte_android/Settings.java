@@ -44,5 +44,5 @@ public class Settings extends PreferenceActivity implements Preference.OnPrefere
         }
         return true;
     }
-    public static Long myId = 0L;
+    
 }

@@ -20,7 +20,7 @@ interface IVkontakteService {
   boolean loadAllUsersPhotos(); 
   
   //load user's profile to the cache and return if successful
-  boolean loadProfile(long userid,boolean setMe);
+  boolean loadProfile(long userid);
   boolean loadMyProfile();
 
   

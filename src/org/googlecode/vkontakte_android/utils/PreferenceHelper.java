@@ -12,6 +12,7 @@ public class PreferenceHelper {
     public static final String PASSWORD = "password";
     public static final String REMIX = "remix";
     public static final String SYNC_PERIOD = "sync_period";
+    public static final String MY_ID = "my_id";
     public static final int SYNC_INTERVAL_NEVER = -1;
     private static final boolean DEFAULT_LOGIN_STATUS = false;
     private static final String DEFAULT_LOGIN_NAME = "";
@@ -64,6 +65,16 @@ public class PreferenceHelper {
         ed.commit();
         ed.remove(REMIX);
         ed.commit();
+    }
+
+    public static  long getMyId(Context context){
+        return PreferenceManager.getDefaultSharedPreferences(context).getLong(MY_ID, 0L);
+    }
+    
+    public static  void saveMyId(Context context,Long _myId){
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putLong(MY_ID, _myId).commit();
     }
 
     /**
