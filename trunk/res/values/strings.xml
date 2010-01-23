@@ -9,7 +9,6 @@
     <string name="legal">Legal Information</string>
     <string name="copyright">© 2009-2010 Ildar Karimov, Evgeny Balandin, Serg Podtynnyi, Anastasia Dremina and others.</string>
 
-    <string name="set_status">Change Status</string>
     <string name="ok">Ok</string>
     <string name="send">Send</string>
     <string name="yes">Yes</string>
@@ -19,7 +18,7 @@
     <string name="from">From:</string>
     <string name="to">Whom:</string>
 
-    <string name="i">My Profile</string>
+    <!-- HomeGrid -->
     <string name="my_profile">My Profile</string>
     <string name="friends">Friends</string>
     <string name="messages">Messages</string>
@@ -29,7 +28,10 @@
     <string name="requests">Requests</string>
     <string name="search">Search</string>
     <string name="settings">Settings</string>
-
+    <string name="share">Share</string>
+    <string name="what_are_you_doing">What you are doing?</string>
+    
+    <!-- Settings -->
     <string name="prefs_title">Settings</string>
     <string name="period_title">Background updates</string>
     <string name="sound_title">Sound</string>
@@ -68,7 +70,6 @@
     <string name="email">E-mail</string>
     <string name="password">Password</string>
     <string name="mark_as_read">Mark as read</string>
-    <string name="what_are_you_doing">What you are doing?</string>
     <!--user info-->
     <string name="info_sex">Sex:</string>
     <string name="info_birthday">Birthday:</string>

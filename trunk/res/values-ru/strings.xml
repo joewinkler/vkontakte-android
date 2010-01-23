@@ -8,8 +8,7 @@
     <string name="app_description">Android-клиент для социальной сети Вконтакте</string>
     <string name="legal">Информация о лицензии</string>
     <string name="copyright">© 2009-2010 Ильдар Каримов, Евгений Баландин, Сергей Подтынный, Анастасия Дремина и другие</string>
-
-   <string name="set_status">Редактировать статус</string>
+    
     <string name="ok">Ok</string>
     <string name="send">Отправить</string>
     <string name="yes">Да</string>
@@ -19,11 +18,20 @@
     <string name="from">От:</string>
     <string name="to">Кому:</string>
 
-    <string name="i">Моя страница</string>
+    <!-- HomeGrid -->
+    <string name="my_profile">Моя страница</string>
     <string name="friends">Друзья</string>
     <string name="messages">Сообщения</string>
-    <string name="updates">Обновления</string>
-
+    <string name="updates">Новости</string>
+    <string name="photos">Фотографии</string>
+    <string name="help">Помощь</string>
+    <string name="requests">Заявки</string>
+    <string name="search">Поиск</string>
+    <string name="settings">Настройки</string>
+    <string name="share">Отправить</string>
+    <string name="what_are_you_doing">Что вы сейчас делаете?</string>
+    
+    <!-- Settings -->
     <string name="prefs_title">Настройки</string>
     <string name="period_title">Период обновления</string>
     <string name="sound_title">Звук</string>
@@ -31,7 +39,7 @@
     <string name="load_pics_title">Загружать картинки</string>
 
     <string name="refresh">Обновить</string>
-    <string name="settings">Настройки</string>
+    
     <string name="about">О программе</string>
     <string name="send_message">Отправить сообщение</string>
     <string name="remove_from_friends">Удалить из друзей</string>
@@ -55,7 +63,6 @@
     <string name="status_update_err">Ошибка при обновлении</string>
     <!--login message-->
     <string name="login_err">Неправильные логин/пароль</string>
-    <string name="what_are_you_doing">Что вы сейчас делаете?</string>
     <string name="mark_as_read">Пометить как прочитанное</string>
     <!--user info-->
     <string name="info_sex">Пол:</string>

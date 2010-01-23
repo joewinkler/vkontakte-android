@@ -20,11 +20,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
-import org.googlecode.vkontakte_android.service.AutoUpdateService;
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.service.UpdatesNotifier;
 import org.googlecode.vkontakte_android.utils.AppHelper;
-import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 import com.nullwire.trace.ExceptionHandler;
