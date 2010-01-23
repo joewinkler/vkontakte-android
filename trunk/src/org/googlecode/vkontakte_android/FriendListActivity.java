@@ -76,7 +76,7 @@ public class FriendListActivity extends TabActivity {
     		protected Object doInBackground(Object... params) {
     			try {
     				ServiceHelper.getService().update(CheckingService.contentToUpdate.FRIENDS.ordinal(), true);
-    				ServiceHelper.getService().loadAllUsersPhotos();
+    				//ServiceHelper.getService().loadAllUsersPhotos();
     				
     			} catch (RemoteException e) {
     				e.printStackTrace();

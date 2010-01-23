@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 
 
 import org.googlecode.vkontakte_android.CImagesManager;
@@ -127,13 +128,21 @@ public class UserHelper {
 
     				bitmapCache2.put(user.userId, croppedBitmap);
     				return bitmapCache2.get(user.userId);
-    			}else{
-    				return CImagesManager.getBitmap(context, Icons.STUB);
-    			}
-    		}else{
-    			return CImagesManager.getBitmap(context, Icons.STUB);
-    		}
-    	}else{
+				} else {
+
+					return CImagesManager.getBitmap(context, Icons.STUB);
+				}
+			} else {
+				try {
+					user.updatePhoto(context);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				return CImagesManager.getBitmap(context, Icons.STUB);
+			}
+		} else {
     		return bm;
     	}
     }
