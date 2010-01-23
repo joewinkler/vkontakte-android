@@ -30,6 +30,16 @@ public class AutoUpdateService extends Service {
     }
 
     @Override
+    public void onStart(final Intent intent, int startId) {
+        super.onStart(intent, startId);
+        
+    	Log.v(TAG, "Started command: " + intent);
+    	String action = intent.getAction();
+        if (AppHelper.ACTION_SET_AUTOUPDATE.equals(action))
+            processAutoUpdate(intent.getIntExtra(AppHelper.EXTRA_AUTOUPDATE_PERIOD, PreferenceHelper.SYNC_INTERVAL_NEVER));
+    }
+    /*
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(TAG, "Started command: " + intent);
            
@@ -39,7 +49,7 @@ public class AutoUpdateService extends Service {
 
         return START_STICKY;
     }
-
+*/
     /**
      * Starts auto update timer with period specified by user in preferences.
      *
