@@ -1,22 +1,39 @@
 package org.googlecode.vkontakte_android.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.*;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+import org.googlecode.userapi.Credentials;
+import org.googlecode.userapi.UserapiLoginException;
+import org.googlecode.vkontakte_android.HomeGridActivity;
 import org.googlecode.vkontakte_android.R;
+import org.googlecode.vkontakte_android.service.CheckingService;
+import org.googlecode.vkontakte_android.service.MyRemoteException;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
+import java.io.IOException;
+import java.util.concurrent.Semaphore;
 
-public class LoginActivity extends Activity implements View.OnClickListener {
+
+public class LoginActivity extends Activity implements View.OnClickListener, ServiceConnection {
     private final int DIALOG_PROGRESS = 0;
     private final int DIALOG_ERROR_PASSWORD = 1;
     private final int DIALOG_ERROR_CAPTCHA = 2;
     private final int DIALOG_ERROR_CONNECTION = 3;
+    private final int DIALOG_ERROR_REMOTE = 4;
+
+    private Semaphore serviceWaitLock = new Semaphore(0);
+    private AsyncTask<String, Void, RemoteException> currentTask;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,18 +42,22 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             setContentView(R.layout.login_dialog);
             findViewById(R.id.button_login).setOnClickListener(this);
             findViewById(R.id.cancel).setOnClickListener(this);
-            login(getLogin(), getPass());
-            //todo
+            bindService(new Intent(this, CheckingService.class), this, Context.BIND_AUTO_CREATE);
         } else {
-
+            startHome();
         }
+    }
+
+    private void startHome() {
+        Intent intent = new Intent(this, HomeGridActivity.class);
+        startActivity(intent);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_login:
-
+                login(getLogin(), getPass());
                 break;
             case R.id.cancel:
                 finish();
@@ -45,40 +66,66 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
     private void login(String login, String pass) {
-        new AsyncTask<String, Void, Boolean>() {
+        currentTask = new AsyncTask<String, Void, RemoteException>() {
             @Override
-            protected void onPostExecute(Boolean result) {
-                if (result) {
+            protected void onPreExecute() {
+                LoginActivity.this.showDialog(DIALOG_PROGRESS);
+            }
 
+            @Override
+            protected void onCancelled() {
+                //todo: cancel connection?
+            }
+
+            @Override
+            protected void onPostExecute(RemoteException e) {
+                dismissDialog(DIALOG_PROGRESS);
+                if (e == null) {
+                    PreferenceHelper.setLogged(LoginActivity.this, true);
+                    startHome();
                 } else {
-
+                    if (e instanceof MyRemoteException) {
+                        Exception exception = ((MyRemoteException) e).innerException;
+                        if (exception instanceof UserapiLoginException) {
+                            switch (((UserapiLoginException) exception).getType()) {
+                                case LOGIN_INCORRECT:
+                                case LOGIN_INCORRECT_CAPTCHA_NOT_REQUIRED:
+                                    LoginActivity.this.showDialog(DIALOG_ERROR_PASSWORD);
+                                    PreferenceHelper.setLogged(LoginActivity.this, false);
+                                    break;
+                                case CAPTCHA_INCORRECT:
+                                case LOGIN_INCORRECT_CAPTCHA_REQUIRED:
+                                    LoginActivity.this.showDialog(DIALOG_ERROR_CAPTCHA);
+                                    break;
+                            }
+                        }
+                        if (exception instanceof IOException) {
+                            LoginActivity.this.showDialog(DIALOG_ERROR_CONNECTION);
+                        }
+                    } else {
+                        LoginActivity.this.showDialog(DIALOG_ERROR_REMOTE);
+                    }
                 }
             }
 
             @Override
-            protected Boolean doInBackground(String... params) {
-                try {
-//                     LoginResult result = ServiceHelper.getService().login(new Credentials(params[0], params[1], null));
-//                    if (result.isSuccess()){
-//
-//                    } else {
-//                        Exception e = result.getCause();
-//                        if (e instanceof UserapiLoginException){
-//                            UserapiLoginException.ErrorType type = ((UserapiLoginException) e).getType();
-//                            switch (type){
-//                                case CAPTCHA_INCORRECT:
-//                                    //...
-//                                    break;
-//                            }
-//                        }
-//                    }
-                    return ServiceHelper.getService().login(params[0], params[1], null);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                    return false;
+            protected RemoteException doInBackground(String... params) {
+                if (ServiceHelper.getService() == null) {
+                    try {
+                        serviceWaitLock.acquire();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
+                try {
+                    ServiceHelper.getService().login(params[0], params[1], null);
+                } catch (RemoteException e) {
+                    return e;
+                }
+                return null;
             }
         }.execute(login, pass);
+
     }
 
     private String getLogin() {
@@ -91,14 +138,60 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     @Override
     protected Dialog onCreateDialog(int id) {
-        switch (id){
+        switch (id) {
             case DIALOG_PROGRESS:
+                ProgressDialog pd = new ProgressDialog(this);
+                pd.setMessage("please wait");
+                pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        if (currentTask != null) currentTask.cancel(true);
+                    }
+                });
+                return pd;
             case DIALOG_ERROR_CONNECTION:
+                return new AlertDialog.Builder(this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Connection error!")
+                        .setMessage("Connection error!")
+                        .setPositiveButton(android.R.string.ok, null)
+                        .create();
+            //todo: retry
             case DIALOG_ERROR_PASSWORD:
+                return new AlertDialog.Builder(this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Password incorrect!")
+                        .setMessage("No such e-mail address has been registered or your password is incorrect.")
+                        .setPositiveButton(android.R.string.ok, null)
+                        .create();
             case DIALOG_ERROR_CAPTCHA:
-                return null;
+                return new AlertDialog.Builder(this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Captcha required, please try again later")
+                        .setMessage("Captcha required, please try again later or login with captcha on durov.ru")
+                        .setPositiveButton(android.R.string.ok, null)
+                        .create();
+            case DIALOG_ERROR_REMOTE:
+                return new AlertDialog.Builder(this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Internal error!")
+                        .setMessage("Internal error!")
+                        .setPositiveButton(android.R.string.ok, null)
+                        .create();
             default:
                 return super.onCreateDialog(id);
         }
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder service) {
+        ServiceHelper.connect(service);
+        serviceWaitLock.release();
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) {
+        ServiceHelper.disconnect();
     }
 }
