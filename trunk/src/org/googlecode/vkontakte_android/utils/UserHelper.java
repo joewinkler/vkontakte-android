@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 
 import org.googlecode.vkontakte_android.CImagesManager;
@@ -117,16 +117,26 @@ public class UserHelper {
     		if (user._data != null && UserapiProvider.isExists(user._data)) {
     			bm=getPhoto(context, user.rowId);
     			if (bm!=null){
+    		
     				
                     int srcWidth = bm.getWidth();
                     int srcHeight = bm.getHeight();
                     int dstWidth = PHOTO_SIZE;
                     int dstHeight = srcHeight * PHOTO_SIZE / srcWidth;
+                    //int dstHeight = srcHeight ;
+                    Canvas canvas=new Canvas();
 
-                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,dstWidth,dstHeight,true);
-                    Bitmap croppedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight));
+                    Bitmap bitmap = Bitmap.createBitmap( Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight), Bitmap.Config.RGB_565);
+                    
+                    canvas.setBitmap(bitmap);
 
-    				bitmapCache2.put(user.userId, croppedBitmap);
+                    canvas.drawBitmap(bm, 0, 0, null);
+                    
+//                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,dstWidth,dstHeight,true);
+                      //bm = Bitmap.createBitmap(bm, 0, 0, Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight));
+    //                croppedBitmap = Bitmap.createBitmap(croppedBitmap, 0, 0, Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight));
+                    
+    				bitmapCache2.put(user.userId, bitmap);
     				return bitmapCache2.get(user.userId);
 				} else {
 

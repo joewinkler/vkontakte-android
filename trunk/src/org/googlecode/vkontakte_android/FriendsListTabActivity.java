@@ -1,5 +1,6 @@
 package org.googlecode.vkontakte_android;
 
+import android.app.ListActivity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -14,7 +15,7 @@ import org.googlecode.vkontakte_android.utils.UserHelper;
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_URI;
 
-public class FriendsListTabActivity extends AutoLoadActivity implements AdapterView.OnItemClickListener {
+public class FriendsListTabActivity extends ListActivity implements AdapterView.OnItemClickListener {
     private FriendsListAdapter adapter;
     
     @SuppressWarnings("unused")

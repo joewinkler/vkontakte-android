@@ -8,9 +8,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 import org.googlecode.userapi.*;
-import org.googlecode.vkontakte_android.Settings;
 import org.googlecode.vkontakte_android.R;
-//import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
@@ -47,9 +45,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             api.login(cred);
             Log.d(TAG, "Successful log with login/pass (or remix)");
             PreferenceHelper.saveLogin(ctx, cred);
-
-            //todo: is really required here?
-            loadMyProfile();
+            PreferenceHelper.saveMyId(m_context, api.myId);
             restartScheduledUpdates(ctx);
 
 
@@ -73,7 +69,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 result = true;
                 Log.d(TAG, "Logged in");
                 PreferenceHelper.saveLogin(ctx, credentials);
-                loadMyProfile();
+                PreferenceHelper.saveMyId(m_context, api.myId);
                 restartScheduledUpdates(ctx);
             } catch (IOException ex) {
                 PreferenceHelper.clearPrivateInfo(ctx);
@@ -182,7 +178,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public boolean loadProfile(long userid, boolean setMe) throws RemoteException {
+    public boolean loadProfile(long userid) throws RemoteException {
         ProfileInfo pr = null;
         try {
             try {
@@ -204,9 +200,6 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 }
             }
 
-            if (setMe) if (pr != null) {
-                Settings.myId = pr.getId();
-            }
             ProfileDao dao = null;
             if (pr != null) {
                 dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr.getSurname(), (pr.getStatus() == null) ? null : pr.getStatus().getText(),
@@ -239,7 +232,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     @Override
     public boolean loadMyProfile() throws RemoteException {
         Log.d(TAG, "" + ApiCheckingKit.getApi().myId);
-        return loadProfile(ApiCheckingKit.getApi().myId, true);
+        return loadProfile(ApiCheckingKit.getApi().myId);
     }
 
     @Override

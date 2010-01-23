@@ -26,6 +26,7 @@ import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.service.UpdatesNotifier;
 import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
 import org.googlecode.vkontakte_android.utils.AppHelper;
+import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 import org.json.JSONException;
 
@@ -55,7 +56,7 @@ public class MessagesListActivity extends AutoLoadActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 MessageDao messageDao = new MessageDao(((CursorAdapter) m_adapter).getCursor());
                 Intent intent = new Intent(MessagesListActivity.this, ComposeMessageActivity.class);
-                boolean isOutgoing = messageDao.getSenderId() == Settings.myId;
+                boolean isOutgoing = messageDao.getSenderId() == PreferenceHelper.getMyId(getApplicationContext());
                 intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID, isOutgoing ? messageDao.getReceiverId() : messageDao.getSenderId());
                 startActivity(intent);
             }
@@ -128,7 +129,7 @@ public class MessagesListActivity extends AutoLoadActivity {
 		switch (item.getItemId()) {
 		case R.id.message_view_and_reply:
 			Intent intent = new Intent(this, ComposeMessageActivity.class);
-			boolean isOutgoing = messageDao.getSenderId() == Settings.myId;
+			boolean isOutgoing = messageDao.getSenderId() == PreferenceHelper.getMyId(this);
 			intent.putExtra(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID,
 					isOutgoing ? messageDao.getReceiverId() : messageDao
 							.getSenderId());
@@ -198,11 +199,11 @@ public class MessagesListActivity extends AutoLoadActivity {
             case INCOMING:
                 return managedQuery(UserapiProvider.MESSAGES_URI, null,
                         UserapiDatabaseHelper.KEY_MESSAGE_RECEIVERID + "="
-                                + Settings.myId, null, KEY_MESSAGE_DATE + " DESC");
+                                + PreferenceHelper.getMyId(this), null, KEY_MESSAGE_DATE + " DESC");
             case OUTCOMING:
                 return managedQuery(UserapiProvider.MESSAGES_URI, null,
                         UserapiDatabaseHelper.KEY_MESSAGE_SENDERID + "="
-                                + Settings.myId, null, KEY_MESSAGE_DATE + " DESC");
+                                + PreferenceHelper.getMyId(this), null, KEY_MESSAGE_DATE + " DESC");
             default:
                 return this.managedQuery(UserapiProvider.MESSAGES_URI, null, null,
                         null, KEY_MESSAGE_DATE + " DESC");

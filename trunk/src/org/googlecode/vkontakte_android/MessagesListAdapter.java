@@ -11,6 +11,7 @@ import android.widget.TextView;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_USER_USERID;
 
@@ -36,7 +37,7 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
         
 		if (view.findViewById(R.id.name) != null) {
 
-			if (receiverid.equals(Settings.myId)) {
+			if (receiverid.equals(PreferenceHelper.getMyId(context))) {
 				strName = getNameById(context, senderid);
 			} else {
 				strName = getNameById(context, receiverid);
@@ -78,7 +79,7 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
     private String getNameById(Context context, Long userid) {
 
         String username = userid.toString();
-        if (userid.equals(Settings.myId)) {
+        if (userid.equals(PreferenceHelper.getMyId(context))) {
             return context.getString(R.string.send_by_me);
         }
 

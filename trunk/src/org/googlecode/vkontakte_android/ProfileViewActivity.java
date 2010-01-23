@@ -67,7 +67,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
 
     private void initInfoTab() {
-        profileId = Settings.myId;
+        profileId = PreferenceHelper.getMyId(this);
         if (getIntent().getExtras() != null)
             profileId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_PROFILE_USERID, profileId);
 
@@ -88,7 +88,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
             protected ProfileDao doInBackground(Long... id) {
 
                 try {
-                    if (!ServiceHelper.getService().loadProfile(id[0], false)) {
+                    if (!ServiceHelper.getService().loadProfile(id[0])) {
                         Log.e(TAG, "Cannot load profile");
                         return null;
                     } else {

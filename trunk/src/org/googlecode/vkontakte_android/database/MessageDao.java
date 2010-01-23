@@ -7,9 +7,9 @@ import android.database.Cursor;
 import android.util.Log;
 
 import org.googlecode.userapi.Message;
-import org.googlecode.vkontakte_android.Settings;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 
 import java.util.Date;
 
@@ -172,7 +172,7 @@ public class MessageDao extends Message {
         if (user == null) {
             return false;
         }
-        if (user.getUserId() != Settings.myId) {
+        if (user.getUserId() != PreferenceHelper.getMyId(ctx)) {
             user.saveOrUpdate(ctx);
         }
         return true;
