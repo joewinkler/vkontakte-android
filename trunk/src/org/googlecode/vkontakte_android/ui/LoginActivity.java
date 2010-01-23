@@ -11,8 +11,6 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-import org.googlecode.userapi.Credentials;
 import org.googlecode.userapi.UserapiLoginException;
 import org.googlecode.vkontakte_android.HomeGridActivity;
 import org.googlecode.vkontakte_android.R;
@@ -51,6 +49,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
     private void startHome() {
         Intent intent = new Intent(this, HomeGridActivity.class);
         startActivity(intent);
+        finish();
     }
 
     @Override
