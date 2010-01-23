@@ -196,10 +196,10 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
             Log.d(TAG, "Already authorized");
             return;
         }
-        final LoginDialog ld = new LoginDialog(this);
-        ld.setTitle(R.string.please_login);
-        ld.setCancelable(false);
-        ld.show();
+//        final LoginDialog ld = new LoginDialog(this);
+//        ld.setTitle(R.string.please_login);
+//        ld.setCancelable(false);
+//        ld.show();
     }
 
     @Override

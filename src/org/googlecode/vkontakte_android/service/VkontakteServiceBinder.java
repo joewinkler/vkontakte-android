@@ -38,28 +38,27 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public boolean login(String login, String pass, String remix) throws RemoteException {
+    public void login(String login, String pass, String remix) throws RemoteException {
         VkontakteAPI api = ApiCheckingKit.getApi();
         Context ctx = m_context;
-        boolean result = false;
         try {
+            Log.d(TAG, "Trying to log with login/pass (or remix)");
             Credentials cred = new Credentials(login, pass, remix);
-            try {
-                api.login(cred);
-                Log.d(TAG, "Successful log with login/pass (or remix)");
-                PreferenceHelper.saveLogin(ctx, cred);
-                loadMyProfile();
-                restartScheduledUpdates(ctx);
-                result = true;
-            } catch (UserapiLoginException e) {
-                e.printStackTrace();
-            }
+            api.login(cred);
+            Log.d(TAG, "Successful log with login/pass (or remix)");
+            PreferenceHelper.saveLogin(ctx, cred);
+
+            //todo: is really required here?
+            loadMyProfile();
+            restartScheduledUpdates(ctx);
+
+
         } catch (IOException e) {
-            e.printStackTrace();
-            UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
-            //TODO what to do in this case?
+            throw new MyRemoteException(e);
+//            UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
+        } catch (UserapiLoginException e) {
+            throw new MyRemoteException(e);
         }
-        return result;
     }
 
     @Override
@@ -116,7 +115,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         }
         return true;
     }
-    
+
     @Override
     public boolean sendStatus(String status) throws RemoteException {
         boolean result = false;
@@ -153,9 +152,9 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
     @Override
     public void stop() throws RemoteException {
-    	m_service.stopSelf();
+        m_service.stopSelf();
     }
-   
+
     @Override
     public boolean loadPrivateMessages(int type, int first, int last)
             throws RemoteException {
@@ -318,5 +317,5 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         }
         c.close();
         return false;
-	}
+    }
 }
