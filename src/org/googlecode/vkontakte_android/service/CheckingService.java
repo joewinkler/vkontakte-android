@@ -47,10 +47,22 @@ public class CheckingService extends Service {
 
     @Override
     public void onStart(final Intent intent, int startId) {
-        Log.v(TAG, "Service started");
         super.onStart(intent, startId);
+
+        Log.v(TAG, "Started command: " + intent);
+        try {
+            String action = intent.getAction();
+            if (AppHelper.ACTION_CHECK_UPDATES.equals(action))
+                checkUpdates();
+        } catch (Exception e) {
+            Log.e(TAG, "Exception while checking updates", e);
+            //TODO: Need to save that to show for user later...
+        }
+    	
+        
     }
 
+    /*
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(TAG, "Started command: " + intent);
@@ -66,7 +78,7 @@ public class CheckingService extends Service {
 
         return START_NOT_STICKY;
     }
-
+*/
     /**
      * Check given content type for updates
      *
