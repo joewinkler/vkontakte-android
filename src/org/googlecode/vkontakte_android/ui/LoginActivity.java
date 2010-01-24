@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import org.googlecode.userapi.Credentials;
 import org.googlecode.userapi.UserapiLoginException;
@@ -73,7 +74,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
         }
     }
 
-    private void login(String login, String pass, String remixpass) {
+    private void login(final String login, final String pass, final String remixpass) {
         currentTask = new AsyncTask<String, Void, RemoteException>() {
             @Override
             protected void onPreExecute() {
@@ -92,8 +93,10 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
                     PreferenceHelper.setLogged(LoginActivity.this, true);
                     startHome();
                 } else {
-                    if (!viewIsLoaded){
+                    if (!viewIsLoaded) {
                         setupMainView();
+                        ((TextView) findViewById(R.id.login)).setText(login);
+                        ((TextView) findViewById(R.id.pass)).setText(pass);
                     }
                     if (e instanceof MyRemoteException) {
                         Exception exception = ((MyRemoteException) e).innerException;
@@ -122,16 +125,16 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
             @Override
             protected RemoteException doInBackground(String... params) {
                 try {
-					if (ServiceHelper.getService() == null) {
-					    try {
-					        serviceWaitLock.acquire();
-					    } catch (InterruptedException e) {
-					        e.printStackTrace();
-					    }
-					}
-				} catch (RemoteException e1) {
-					e1.printStackTrace();
-				}
+                    if (ServiceHelper.getService() == null) {
+                        try {
+                            serviceWaitLock.acquire();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                }
                 try {
                     ServiceHelper.getService().login(params[0], params[1], params[2]);
                 } catch (RemoteException e) {
