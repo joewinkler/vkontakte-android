@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.View;
 import android.widget.TextView;
+import org.googlecode.userapi.Credentials;
 import org.googlecode.userapi.UserapiLoginException;
 import org.googlecode.vkontakte_android.HomeGridActivity;
 import org.googlecode.vkontakte_android.R;
@@ -33,17 +34,24 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
     private Semaphore serviceWaitLock = new Semaphore(0);
     private AsyncTask<String, Void, RemoteException> currentTask;
 
+    private boolean viewIsLoaded = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bindService(new Intent(this, CheckingService.class), this, Context.BIND_AUTO_CREATE);
         if (!PreferenceHelper.isLogged(this)) {
-            setContentView(R.layout.login_dialog);
-            findViewById(R.id.button_login).setOnClickListener(this);
-            findViewById(R.id.cancel).setOnClickListener(this);
-            bindService(new Intent(this, CheckingService.class), this, Context.BIND_AUTO_CREATE);
+            setupMainView();
         } else {
-            startHome();
+            Credentials credentials = PreferenceHelper.getCredentials(this);
+            login(credentials.getLogin(), credentials.getPass(), credentials.getRemixpass());
         }
+    }
+
+    private void setupMainView() {
+        setContentView(R.layout.login_dialog);
+        findViewById(R.id.button_login).setOnClickListener(this);
+        findViewById(R.id.cancel).setOnClickListener(this);
     }
 
     private void startHome() {
@@ -56,7 +64,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_login:
-                login(getLogin(), getPass());
+                login(getLogin(), getPass(), null);
                 break;
             case R.id.cancel:
                 finish();
@@ -64,7 +72,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
         }
     }
 
-    private void login(String login, String pass) {
+    private void login(String login, String pass, String remixpass) {
         currentTask = new AsyncTask<String, Void, RemoteException>() {
             @Override
             protected void onPreExecute() {
@@ -83,6 +91,9 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
                     PreferenceHelper.setLogged(LoginActivity.this, true);
                     startHome();
                 } else {
+                    if (!viewIsLoaded){
+                        setupMainView();
+                    }
                     if (e instanceof MyRemoteException) {
                         Exception exception = ((MyRemoteException) e).innerException;
                         if (exception instanceof UserapiLoginException) {
@@ -117,13 +128,13 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
                     }
                 }
                 try {
-                    ServiceHelper.getService().login(params[0], params[1], null);
+                    ServiceHelper.getService().login(params[0], params[1], params[2]);
                 } catch (RemoteException e) {
                     return e;
                 }
                 return null;
             }
-        }.execute(login, pass);
+        }.execute(login, pass, remixpass);
 
     }
 
@@ -193,13 +204,13 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
     public void onServiceDisconnected(ComponentName componentName) {
         ServiceHelper.disconnect();
     }
-    
-    
+
+
     @Override
-    public void onStop(){
-    	unbindService(this);
-    	super.onStop();
+    public void onStop() {
+        unbindService(this);
+        super.onStop();
     }
-    
-    
+
+
 }
