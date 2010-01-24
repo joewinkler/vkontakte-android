@@ -7,7 +7,7 @@ interface IVkontakteService {
   boolean sendStatus(String status);
   
   void login(String login, String pass, String remix);
-//  LoginResult login(Credentials credentials);
+//  void login(Credentials credentials);
   boolean loginAuth();
   boolean logout();
   
