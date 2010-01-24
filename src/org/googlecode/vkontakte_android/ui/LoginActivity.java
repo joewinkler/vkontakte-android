@@ -121,13 +121,17 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
 
             @Override
             protected RemoteException doInBackground(String... params) {
-                if (ServiceHelper.getService() == null) {
-                    try {
-                        serviceWaitLock.acquire();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+                try {
+					if (ServiceHelper.getService() == null) {
+					    try {
+					        serviceWaitLock.acquire();
+					    } catch (InterruptedException e) {
+					        e.printStackTrace();
+					    }
+					}
+				} catch (RemoteException e1) {
+					e1.printStackTrace();
+				}
                 try {
                     ServiceHelper.getService().login(params[0], params[1], params[2]);
                 } catch (RemoteException e) {

@@ -152,7 +152,11 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
     @Override
     public void stop() throws RemoteException {
-        m_service.stopSelf();
+        if(m_service!=null){
+    	m_service.stopSelf();
+        }else{
+        	throw new RemoteException();
+        }
     }
 
     @Override
@@ -233,7 +237,11 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         }
         if (pr != null) {
             Log.d(TAG,"Finish loading:"+ pr.toString());
+        }else{
+        	throw new RemoteException();
         }
+        	
+        
     }
 
     @Override
@@ -243,32 +251,28 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public boolean loadStatuses(int start, int end) throws RemoteException {
+    public void loadStatuses(int start, int end) throws RemoteException {
         try {
             m_service.updateStatuses(start, end);
-            return true;
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            throw new RemoteException();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            throw new RemoteException();
         }
-        return false;
     }
 
-    public boolean loadStatusesByUser(int start, int end, long userId) throws RemoteException {
+    public void loadStatusesByUser(int start, int end, long userId) throws RemoteException {
         try {
             m_service.updateStatusesForUser(start, end, userId);
-            return true;
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            throw new RemoteException();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            throw new RemoteException();
         }
-        return false;
     }
 
     /**
