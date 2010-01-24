@@ -102,7 +102,7 @@ public class UserHelper {
     	if (bm==null){
     		UserDao user = UserDao.findByUserId(context, userId);
     		if (user!=null){
-    			return getPhotoByUser(context, user);
+    			return getPhotoByUser2(context, user);
     		}
     		return CImagesManager.getBitmap(context, Icons.STUB);
     	}else{
