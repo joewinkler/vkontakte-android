@@ -85,25 +85,22 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
             }
 
             @Override
-            protected ProfileDao doInBackground(Long... id) {
+			protected ProfileDao doInBackground(Long... id) {
+				try {
+					ServiceHelper.getService().loadProfile(id[0]);
+				} catch (RemoteException e) {
+					Log.e(TAG, "Cannot load profile");
+					e.printStackTrace();
+					return null;
+				}
+				Cursor cursor = managedQuery(PROFILES_URI, null,
+						UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?",
+						new String[] { String.valueOf(id[0]) }, null);
+				cursor.moveToFirst();
+				return new ProfileDao(cursor);
 
-                try {
-                    if (!ServiceHelper.getService().loadProfile(id[0])) {
-                        Log.e(TAG, "Cannot load profile");
-                        return null;
-                    } else {
-                        Cursor cursor = managedQuery(PROFILES_URI, null, UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?", new String[]{String.valueOf(id[0])}, null);
-                        cursor.moveToFirst();
-                        return new ProfileDao(cursor);
-                    }
-
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-
-                return null;
-            }
-        }.execute(profileId);
+			}
+		}.execute(profileId);
 
     }
 

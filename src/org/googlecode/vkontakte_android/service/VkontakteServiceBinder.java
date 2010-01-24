@@ -182,26 +182,16 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public boolean loadProfile(long userid) throws RemoteException {
-        ProfileInfo pr = null;
+    public void loadProfile(long userid) throws RemoteException {
+        
+    	Log.d(TAG,"Start loading profile:"+ String.valueOf(userid));
+    	
+    	ProfileInfo pr = null;
         try {
             try {
                 pr = ApiCheckingKit.getApi().getProfileOrThrow(userid);
             } catch (UserapiLoginException e) {
                 e.printStackTrace();
-            }
-
-            String photoUrl = null;
-            if (pr != null) {
-                photoUrl = pr.getPhoto();
-            }
-            byte photo[] = null;
-            if (photoUrl != null) {
-                try {
-                    photo = ApiCheckingKit.getApi().getFileFromUrl(photoUrl);
-                } catch (Exception e) {
-                    Log.e(TAG, "cannot load photo", e);
-                }
             }
 
             ProfileDao dao = null;
@@ -216,27 +206,40 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             if (uri != null) {
                 Log.d(TAG, uri.toString());
             }
+
+            String photoUrl = null;
+            if (pr != null) {
+                photoUrl = pr.getPhoto();
+            }
+            byte photo[] = null;
+            if (photoUrl != null) {
+                try {
+                    photo = ApiCheckingKit.getApi().getFileFromUrl(photoUrl);
+                } catch (Exception e) {
+                    Log.e(TAG, "cannot load photo", e);
+                }
+            }
+            
+            if (photo!=null){
             OutputStream os = m_context.getContentResolver().openOutputStream(uri);
             os.write(photo);
             os.close();
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         } catch (JSONException e) {
             e.printStackTrace();
-            return false;
         }
         if (pr != null) {
-            Log.d(TAG, pr.toString());
+            Log.d(TAG,"Finish loading:"+ pr.toString());
         }
-        return true;
     }
 
     @Override
-    public boolean loadMyProfile() throws RemoteException {
+    public void loadMyProfile() throws RemoteException {
         Log.d(TAG, "" + ApiCheckingKit.getApi().myId);
-        return loadProfile(ApiCheckingKit.getApi().myId);
+        loadProfile(ApiCheckingKit.getApi().myId);
     }
 
     @Override
