@@ -40,7 +40,7 @@ public class CheckingService extends Service {
 
     @Override
     public void onCreate() {
-        Log.v(TAG, "Service created");
+        Log.v(TAG, "Service onCreate");
         super.onCreate();
         m_binder = new VkontakteServiceBinder(this);
     }
@@ -344,7 +344,7 @@ public class CheckingService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.v(TAG, "service stopped/destroyed");
+        Log.v(TAG, "Service onDestroy");
 
         // stop all running threads
         for (Thread t : threads) {
@@ -360,6 +360,8 @@ public class CheckingService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d(TAG, "Service onBind");
+
         return m_binder;
     }
 
