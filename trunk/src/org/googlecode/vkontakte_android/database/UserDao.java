@@ -11,7 +11,6 @@ import org.googlecode.userapi.User;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.ApiCheckingKit;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -211,28 +210,19 @@ public class UserDao {
 					Uri uri=(Uri)params[2];
 		        	Log.d(TAG, "Updating photo of " + user.userName + " " + user.userPhotoUrl);
 		            byte[] photo = null;
+
 					try {
 						photo = ApiCheckingKit.getApi().getFileFromUrl(userPhotoUrl);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		            OutputStream os=null;
-					try {
+						OutputStream os = null;
 						os = ctx.getContentResolver().openOutputStream(uri);
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		            try {
-						os.write(photo);
-						os.close();
+						if (photo != null) {
+							os.write(photo);
+							os.close();
+						}
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-		            
-		            ctx.getContentResolver().notifyChange(uri, null);
+					ctx.getContentResolver().notifyChange(uri, null);
 					return null;
 				}
 					

@@ -1,6 +1,7 @@
 package org.googlecode.vkontakte_android.utils;
 
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
 import org.googlecode.vkontakte_android.service.IVkontakteService;
 
@@ -10,9 +11,10 @@ public class ServiceHelper {
 
     private static IVkontakteService mVKService = null;
 
-    public static IVkontakteService getService() {
+    public static IVkontakteService getService() throws RemoteException {
         if (ServiceHelper.mVKService == null) {
             Log.e(TAG, "Service binder is null");
+            throw new RemoteException();
         }
         return ServiceHelper.mVKService;
     }

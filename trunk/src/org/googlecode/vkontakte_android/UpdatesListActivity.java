@@ -35,11 +35,10 @@ public class UpdatesListActivity extends AutoLoadActivity implements AdapterView
             @Override
             public Boolean load() {
                 try {
-                    return ServiceHelper.getService().loadStatuses(m_adapter.getCount(),
+                     ServiceHelper.getService().loadStatuses(m_adapter.getCount(),
                             m_adapter.getCount() + CheckingService.STATUS_NUM_LOAD);
                 } catch (RemoteException e) {
                     e.printStackTrace();
-                    AppHelper.showFatalError(UpdatesListActivity.this, "While trying to load statuses");
                     Log.e(TAG, "Loading statuses failed");
                 }
                 return false;

@@ -13,8 +13,8 @@ interface IVkontakteService {
   
   
   boolean loadPrivateMessages(int type, int first, int last);
-  boolean loadStatuses(int start, int end);
-  boolean loadStatusesByUser(int start, int end, long id);
+  void loadStatuses(int start, int end);
+  void loadStatusesByUser(int start, int end, long id);
   
   boolean loadUsersPhotos(in List<String> l);  //how to pass Long as type?
   boolean loadAllUsersPhotos(); 

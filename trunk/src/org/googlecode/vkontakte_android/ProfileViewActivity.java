@@ -81,7 +81,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
             @Override
             protected void onPostExecute(ProfileDao result) {
                 setProgressBarIndeterminateVisibility(false);
-                if (!(result == null)) showProfileInfo(result);
+                if (result != null) showProfileInfo(result);
             }
 
             @Override
@@ -109,13 +109,13 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
     private void initUpdatesTab() {
         Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_USERID + "=" + profileId, null, KEY_STATUS_DATE + " DESC ");
-        if (statusesCursor.getCount() < 2) {
+        if (statusesCursor!=null && statusesCursor.getCount() < 2) {
             new AsyncTask<Long, Object, Boolean>() {
 
                 @Override
                 protected Boolean doInBackground(Long... params) {
                     try {
-                        return ServiceHelper.getService().loadStatusesByUser(0, CheckingService.STATUS_NUM_LOAD, profileId);
+                         ServiceHelper.getService().loadStatusesByUser(0, CheckingService.STATUS_NUM_LOAD, profileId);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -249,7 +249,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
                 @Override
                 public Boolean load() {
                     try {
-                        return ServiceHelper.getService().loadStatusesByUser(arl.getAdapter().getCount(),
+                         ServiceHelper.getService().loadStatusesByUser(arl.getAdapter().getCount(),
                                 arl.getAdapter().getCount() + CheckingService.STATUS_NUM_LOAD, profileId);
                     } catch (RemoteException e) {
                         e.printStackTrace();
