@@ -1,14 +1,10 @@
 package org.googlecode.vkontakte_android;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.RemoteException;
 import android.text.InputType;
 import android.util.Log;
@@ -20,14 +16,13 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
-import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.service.UpdatesNotifier;
 import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 import com.nullwire.trace.ExceptionHandler;
 
-public class HomeGridActivity extends Activity implements OnItemClickListener, ServiceConnection {
+public class HomeGridActivity extends Activity implements OnItemClickListener{
 
     private final static String TAG = "VK:HomeGridActivity";
 
@@ -44,7 +39,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
-        bindService(new Intent(this, CheckingService.class), this, Context.BIND_AUTO_CREATE);
 
         setContentView(R.layout.homegrid);
         GridView mHomeGrid = (GridView) findViewById(R.id.HomeGrid);
@@ -152,7 +146,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
     public void onDestroy() {
         super.onDestroy();
         Log.v(TAG, "Activity destroyed");
-        unbindService(this);
     }
 
     @Override
@@ -169,7 +162,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
                 try {
                     // todo async
                     ServiceHelper.getService().logout();
-                    login();
                     return true;
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -189,32 +181,5 @@ public class HomeGridActivity extends Activity implements OnItemClickListener, S
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void login() throws RemoteException {
-        if (ServiceHelper.getService().loginAuth()) {
-            Log.d(TAG, "Already authorized");
-            return;
-        }
-//        final LoginDialog ld = new LoginDialog(this);
-//        ld.setTitle(R.string.please_login);
-//        ld.setCancelable(false);
-//        ld.show();
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        ServiceHelper.connect(service);
-        try {
-            login();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            AppHelper.showFatalError(this, "Error while launching the application");
-        }
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        ServiceHelper.disconnect();
     }
 }
