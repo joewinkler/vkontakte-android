@@ -208,10 +208,9 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
 
 
     @Override
-    public void onStop() {
+    public void onDestroy() {
+        super.onDestroy();
+        //todo: not sure this should be called from here
         unbindService(this);
-        super.onStop();
     }
-
-
 }
