@@ -52,6 +52,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
         setContentView(R.layout.login_dialog);
         findViewById(R.id.button_login).setOnClickListener(this);
         findViewById(R.id.cancel).setOnClickListener(this);
+        viewIsLoaded = true;
     }
 
     private void startHome() {
