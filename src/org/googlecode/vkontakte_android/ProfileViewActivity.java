@@ -266,10 +266,15 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (isMyProfile()) return false;
         MenuInflater inflater = getMenuInflater();
         menuToRefresh = menu;
         inflater.inflate(R.menu.friend_profile_menu, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private boolean isMyProfile() {
+        return profileId == PreferenceHelper.getMyId(this);
     }
 
     @Override
