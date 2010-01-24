@@ -193,7 +193,9 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         //TODO add mail and other
         Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
         intent.setType("vnd.android.cursor.item/person");
-        intent.putExtra(Contacts.Intents.Insert.PHONE, Phone.formatPhoneNumber(profileDao.phone));
+        if (profileDao.phone != null) {
+            intent.putExtra(Contacts.Intents.Insert.PHONE, Phone.formatPhoneNumber(profileDao.phone));
+        }
         intent.putExtra(Contacts.Intents.Insert.NAME, profileDao.firstname + " " + profileDao.surname);
         startActivity(intent);
     }
