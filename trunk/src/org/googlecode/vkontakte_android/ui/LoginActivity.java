@@ -152,7 +152,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
         switch (id) {
             case DIALOG_PROGRESS:
                 ProgressDialog pd = new ProgressDialog(this);
-                pd.setMessage("please wait");
+                pd.setMessage("Please wait thile cheching your credentials...");
                 pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
@@ -165,7 +165,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
                 return new AlertDialog.Builder(this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Connection error!")
-                        .setMessage("Connection error!")
+                        .setMessage("Please check your internet connection.")
                         .setPositiveButton(android.R.string.ok, null)
                         .create();
             //todo: retry
@@ -179,15 +179,15 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
             case DIALOG_ERROR_CAPTCHA:
                 return new AlertDialog.Builder(this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle("Captcha required, please try again later")
-                        .setMessage("Captcha required, please try again later or login with captcha on durov.ru")
+                        .setTitle("Captcha required!")
+                        .setMessage("Captcha required, please try again later or login via wifi.")
                         .setPositiveButton(android.R.string.ok, null)
                         .create();
             case DIALOG_ERROR_REMOTE:
                 return new AlertDialog.Builder(this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle("Internal error!")
-                        .setMessage("Internal error!")
+                        .setMessage("Please report to developers.")
                         .setPositiveButton(android.R.string.ok, null)
                         .create();
             default:
@@ -205,7 +205,6 @@ public class LoginActivity extends Activity implements View.OnClickListener, Ser
     public void onServiceDisconnected(ComponentName componentName) {
         ServiceHelper.disconnect();
     }
-
 
     @Override
     public void onDestroy() {
