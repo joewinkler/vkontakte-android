@@ -4,6 +4,9 @@
     <string name="inbox">Inbox</string>
     <string name="exit">Exit</string>
     <string name="logout">Logout</string>
+    <string name="signup">Sign up</string>
+    <string name="login">Login</string>
+    <string name="nologin">New user?</string>
     <string name="app_name"> VK</string>
     <string name="app_description">Android client for vk.com social network</string>
     <string name="legal">Legal Information</string>
@@ -54,7 +57,7 @@
     <!--status messages-->
     <string name="status_online">Online</string>
     <string name="status_offline">Offline</string>
-    <!--error messages-->
+    <!--error messages-->  
     <string name="err_msg_check_connection_to_send">Cannot send the message. Check connection.</string>
     <string name="err_msg_connection_problem">Connection problems</string>
     <string name="err_msg_fatal_error">Fatal error. Cannot connect to the service</string>

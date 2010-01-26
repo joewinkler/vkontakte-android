@@ -16,8 +16,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -52,7 +54,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     private void setupMainView() {
         setContentView(R.layout.login_dialog);
         findViewById(R.id.button_login).setOnClickListener(this);
-        findViewById(R.id.cancel).setOnClickListener(this);
+        findViewById(R.id.button_signup).setOnClickListener(this);
         viewIsLoaded = true;
     }
 
@@ -68,9 +70,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             case R.id.button_login:
                 login(getLogin(), getPass(), null);
                 break;
-            case R.id.cancel:
-                finish();
-                break;
+            case R.id.button_signup: 
+            	Intent i = new Intent(Intent.ACTION_VIEW); 
+            	Uri u = Uri.parse("http://vk.com/reg0"); 
+            	i.setData(u); 
+            	startActivity(i);
+            	break;
         }
     }
 

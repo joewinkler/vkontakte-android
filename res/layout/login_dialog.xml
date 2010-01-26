@@ -1,38 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_height="wrap_content"
               android:layout_width="fill_parent"
-              android:orientation="vertical"
-              android:gravity="center">
-    <TextView android:layout_height="wrap_content"
-              android:layout_width="fill_parent"
-              android:text="@string/email"/>
-    <EditText android:id="@+id/login"
+              android:orientation="vertical" android:layout_height="fill_parent">
+    
+    
+    
+    
+
+    
+    
+
+    
+
+<LinearLayout android:id="@+id/LinearLayout03" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="horizontal" android:layout_weight="4">
+
+
+
+</LinearLayout><LinearLayout android:id="@+id/LinearLayout02" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1" android:background="#ffffff"><EditText android:id="@+id/login"
               android:layout_height="wrap_content"
               android:layout_width="fill_parent"
               android:lines="1"
-              android:inputType="textEmailAddress"/>
-    <TextView android:layout_height="wrap_content"
-              android:layout_width="fill_parent"
-              android:text="@string/password"/>
-    <EditText android:id="@+id/pass"
+              android:inputType="textEmailAddress" android:hint="@string/email" android:layout_margin="10dip"/><EditText android:id="@+id/pass"
               android:layout_height="wrap_content"
               android:layout_width="fill_parent"
               android:inputType="textPassword"
-              android:lines="1"/>
-
-    <LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content"
-                  android:layout_width="fill_parent">
-        <Button android:id="@+id/button_login" android:layout_height="wrap_content" android:layout_width="fill_parent"
-                android:layout_weight="50" android:text="@string/ok"/>
-        <Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="50"
-                android:id="@+id/cancel" android:text="@string/cancel"/>
-    </LinearLayout>
-    <ProgressBar android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true"
-                 android:visibility="gone" android:id="@+id/progress_bar"/>
-
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#ff0000"
+              android:lines="1" android:hint="@string/password" android:layout_margin="10dip"/><LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <CheckBox android:layout_height="wrap_content" android:text="@string/remember" android:checked="true" android:layout_width="fill_parent" android:layout_weight="35" android:layout_margin="10dip" android:textColor="#000000" android:id="@+id/remember_box"></CheckBox>
+        
+    </LinearLayout><ProgressBar android:layout_width="wrap_content" android:layout_height="wrap_content" android:indeterminate="true"
+                 android:visibility="gone" android:id="@+id/progress_bar"/><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#ff0000"
               android:text="Error" android:visibility="gone" android:id="@+id/login_error"/>
-<CheckBox android:id="@+id/CheckBox01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/remember" android:checked="true"></CheckBox>
+</LinearLayout>
+
+<LinearLayout android:id="@+id/LinearLayout04" android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_weight="3" android:background="#7b96a8" android:orientation="horizontal" android:padding="10dip"><LinearLayout android:id="@+id/LinearLayout05" android:layout_height="wrap_content" android:orientation="vertical" android:layout_gravity="bottom|left" android:layout_width="fill_parent" android:layout_weight="1"><TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#ffffff" android:textStyle="bold" android:textSize="15sp" android:layout_gravity="center_horizontal" android:layout_marginBottom="10dip" android:text="@string/nologin"></TextView><Button android:layout_height="wrap_content" android:text="@string/signup" android:layout_width="fill_parent" android:id="@+id/button_signup"></Button>
+
+
+</LinearLayout><LinearLayout android:id="@+id/LinearLayout06" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="1.5"></LinearLayout><Button android:id="@+id/button_login" android:layout_height="wrap_content" android:minWidth="150dip" android:layout_gravity="bottom|right" android:layout_weight="1" android:layout_width="fill_parent" android:text="@string/login"/>
+</LinearLayout>
 </LinearLayout>

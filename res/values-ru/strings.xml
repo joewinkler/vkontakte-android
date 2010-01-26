@@ -4,6 +4,9 @@
     <string name="inbox">Входящие</string>
     <string name="exit">Завершить</string>
     <string name="logout">Выход</string>
+    <string name="login">Вход</string>
+    <string name="nologin">Нет аккаунта?</string>
+    <string name="signup">Регистрация</string>
     <string name="app_name"> В Контакте</string>
     <string name="app_description">Android-клиент для социальной сети Вконтакте</string>
     <string name="legal">Информация о лицензии</string>
@@ -61,7 +64,7 @@
     <string name="err_msg_offer_report">Приложение неожиданно завершилось в прошлый раз. Отправите сообщение об ошибке? ^_^ </string>
     <string name="err_msg_check_connection">Проверьте соединение с Интернетом</string>
     <string name="err_msg_wrong_pass"> Неверный пароль </string>
-    <string name="err_msg_wrong_pass_long"> Такой адрес не был загистрирован или вы ввели неправильный пароль</string>
+    <string name="err_msg_wrong_pass_long"> Такой адрес не был зарегистрирован или вы ввели неправильный пароль</string>
     <string name="err_msg_captcha">Captcha required! </string>
     <string name="err_msg_captcha_long">Captcha required, please try again later or login via wifi</string>
     <string name="err_msg_internal_error">Внутренняя ошибка </string>
@@ -76,6 +79,8 @@
     <string name="status_update_ok">Обновление успешно</string>
     <string name="status_update_err">Ошибка при обновлении</string>
     <!--login message-->
+    <string name="email">E-mail</string>
+    <string name="password">Пароль</string>
     <string name="remember">Запомнить меня</string>
     <string name="login_err">Неправильные логин/пароль</string>
     <string name="mark_as_read">Пометить как прочитанное</string>
