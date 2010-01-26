@@ -55,7 +55,9 @@ public class AppHelper {
 		   	.setNegativeButton(ctx.getString(R.string.no), new OnClickListener() {
 			
 		   		@Override
-		   		public void onClick(DialogInterface dialog, int which) {} //do nothing
+		   		public void onClick(DialogInterface dialog, int which) {
+		   			ExceptionHandler.deleteStackTrace();
+		   		} 
 		   		
 		   	})
 		   	.create()

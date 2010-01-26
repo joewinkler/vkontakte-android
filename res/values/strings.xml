@@ -13,6 +13,7 @@
     <string name="send">Send</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="cancel">Cancel</string>
     <string name="remove_status">Delete</string>
     <string name="online_only">Online only</string>
     <string name="from">From:</string>
@@ -54,10 +55,22 @@
     <string name="status_online">Online</string>
     <string name="status_offline">Offline</string>
     <!--error messages-->
-    <string name="err_msg_check_connection">Cannot send the message. Check connection.</string>
+    <string name="err_msg_check_connection_to_send">Cannot send the message. Check connection.</string>
     <string name="err_msg_connection_problem">Connection problems</string>
     <string name="err_msg_fatal_error">Fatal error. Cannot connect to the service</string>
     <string name="err_msg_offer_report"> Application had crashed last time. Would you send the error report? </string>
+    <string name="err_msg_check_connection">Please check your Internet connection</string>
+    <string name="err_msg_wrong_pass"> Password incorrect! </string>
+    <string name="err_msg_wrong_pass_long"> No such e-mail address has been registered or your password is incorrect</string>
+    <string name="err_msg_captcha">Captcha required! </string>
+    <string name="err_msg_captcha_long">Captcha required, please try again later or login via wifi</string>
+    <string name="err_msg_internal_error">Internal error! </string>
+    <string name="err_msg_report">Please report to developers</string>
+    
+    <!--state messages-->
+    <string name="state_msg_checking_cred"> Please wait while checking your credentials... </string>  
+   
+    
     <!--update statuses-->
     <string name="status_update_ok">Update successful</string>
     <string name="status_update_err">Update failed</string>
@@ -70,6 +83,7 @@
     <string name="email">E-mail</string>
     <string name="password">Password</string>
     <string name="mark_as_read">Mark as read</string>
+    <string name="remember">Remember me</string>
     <!--user info-->
     <string name="info_sex">Sex:</string>
     <string name="info_birthday">Birthday:</string>

@@ -9,10 +9,11 @@
     <string name="legal">Информация о лицензии</string>
     <string name="copyright">© 2009-2010 Ильдар Каримов, Евгений Баландин, Сергей Подтынный, Анастасия Дремина и другие</string>
     
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="send">Отправить</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
+    <string name="cancel">Отмена</string>
     <string name="remove_status">Убрать статус</string>
     <string name="online_only">Только онлайн</string>
     <string name="from">От:</string>
@@ -54,14 +55,28 @@
     <string name="status_online">Онлайн</string>
     <string name="status_offline">Оффлайн</string>
     <!--error messages-->
-    <string name="err_msg_check_connection">Нельзя послать сообщение. Проверьте соединение.</string>
+    <string name="err_msg_check_connection_to_send">Нельзя послать сообщение. Проверьте соединение.</string>
     <string name="err_msg_connection_problem">Проблемы соединения</string>
     <string name="err_msg_fatal_error">Ну оооочень плохая ошибка. Соединение с сервисом невозможно</string>
     <string name="err_msg_offer_report">Приложение неожиданно завершилось в прошлый раз. Отправите сообщение об ошибке? ^_^ </string>
+    <string name="err_msg_check_connection">Проверьте соединение с Интернетом</string>
+    <string name="err_msg_wrong_pass"> Неверный пароль </string>
+    <string name="err_msg_wrong_pass_long"> Такой адрес не был загистрирован или вы ввели неправильный пароль</string>
+    <string name="err_msg_captcha">Captcha required! </string>
+    <string name="err_msg_captcha_long">Captcha required, please try again later or login via wifi</string>
+    <string name="err_msg_internal_error">Внутренняя ошибка </string>
+    <string name="err_msg_report">Отправьте разработчикам сообщение об ошибке.</string>
+    
+    <!--state messages-->
+    <string name="state_msg_checking_cred"> Please wait while checking your credentials... </string>  
+    
+    
+    
     <!--update statuses-->
     <string name="status_update_ok">Обновление успешно</string>
     <string name="status_update_err">Ошибка при обновлении</string>
     <!--login message-->
+    <string name="remember">Запомнить меня</string>
     <string name="login_err">Неправильные логин/пароль</string>
     <string name="mark_as_read">Пометить как прочитанное</string>
     <!--user info-->
