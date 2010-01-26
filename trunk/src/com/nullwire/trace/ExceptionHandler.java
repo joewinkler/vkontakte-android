@@ -212,15 +212,19 @@ public class ExceptionHandler {
 		} catch( Exception e ) {
 			e.printStackTrace();
 		} finally {
-			try {
-				String[] list = searchForStackTraces(); 
-				for ( int i = 0; i < list.length; i ++ ) {
-					File file = new File(G.FILES_PATH+"/"+list[i]);
-					file.delete();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			deleteStackTrace();
+		}
+	}
+	
+	public static void deleteStackTrace() {
+		try {
+			String[] list = searchForStackTraces(); 
+			for ( int i = 0; i < list.length; i ++ ) {
+				File file = new File(G.FILES_PATH+"/"+list[i]);
+				file.delete();
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

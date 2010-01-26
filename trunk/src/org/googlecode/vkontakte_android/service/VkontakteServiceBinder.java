@@ -109,7 +109,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             m_service.doCheck(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal(), new Bundle(), false);
         } catch (IOException e) {
             UpdatesNotifier.showError(m_context,
-                    R.string.err_msg_check_connection);
+                    R.string.err_msg_check_connection_to_send);
             e.printStackTrace();
             return false;
         }

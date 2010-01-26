@@ -19,6 +19,10 @@ public class ServiceHelper {
         return ServiceHelper.mVKService;
     }
 
+    public static boolean isBinded() {
+    	return ServiceHelper.mVKService != null;
+    }
+    
     public static void connect(IBinder service) {
         ServiceHelper.mVKService = IVkontakteService.Stub.asInterface(service);
         Log.d(TAG, "Service has been connected");
