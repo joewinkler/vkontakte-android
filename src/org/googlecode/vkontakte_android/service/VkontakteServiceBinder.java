@@ -151,15 +151,6 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public void stop() throws RemoteException {
-        if(m_service!=null){
-    	m_service.stopSelf();
-        }else{
-        	throw new RemoteException();
-        }
-    }
-
-    @Override
     public boolean loadPrivateMessages(int type, int first, int last)
             throws RemoteException {
         try {

@@ -74,12 +74,10 @@ public class VApplication extends Application implements ServiceConnection {
     }
     
     public static void stopService(final Activity activity) {
-    	try {
-            ServiceHelper.getService().stop();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+    	//we have to unbind service before stopping it. 
+    	VApplication.getInstance().unbindService(VApplication.getInstance());
+    	VApplication.getInstance().stopService(new Intent(VApplication.getInstance(), CheckingService.class));
         activity.finish();
-    }
+    } 
 
 }
