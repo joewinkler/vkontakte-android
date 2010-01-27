@@ -2,6 +2,8 @@ package org.googlecode.vkontakte_android.ui;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.googlecode.userapi.Credentials;
 import org.googlecode.userapi.UserapiLoginException;
@@ -23,7 +25,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 
@@ -53,6 +60,29 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     private void setupMainView() {
         setContentView(R.layout.login_dialog);
+        
+       
+        ((EditText)findViewById(R.id.login)).addTextChangedListener(new TextWatcher() {
+			
+        	Button login = (Button) findViewById(R.id.button_login);
+        	
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				if (LoginActivity.isEmailValid(s.toString()) 
+					|| LoginActivity.isLoginValid(s.toString())) {
+					login.setEnabled(true);
+				} else {
+					login.setEnabled(false);
+				}
+			}
+		});
         findViewById(R.id.button_login).setOnClickListener(this);
         findViewById(R.id.button_signup).setOnClickListener(this);
         viewIsLoaded = true;
@@ -129,7 +159,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
             @Override
             protected RemoteException doInBackground(String... params) {
-                    if (! ServiceHelper.isBinded()) {
+                    if (! ServiceHelper.isBinded() && !Thread.interrupted()) {  
                         try {
                          	//timeout 2sec to give additional chance for service to bind.
                         	//if returns false, remote exception will be thrown soon
@@ -212,5 +242,19 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         super.onDestroy();
         //todo: not sure this should be called from here
         //unbindService(this);
+    }
+    
+    public static boolean isEmailValid(String s) {
+       Pattern pattern = Pattern.compile(
+              "^[\\w\\.-]*@[\\.\\w-]*$");
+       Matcher matcher = pattern.matcher(s);
+       return matcher.matches();
+    }
+    
+    public static boolean isLoginValid(String s) {
+    	Pattern pattern = Pattern.compile(
+          "^\\w+$");
+    	Matcher matcher = pattern.matcher(s);
+    	return matcher.matches();
     }
 }

@@ -31,15 +31,12 @@ public class HomeGridActivity extends Activity implements OnItemClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v(TAG, "Activity created");
 
-        //move it to logindialog when implemented
+        //register remote-stacktrace handler
         Handler handler = new Handler();
         ExceptionHandler.register(this, handler);
         
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
-
         setContentView(R.layout.homegrid);
         GridView mHomeGrid = (GridView) findViewById(R.id.HomeGrid);
 //        mHomeGrid.setNumColumns(3);
@@ -97,12 +94,12 @@ public class HomeGridActivity extends Activity implements OnItemClickListener{
     }
 
     private void backToHome() {
-        this.setTitle(" "+getResources().getString(R.string.app_name) + " > " + "Home");
+    	changeTitle("Home");
         setProgressBarIndeterminateVisibility(false);
     }
     
     private void changeTitle(String uiComponent){
-    	this.setTitle(" "+getResources().getString(R.string.app_name) + " > " + uiComponent);
+    	this.setTitle(" "+getResources().getString(R.string.app_name) + " -> " + uiComponent);
     }
     
     @Override
@@ -137,18 +134,6 @@ public class HomeGridActivity extends Activity implements OnItemClickListener{
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        Log.v(TAG, "Activity stopped");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.v(TAG, "Activity destroyed");
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.home_menu, menu);
@@ -156,30 +141,17 @@ public class HomeGridActivity extends Activity implements OnItemClickListener{
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.LogoutMenuItem:
-                try {
-                    // todo async
-                    ServiceHelper.getService().logout();
-                    return true;
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                    AppHelper.showFatalError(this, "Error while logging out");
-                }
+            	VApplication.logout(this);
+            	return true;
             case R.id.AboutMenuItem:
                 AboutDialog.makeDialog(this).show();
                 return true;
             case R.id.ExitMenuItem:
-                try {
-                    ServiceHelper.getService().stop();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                finish();
+                VApplication.stopService(this);
                 return true;
         }
-
-        return super.onOptionsItemSelected(item);
+       return super.onOptionsItemSelected(item);
     }
 }
