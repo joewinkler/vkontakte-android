@@ -10,6 +10,7 @@ import org.googlecode.userapi.UserapiLoginException;
 import org.googlecode.vkontakte_android.HomeGridActivity;
 import org.googlecode.vkontakte_android.R;
 import org.googlecode.vkontakte_android.VApplication;
+import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.service.MyRemoteException;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
@@ -50,6 +51,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        MessageDao.deleteAllMessages(this);
+
         if (!PreferenceHelper.isLogged(this)) {
             setupMainView();
         } else {
