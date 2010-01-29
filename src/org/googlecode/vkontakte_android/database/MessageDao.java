@@ -154,21 +154,28 @@ public class MessageDao extends Message {
     }
 
     /**
-     * Sets read flag of this message and saves it to DB. If message doesn't exist in DB then it will create it.
+     * Sets read flag of this message and saves it to DB.
      *
      * @param ctx application context
      */
     public void read(Context ctx) {
         Log.d(TAG, "Reading message with id = " + id);
 
-        read = true;
-        saveOrUpdate(ctx);
+        MessageDao message = MessageDao.findByMessageId(ctx, id);
+        if (message != null) {
+            ContentValues insertValues = new ContentValues();
+            insertValues.put(KEY_MESSAGE_READ, 1);
+            ctx.getContentResolver().update(ContentUris.withAppendedId(UserapiProvider.MESSAGES_URI, message.rowId), insertValues, null, null);
+        }
+        else {
+            Log.d(TAG, "Unfortunately that message not in DB");
+        }
     }
 
     public long getId(){
     	return id;
     }
-    
+
     public long getSenderId() {
         return senderId;
     }
