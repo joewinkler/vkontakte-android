@@ -1,22 +1,26 @@
 package org.googlecode.vkontakte_android.database;
 
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.BaseColumns;
 import android.util.Log;
 
 import org.googlecode.userapi.Message;
-import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.userapi.MessageHistory;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 import static org.googlecode.vkontakte_android.provider.UserapiProvider.MESSAGES_URI;
 
 public class MessageDao extends Message {
+
     private static final String TAG = "VK:MessageDao";
 
     public long rowId;
@@ -94,7 +98,7 @@ public class MessageDao extends Message {
 
     public static MessageDao findByMessageId(Context context, long id) {
         if (id == -1) return null;
-        Cursor cursor = context.getContentResolver().query(MESSAGES_URI, null, UserapiDatabaseHelper.KEY_MESSAGE_MESSAGEID + "=?", new String[]{String.valueOf(id)}, null);
+        Cursor cursor = context.getContentResolver().query(MESSAGES_URI, null, KEY_MESSAGE_MESSAGEID + "=?", new String[]{String.valueOf(id)}, null);
         MessageDao messageDao = null;
         if (cursor != null && cursor.moveToNext()) {
             messageDao = new MessageDao(cursor);
@@ -126,31 +130,44 @@ public class MessageDao extends Message {
     public int saveOrUpdate(Context context) {
         MessageDao message = MessageDao.findByMessageId(context, id);
         ContentValues insertValues = new ContentValues();
-        insertValues.put(KEY_MESSAGE_MESSAGEID, this.id);
-        insertValues.put(KEY_MESSAGE_DATE, this.date);
-        insertValues.put(KEY_MESSAGE_TEXT, this.text);
-        insertValues.put(KEY_MESSAGE_SENDERID, this.senderId);
-        insertValues.put(KEY_MESSAGE_RECEIVERID, this.receiverId);
-        insertValues.put(KEY_MESSAGE_READ, this.isRead() ? 0 : 1);
+        insertValues.put(KEY_MESSAGE_MESSAGEID, id);
+        insertValues.put(KEY_MESSAGE_DATE, date);
+        insertValues.put(KEY_MESSAGE_TEXT, text);
+        insertValues.put(KEY_MESSAGE_SENDERID, senderId);
+        insertValues.put(KEY_MESSAGE_RECEIVERID, receiverId);
+        insertValues.put(KEY_MESSAGE_READ, read ? 1 : 0);
 
-        Log.d(TAG, "saving "+sender.userId+"("+sender.userName+") and "+ receiver.userId);
         saveUserIfNeed(context, sender);
         saveUserIfNeed(context, receiver);
 
         if (message == null) {
+            Log.d(TAG, "Inserting message with id = " + id + " from " + sender.userId + "(" + sender.userName + ") to " +
+                receiver.userId + "(" + receiver.userName + ")");
             context.getContentResolver().insert(UserapiProvider.MESSAGES_URI, insertValues);
             return 1;
         } else {
+            Log.d(TAG, "Updating message with id = " + id + " from " + sender.userId + "(" + sender.userName + ") to " +
+                receiver.userId + "(" + receiver.userName + ")");
             context.getContentResolver().update(ContentUris.withAppendedId(UserapiProvider.MESSAGES_URI, message.rowId), insertValues, null, null);
             return 0;
         }
     }
 
-    
+    /**
+     * Sets read flag of this message and saves it to DB. If message doesn't exist in DB then it will create it.
+     *
+     * @param ctx application context
+     */
+    public void read(Context ctx) {
+        Log.d(TAG, "Reading message with id = " + id);
+
+        read = true;
+        saveOrUpdate(ctx);
+    }
+
     public long getId(){
     	return id;
     }
-    
     
     public long getSenderId() {
         return senderId;
@@ -176,6 +193,47 @@ public class MessageDao extends Message {
             user.saveOrUpdate(ctx);
         }
         return true;
+    }
+
+    public static void applyMessagesHistory(Context ctx, List<MessageHistory> history) {
+        if (history.size() == 0)
+            return;
+
+        long timestamp = -1;
+        for (MessageHistory mh : history) {
+            timestamp = mh.getTimestamp();
+            MessageDao msg = new MessageDao(mh.getMessage());
+            switch (mh.getType()) {
+                case add:
+                case restore:
+                    msg.saveOrUpdate(ctx);
+                    break;
+                case del:
+                    msg.delete(ctx);
+                    break;
+                case read:
+                    msg.read(ctx);
+                    break;
+            }
+        }
+
+        PreferenceHelper.setMessagesTimestamp(ctx, timestamp);
+        ctx.getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
+    }
+
+    public static int getMessagesCount(Context ctx) {
+        String selectInbox = KEY_MESSAGE_RECEIVERID + "=" + PreferenceHelper.getMyId(ctx);
+
+        ContentResolver cr = ctx.getContentResolver();
+        Cursor cursor = cr.query(MESSAGES_URI, null, selectInbox, null, null);
+
+        return cursor.getCount();
+    }
+    
+    public static void deleteAllMessages(Context ctx) {
+        ContentResolver cr = ctx.getContentResolver();
+        cr.delete(MESSAGES_URI, null, null);
+        PreferenceHelper.setMessagesTimestamp(ctx, -1);
     }
 
 }

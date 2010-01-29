@@ -153,7 +153,8 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     @Override
     public boolean loadPrivateMessages(int type, int first, int last)
             throws RemoteException {
-        try {
+        return true;
+        /*try {
             switch (contentToUpdate.values()[type]) {
                 case MESSAGES_IN:
                     m_service.updateInMessages(first, last);
@@ -173,7 +174,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             // TODO Auto-generated catch block
             e.printStackTrace();
             return false;
-        }
+        }*/
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.ContactsContract;
 import android.util.Log;
 import org.googlecode.userapi.*;
 import org.googlecode.vkontakte_android.database.MessageDao;
@@ -112,13 +113,9 @@ public class CheckingService extends Service {
                     updateWall();
                     break;
                 case MESSAGES_ALL:
-                    updateMessages();
-                    break;
                 case MESSAGES_IN:
-                    updateInMessages(0, MESSAGE_NUM_LOAD);
-                    break;
                 case MESSAGES_OUT:
-                    updateOutMessages(0, MESSAGE_NUM_LOAD); //should be called when user sends messages
+                    updateMessages();
                     break;
                 case HISTORY:
                     checkUpdates();
@@ -148,51 +145,58 @@ public class CheckingService extends Service {
 
     // =============== updating methods
 
-    protected void updateInMessages(long first, long last) throws IOException, JSONException {
-        //todo: use history or friends-like update with save
+    private long loadInboxMessages(int first, int last) throws IOException, JSONException, UserapiLoginException {
         VkontakteAPI api = ApiCheckingKit.getApi();
-        List<Message> messages = null;
-        try {
-            messages = api.getInbox((int) first, (int) last);
-        } catch (UserapiLoginException e) {
-            e.printStackTrace();
-        }
-        MessageDao single = null;
-        int countNew = 0;
-        if (messages != null) {
-            for (Message m : messages) {
-
-                MessageDao md = new MessageDao(m);
-                if (single == null) {
-                    single = md;
-                }
-                Log.d(TAG, "saving message");
-                countNew += md.saveOrUpdate(this);
-
-            }
-        }
-
-        getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
-        //TODO get real counter from provider
-    }
-
-    protected void updateOutMessages(long first, long last) throws IOException, JSONException {
-        //todo: use history or friends-like update with save
-        VkontakteAPI api = ApiCheckingKit.getApi();
-        List<Message> messages = null;
-        try {
-            messages = api.getOutbox((int) first, (int) last);
-        } catch (UserapiLoginException e) {
-            e.printStackTrace();
-        }
+        MessagesStruct messagesStruct = api.getInboxMessagesStruct(first, last);
+        List<Message> messages = messagesStruct.getMessages();
         if (messages != null) {
             for (Message m : messages) {
                 MessageDao md = new MessageDao(m);
-                Log.d(TAG, "saving outcoming message");
                 md.saveOrUpdate(this);
             }
         }
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
+        return messagesStruct.getTimestamp();
+    }
+
+    private long loadOutboxMessages(int first, int last) throws IOException, JSONException, UserapiLoginException {
+        VkontakteAPI api = ApiCheckingKit.getApi();
+        MessagesStruct messagesStruct = api.getOutboxMessagesStruct(first, last);
+        List<Message> messages = messagesStruct.getMessages();
+        if (messages != null) {
+            for (Message m : messages) {
+                MessageDao md = new MessageDao(m);
+                md.saveOrUpdate(this);
+            }
+        }
+        getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
+        return messagesStruct.getTimestamp();
+    }
+
+    private void loadMoreMessages() throws IOException, JSONException, UserapiLoginException {
+        int count = MessageDao.getMessagesCount(this);
+
+    }
+
+    private void updateMessages() throws IOException, JSONException, UserapiLoginException {
+        long timestamp = PreferenceHelper.getMessagesTimestamp(this);
+        // If we haven't got messages yet...
+        if (timestamp == -1) {
+            long inTs, outTs;
+            // This loop is needed to be sure that no new messages user will receive between loadInboxMessages and
+            // loadOutboxMessages calls
+            do {
+                inTs = loadInboxMessages(0, MESSAGE_NUM_LOAD);
+                outTs = loadOutboxMessages(0, MESSAGE_NUM_LOAD);
+            } while (inTs != outTs);
+            PreferenceHelper.setMessagesTimestamp(this, inTs);
+        }
+        else {
+            // Getting messages changes from server and applying them to DB
+            VkontakteAPI api = ApiCheckingKit.getApi();
+            List<MessageHistory> history = api.getPrivateMessagesHistory(timestamp);
+            MessageDao.applyMessagesHistory(this, history);
+        }
     }
 
     private void updateFriends() throws IOException, JSONException {
@@ -200,11 +204,6 @@ public class CheckingService extends Service {
         refreshFriends(ApiCheckingKit.getApi(), getApplicationContext());
         Log.d(TAG, "updating new friends:");
         refreshNewFriends(ApiCheckingKit.getApi(), getApplicationContext());
-    }
-
-    private void updateMessages() throws IOException, JSONException {
-        updateInMessages(0, MESSAGE_NUM_LOAD);
-        updateOutMessages(0, MESSAGE_NUM_LOAD);
     }
 
     private void updateWall() {
