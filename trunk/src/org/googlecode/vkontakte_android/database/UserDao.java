@@ -198,39 +198,23 @@ public class UserDao {
         this._data = getPath();
         insertValues.put(KEY_USER_AVATAR_SMALL, _data);
         Uri uri = Uri.withAppendedPath(UserapiProvider.USERS_URI, String.valueOf(this.rowId));
-        if (1 == ctx.getContentResolver().update(uri, insertValues, null, null)) {
-        
- 			new AsyncTask<Object, Object, Object>(){
+		if (1 == ctx.getContentResolver().update(uri, insertValues, null, null)) {
+			Log.d(TAG, "Updating photo of " + this.userName + " "+ this.userPhotoUrl);
+			byte[] photo = null;
 
-				@Override
-				protected Object doInBackground(Object... params) {
-					
-					UserDao user=(UserDao)params[0];
-					Context ctx=(Context)params[1];
-					Uri uri=(Uri)params[2];
-		        	Log.d(TAG, "Updating photo of " + user.userName + " " + user.userPhotoUrl);
-		            byte[] photo = null;
-
-					try {
-						photo = ApiCheckingKit.getApi().getFileFromUrl(userPhotoUrl);
-						OutputStream os = null;
-						os = ctx.getContentResolver().openOutputStream(uri);
-						if (photo != null) {
-							os.write(photo);
-							os.close();
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					ctx.getContentResolver().notifyChange(uri, null);
-					return null;
+			try {
+				photo = ApiCheckingKit.getApi().getFileFromUrl(userPhotoUrl);
+				OutputStream os = null;
+				os = ctx.getContentResolver().openOutputStream(uri);
+				if (photo != null) {
+					os.write(photo);
+					os.close();
 				}
-					
-			}.execute(this,ctx,uri);
-
-        	
-        	
-        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			ctx.getContentResolver().notifyChange(uri, null);
+		}
         
     }
 
