@@ -84,12 +84,12 @@ public class UserapiProvider extends ContentProvider {
                 break;
             case ALL_MESSAGES:
                 table = DATABASE_MESSAGES_TABLE;
-                mySort = KEY_MESSAGE_ROWID;
+                mySort = KEY_MESSAGE_ID;
                 break;
             case SINGLE_MESSAGE:
                 table = DATABASE_MESSAGES_TABLE;
-                mySort = KEY_MESSAGE_ROWID;
-                column = KEY_MESSAGE_ROWID;
+                mySort = KEY_MESSAGE_ID;
+                column = KEY_MESSAGE_ID;
                 break;
             case ALL_WALL:
                 table = DATABASE_WALL_TABLE;
@@ -173,7 +173,7 @@ public class UserapiProvider extends ContentProvider {
                 break;
             case ALL_MESSAGES:
                 table = DATABASE_MESSAGES_TABLE;
-                column = KEY_MESSAGE_ROWID;
+                column = KEY_MESSAGE_ID;
                 break;
             case ALL_PROFILES:
                 table = DATABASE_PROFILE_TABLE;
@@ -220,7 +220,7 @@ public class UserapiProvider extends ContentProvider {
                 break;
             case SINGLE_MESSAGE:
                 table = DATABASE_MESSAGES_TABLE;
-                column = KEY_MESSAGE_ROWID;
+                column = KEY_MESSAGE_ID;
                 break;
             case ALL_PROFILES:
                 table = DATABASE_PROFILE_TABLE;
@@ -272,7 +272,7 @@ public class UserapiProvider extends ContentProvider {
                 break;
             case SINGLE_MESSAGE:
                 table = DATABASE_MESSAGES_TABLE;
-                column = KEY_MESSAGE_ROWID;
+                column = KEY_MESSAGE_ID;
                 break;
             case ALL_PROFILES:
                 table = DATABASE_MESSAGES_TABLE;
@@ -321,7 +321,7 @@ public class UserapiProvider extends ContentProvider {
                 break;
             case ALL_MESSAGES:
                 table = DATABASE_MESSAGES_TABLE;
-                column = KEY_MESSAGE_ROWID;
+                column = KEY_MESSAGE_ID;
                 break;
             case ALL_PROFILES:
                 table = DATABASE_PROFILE_TABLE;

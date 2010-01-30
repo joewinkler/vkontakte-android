@@ -13,7 +13,6 @@ import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
 import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.json.JSONException;
@@ -106,7 +105,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             } catch (UserapiLoginException e) {
                 e.printStackTrace();
             }
-            m_service.doCheck(CheckingService.contentToUpdate.MESSAGES_OUT.ordinal(), new Bundle(), false);
+            m_service.doCheck(CheckingService.ContentToUpdate.MESSAGES_OUT.ordinal(), new Bundle(), false);
         } catch (IOException e) {
             UpdatesNotifier.showError(m_context,
                     R.string.err_msg_check_connection_to_send);
@@ -151,30 +150,30 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public boolean loadPrivateMessages(int type, int first, int last)
-            throws RemoteException {
-        return true;
-        /*try {
-            switch (contentToUpdate.values()[type]) {
+    public boolean loadPrivateMessages(int type, int first, int last) throws RemoteException {
+        try {
+            switch (CheckingService.ContentToUpdate.values()[type]) {
                 case MESSAGES_IN:
-                    m_service.updateInMessages(first, last);
+                    m_service.loadMoreMessages(CheckingService.ContentToUpdate.MESSAGES_IN);
                     return true;
                 case MESSAGES_OUT:
-                    m_service.updateOutMessages(first, last);
+                    m_service.loadMoreMessages(CheckingService.ContentToUpdate.MESSAGES_OUT);
                     return true;
                 default:
-                    m_service.updateInMessages(first, last / 2);
-                    m_service.updateOutMessages(first, last / 2);
+//                    m_service.updateInMessages(first, last / 2);
+//                    m_service.updateOutMessages(first, last / 2);
                     return true;
             }
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return false;
-        }*/
+        } catch (UserapiLoginException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override

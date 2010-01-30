@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.ContactsContract;
 import android.util.Log;
 import org.googlecode.userapi.*;
 import org.googlecode.vkontakte_android.database.MessageDao;
@@ -35,7 +34,7 @@ public class CheckingService extends Service {
 
     private ChangesHistory prevChangesHistory = new ChangesHistory();
 
-    public enum contentToUpdate {
+    public enum ContentToUpdate {
         FRIENDS, MESSAGES_ALL, MESSAGES_IN, MESSAGES_OUT, WALL, HISTORY, STATUSES, ALL, PROFILE
     }
 
@@ -83,7 +82,7 @@ public class CheckingService extends Service {
     /**
      * Check given content type for updates
      *
-     * @param toUpdate   - ordinal of contentToUpdate
+     * @param toUpdate   - ordinal of ContentToUpdate
      * @param syncronous
      */
     void doCheck(final int toUpdate, final Bundle updateParams, boolean syncronous) {
@@ -102,7 +101,7 @@ public class CheckingService extends Service {
     }
 
     private void updateContent(final int toUpdate, final Bundle updateParams) {
-        contentToUpdate what = contentToUpdate.values()[toUpdate];
+        ContentToUpdate what = ContentToUpdate.values()[toUpdate];
         Log.d(TAG, "updating " + what + " is starting...");
         try {
             switch (what) {
@@ -152,7 +151,7 @@ public class CheckingService extends Service {
         if (messages != null) {
             for (Message m : messages) {
                 MessageDao md = new MessageDao(m);
-                md.saveOrUpdate(this);
+                md.add(this);
             }
         }
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
@@ -166,16 +165,27 @@ public class CheckingService extends Service {
         if (messages != null) {
             for (Message m : messages) {
                 MessageDao md = new MessageDao(m);
-                md.saveOrUpdate(this);
+                md.add(this);
             }
         }
         getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
         return messagesStruct.getTimestamp();
     }
 
-    private void loadMoreMessages() throws IOException, JSONException, UserapiLoginException {
-        int count = MessageDao.getMessagesCount(this);
-
+    protected void loadMoreMessages(ContentToUpdate type) throws IOException, JSONException, UserapiLoginException {
+        int count;
+        switch (type) {
+            case MESSAGES_IN:
+                count = MessageDao.getInboxMessagesCount(this);
+                loadInboxMessages(count, count + MESSAGE_NUM_LOAD - 1);
+                break;
+            case MESSAGES_OUT:
+                count = MessageDao.getOutboxMessagesCount(this);
+                loadOutboxMessages(count, count + MESSAGE_NUM_LOAD - 1);
+                break;
+            case MESSAGES_ALL:
+                break;
+        }
     }
 
     private void updateMessages() throws IOException, JSONException, UserapiLoginException {
@@ -186,8 +196,8 @@ public class CheckingService extends Service {
             // This loop is needed to be sure that no new messages user will receive between loadInboxMessages and
             // loadOutboxMessages calls
             do {
-                inTs = loadInboxMessages(0, MESSAGE_NUM_LOAD);
-                outTs = loadOutboxMessages(0, MESSAGE_NUM_LOAD);
+                inTs = loadInboxMessages(0, MESSAGE_NUM_LOAD - 1);
+                outTs = loadOutboxMessages(0, MESSAGE_NUM_LOAD - 1);
             } while (inTs != outTs);
             PreferenceHelper.setMessagesTimestamp(this, inTs);
         }
