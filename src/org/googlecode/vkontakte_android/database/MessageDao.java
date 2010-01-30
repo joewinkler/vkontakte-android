@@ -5,7 +5,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.BaseColumns;
 import android.util.Log;
 
 import org.googlecode.userapi.Message;
@@ -23,7 +22,6 @@ public class MessageDao extends Message {
 
     private static final String TAG = "VK:MessageDao";
 
-    public long rowId;
     public long id;
     public long date;
     public String text;
@@ -35,13 +33,12 @@ public class MessageDao extends Message {
     private UserDao receiver = null;
 
     public MessageDao(Cursor cursor) {
-        this.rowId = cursor.getLong(0);
-        this.id = cursor.getLong(1);
-        this.date = cursor.getLong(2);
-        this.text = cursor.getString(3);
-        this.senderId = cursor.getLong(4);
-        this.receiverId = cursor.getLong(5);
-        this.read = cursor.getInt(6) == 1;
+        this.id = cursor.getLong(0);
+        this.date = cursor.getLong(1);
+        this.text = cursor.getString(2);
+        this.senderId = cursor.getLong(3);
+        this.receiverId = cursor.getLong(4);
+        this.read = cursor.getInt(5) == 1;
     }
 
     /*
@@ -85,37 +82,6 @@ public class MessageDao extends Message {
 //        return context.getContentResolver().bulkInsert(MESSAGES_URI, values);
 //    }
 
-    public static MessageDao get(Context context, long rowId) {
-        if (rowId == -1) return null;
-        Cursor cursor = context.getContentResolver().query(ContentUris.withAppendedId(MESSAGES_URI, rowId), null, null, null, null);
-        MessageDao messageDao = null;
-        if (cursor != null && cursor.moveToNext()) {
-            messageDao = new MessageDao(cursor);
-            cursor.close();
-        } else if (cursor != null) cursor.close();
-        return messageDao;
-    }
-
-    public static MessageDao findByMessageId(Context context, long id) {
-        if (id == -1) return null;
-        Cursor cursor = context.getContentResolver().query(MESSAGES_URI, null, KEY_MESSAGE_MESSAGEID + "=?", new String[]{String.valueOf(id)}, null);
-        MessageDao messageDao = null;
-        if (cursor != null && cursor.moveToNext()) {
-            messageDao = new MessageDao(cursor);
-            cursor.close();
-        } else if (cursor != null) cursor.close();
-        return messageDao;
-    }
-
-
-    public int delete(Context context) {
-        return context.getContentResolver().delete(ContentUris.withAppendedId(MESSAGES_URI, rowId), null, null);
-    }
-
-    public static int delete(Context context, long rowId) {
-        return context.getContentResolver().delete(ContentUris.withAppendedId(MESSAGES_URI, rowId), null, null);
-    }
-
 //    public static MessageDao findAllBySenderOrReceiver(Context context, long userId) {
 //        if (userId == -1) return null;
 //        Cursor cursor = context.getContentResolver().query(MESSAGES_URI, null, KEY_MESSAGE_SENDERID + "=?" + " OR " + KEY_MESSAGE_RECEIVERID + "=?", new String[]{String.valueOf(userId), String.valueOf(userId)}, null);
@@ -127,10 +93,12 @@ public class MessageDao extends Message {
 //        return messageDao;
 //    }
 
-    public int saveOrUpdate(Context context) {
-        MessageDao message = MessageDao.findByMessageId(context, id);
+    public void add(Context context) {
+        Log.d(TAG, "Inserting message with id = " + id + " from " + sender.userId + "(" + sender.userName + ") to " +
+                receiver.userId + "(" + receiver.userName + ")");
+
         ContentValues insertValues = new ContentValues();
-        insertValues.put(KEY_MESSAGE_MESSAGEID, id);
+        insertValues.put(KEY_MESSAGE_ID, id);
         insertValues.put(KEY_MESSAGE_DATE, date);
         insertValues.put(KEY_MESSAGE_TEXT, text);
         insertValues.put(KEY_MESSAGE_SENDERID, senderId);
@@ -140,17 +108,12 @@ public class MessageDao extends Message {
         saveUserIfNeed(context, sender);
         saveUserIfNeed(context, receiver);
 
-        if (message == null) {
-            Log.d(TAG, "Inserting message with id = " + id + " from " + sender.userId + "(" + sender.userName + ") to " +
-                receiver.userId + "(" + receiver.userName + ")");
-            context.getContentResolver().insert(UserapiProvider.MESSAGES_URI, insertValues);
-            return 1;
-        } else {
-            Log.d(TAG, "Updating message with id = " + id + " from " + sender.userId + "(" + sender.userName + ") to " +
-                receiver.userId + "(" + receiver.userName + ")");
-            context.getContentResolver().update(ContentUris.withAppendedId(UserapiProvider.MESSAGES_URI, message.rowId), insertValues, null, null);
-            return 0;
-        }
+        context.getContentResolver().insert(UserapiProvider.MESSAGES_URI, insertValues);
+    }
+
+    public void delete(Context context) {
+        Log.d(TAG, "Deleting message with id = " + id);
+        context.getContentResolver().delete(ContentUris.withAppendedId(MESSAGES_URI, id), null, null);
     }
 
     /**
@@ -161,15 +124,9 @@ public class MessageDao extends Message {
     public void read(Context ctx) {
         Log.d(TAG, "Reading message with id = " + id);
 
-        MessageDao message = MessageDao.findByMessageId(ctx, id);
-        if (message != null) {
-            ContentValues insertValues = new ContentValues();
-            insertValues.put(KEY_MESSAGE_READ, 1);
-            ctx.getContentResolver().update(ContentUris.withAppendedId(UserapiProvider.MESSAGES_URI, message.rowId), insertValues, null, null);
-        }
-        else {
-            Log.d(TAG, "Unfortunately that message not in DB");
-        }
+        ContentValues updateValues = new ContentValues();
+        updateValues.put(KEY_MESSAGE_READ, 1);
+        ctx.getContentResolver().update(ContentUris.withAppendedId(UserapiProvider.MESSAGES_URI, id), updateValues, null, null);
     }
 
     public long getId(){
@@ -202,6 +159,20 @@ public class MessageDao extends Message {
         return true;
     }
 
+    public static MessageDao get(Context context, long id) {
+        Cursor cursor = context.getContentResolver().query(ContentUris.withAppendedId(MESSAGES_URI, id), null, null, null, null);
+        try {
+            if (cursor != null && cursor.moveToNext())
+                return new MessageDao(cursor);
+            else
+                return null;
+        }
+        finally {
+            if (cursor != null)
+                cursor.close();
+        }
+    }
+
     public static void applyMessagesHistory(Context ctx, List<MessageHistory> history) {
         if (history.size() == 0)
             return;
@@ -213,7 +184,8 @@ public class MessageDao extends Message {
             switch (mh.getType()) {
                 case add:
                 case restore:
-                    msg.saveOrUpdate(ctx);
+                case undel:    
+                    msg.add(ctx);
                     break;
                 case del:
                     msg.delete(ctx);
@@ -228,15 +200,32 @@ public class MessageDao extends Message {
         ctx.getContentResolver().notifyChange(UserapiProvider.MESSAGES_URI, null);
     }
 
-    public static int getMessagesCount(Context ctx) {
+    public static int getInboxMessagesCount(Context ctx) {
         String selectInbox = KEY_MESSAGE_RECEIVERID + "=" + PreferenceHelper.getMyId(ctx);
 
         ContentResolver cr = ctx.getContentResolver();
         Cursor cursor = cr.query(MESSAGES_URI, null, selectInbox, null, null);
+        int count = cursor.getCount();
+        cursor.close();
 
-        return cursor.getCount();
+        return count;
     }
-    
+
+    public static int getOutboxMessagesCount(Context ctx) {
+        String selectOutbox = KEY_MESSAGE_SENDERID + "=" + PreferenceHelper.getMyId(ctx);
+
+        ContentResolver cr = ctx.getContentResolver();
+        Cursor cursor = cr.query(MESSAGES_URI, null, selectOutbox, null, null);
+        int count = cursor.getCount();
+        cursor.close();
+
+        return count;
+    }
+
+    public static int delete(Context context, long id) {
+        return context.getContentResolver().delete(ContentUris.withAppendedId(MESSAGES_URI, id), null, null);
+    }
+
     public static void deleteAllMessages(Context ctx) {
         ContentResolver cr = ctx.getContentResolver();
         cr.delete(MESSAGES_URI, null, null);

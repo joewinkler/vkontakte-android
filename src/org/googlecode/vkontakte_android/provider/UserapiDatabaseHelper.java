@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class UserapiDatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String TAG = "UserapiDatabaseHelper";
+    private static final String TAG = "VK:UserapiDatabaseHelper";
 
     public static final String KEY_USER_ROWID = BaseColumns._ID;
     public static final String KEY_USER_USERID = "userid";
@@ -20,8 +20,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_USER_AVATAR_URL = "photo_small_url";
     public static final String KEY_USER_AVATAR_SMALL = "_data";
 
-    public static final String KEY_MESSAGE_ROWID = BaseColumns._ID;
-    public static final String KEY_MESSAGE_MESSAGEID = "messageid";
+    public static final String KEY_MESSAGE_ID = BaseColumns._ID;
     public static final String KEY_MESSAGE_DATE = "date";
     public static final String KEY_MESSAGE_TEXT = "text";
     public static final String KEY_MESSAGE_SENDERID = "senderid";
@@ -56,7 +55,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_STATUS_TEXT = "text";
 
     public static final String DATABASE_NAME = "userapi";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     public static final String DATABASE_USERS_TABLE = "users";
     private static final String DATABASE_USERS_CREATE = "create table " + DATABASE_USERS_TABLE + " (" +
@@ -73,8 +72,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_MESSAGES_TABLE = "messages";
     private static final String DATABASE_MESSAGES_CREATE = "create table " + DATABASE_MESSAGES_TABLE + " (" +
-            KEY_MESSAGE_ROWID + " integer primary key autoincrement, " +
-            KEY_MESSAGE_MESSAGEID + " long, " +
+            KEY_MESSAGE_ID + " long primary key, " +
             KEY_MESSAGE_DATE + " long, " +
             KEY_MESSAGE_TEXT + " text , " +
             KEY_MESSAGE_SENDERID + " long, " +

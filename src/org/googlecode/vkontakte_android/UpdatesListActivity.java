@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 
 import org.googlecode.vkontakte_android.database.StatusDao;
 import org.googlecode.vkontakte_android.service.CheckingService;
-import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 import org.googlecode.vkontakte_android.utils.UserHelper;
 
@@ -66,7 +65,7 @@ public class UpdatesListActivity extends AutoLoadActivity implements AdapterView
     		@Override
     		protected Object doInBackground(Object... params) {
     			try {
-					ServiceHelper.getService().update(CheckingService.contentToUpdate.STATUSES.ordinal(), true);
+					ServiceHelper.getService().update(CheckingService.ContentToUpdate.STATUSES.ordinal(), true);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -24,7 +24,7 @@ import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.ApiCheckingKit;
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.service.UpdatesNotifier;
-import org.googlecode.vkontakte_android.service.CheckingService.contentToUpdate;
+import org.googlecode.vkontakte_android.service.CheckingService.ContentToUpdate;
 import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
@@ -62,20 +62,19 @@ public class MessagesListActivity extends AutoLoadActivity {
             }
         });
         refreshOnStart();
-        setupLoaders(contentToUpdate.MESSAGES_IN, MessagesCursorType.INCOMING);
+        setupLoaders(ContentToUpdate.MESSAGES_IN, MessagesCursorType.INCOMING);
     }
 
     
     
-    private void setupLoaders( final contentToUpdate messagesToUpdate, MessagesCursorType cursorType){
+    private void setupLoaders( final CheckingService.ContentToUpdate messagesToUpdate, MessagesCursorType cursorType){
     	
         setupLoader(new AutoLoadActivity.Loader() {
 
             @Override
             public Boolean load() {
                 try {
-                    return ServiceHelper.getService().loadPrivateMessages(messagesToUpdate.ordinal(),m_adapter.getCount(), 
-                    		m_adapter.getCount() + CheckingService.MESSAGE_NUM_LOAD);
+                    return ServiceHelper.getService().loadPrivateMessages(messagesToUpdate.ordinal(), 0, 0);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                     AppHelper.showFatalError(MessagesListActivity.this, "While trying to load messages");
@@ -105,7 +104,7 @@ public class MessagesListActivity extends AutoLoadActivity {
     		@Override
     		protected Object doInBackground(Object... params) {
     			try {
-    				ServiceHelper.getService().update(CheckingService.contentToUpdate.MESSAGES_ALL.ordinal(), true);
+    				ServiceHelper.getService().update(ContentToUpdate.MESSAGES_ALL.ordinal(), true);
     			} catch (RemoteException e) {
     				e.printStackTrace();
     			}
@@ -179,11 +178,11 @@ public class MessagesListActivity extends AutoLoadActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.inbox:
-            	setupLoaders(contentToUpdate.MESSAGES_IN, MessagesCursorType.INCOMING);
+            	setupLoaders(CheckingService.ContentToUpdate.MESSAGES_IN, MessagesCursorType.INCOMING);
                 return true;
                 
             case R.id.sent:
-            	setupLoaders(contentToUpdate.MESSAGES_OUT, MessagesCursorType.OUTCOMING);
+            	setupLoaders(ContentToUpdate.MESSAGES_OUT, MessagesCursorType.OUTCOMING);
             	return true;
 
             case R.id.refresh:
