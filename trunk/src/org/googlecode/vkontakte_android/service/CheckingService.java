@@ -224,7 +224,15 @@ public class CheckingService extends Service {
     private void checkUpdates() throws IOException, JSONException, UserapiLoginException {
         Log.v(TAG, "Checking updates");
 
-        ChangesHistory changesHistory = ApiCheckingKit.getApi().getChangesHistory();
+        Timestamps timestamps = new Timestamps();
+        timestamps.setMessagesTs(PreferenceHelper.getMessagesTimestamp(this));
+
+        ChangesHistory changesHistory = ApiCheckingKit.getApi().getChangesHistory(timestamps);
+
+        // Applying history changes if exist
+        List<MessageHistory> messagesHistory = changesHistory.getMessagesHistory();
+        if (messagesHistory != null)
+            MessageDao.applyMessagesHistory(this, messagesHistory);
 
         int changes = prevChangesHistory.compareTo(changesHistory);
 

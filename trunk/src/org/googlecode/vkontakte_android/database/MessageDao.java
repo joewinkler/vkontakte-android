@@ -177,6 +177,8 @@ public class MessageDao extends Message {
         if (history.size() == 0)
             return;
 
+        Log.v(TAG, "Applying messages history changes");
+
         long timestamp = -1;
         for (MessageHistory mh : history) {
             timestamp = mh.getTimestamp();
