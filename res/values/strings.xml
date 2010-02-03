@@ -54,7 +54,7 @@
     <!--info-->
     <string name="build">, build</string>
     <string name="version">Version</string>
-    <!--status messages-->
+    <!--status messages--> 
     <string name="status_online">Online</string>
     <string name="status_offline">Offline</string>
     <!--error messages-->  

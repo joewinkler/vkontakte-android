@@ -37,54 +37,50 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     @Override
     public void login(String login, String pass, String remix) throws RemoteException {
         VkontakteAPI api = ApiCheckingKit.getApi();
-        Context ctx = m_context;
         try {
             Log.d(TAG, "Trying to log with login/pass (or remix)");
             Credentials cred = new Credentials(login, pass, remix);
             api.login(cred);
             Log.d(TAG, "Successful log with login/pass (or remix)");
-            PreferenceHelper.saveLogin(ctx, cred);
+            PreferenceHelper.saveLogin(m_context, cred);
             if (remix == null) {
                 //myId is available only when logging with login/pass but not with remix
-                PreferenceHelper.saveMyId(ctx, api.myId);
+                PreferenceHelper.saveMyId(m_context, api.myId);
             }
 
             //todo: is really required here?
-            restartScheduledUpdates(ctx);
-
+            restartScheduledUpdates(m_context);
         } catch (IOException e) {
             throw new MyRemoteException(e);
-//            UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
         } catch (UserapiLoginException e) {
             throw new MyRemoteException(e);
         }
     }
 
     @Override
-    public boolean loginAuth() throws RemoteException {
+    public void loginAuth() throws RemoteException {
         Context ctx = m_context;
         VkontakteAPI api = ApiCheckingKit.getApi();
-        boolean result = false;
         if (PreferenceHelper.isLogged(ctx)) {
             try {
                 Credentials credentials = PreferenceHelper.getCredentials(ctx);
                 api.login(credentials);
-                result = true;
                 Log.d(TAG, "Logged in");
                 PreferenceHelper.saveLogin(ctx, credentials);
                 PreferenceHelper.saveMyId(m_context, api.myId);
                 restartScheduledUpdates(ctx);
-            } catch (IOException ex) {
+            } catch (IOException e) {
                 PreferenceHelper.clearPrivateInfo(ctx);
                 UpdatesNotifier.showError(ctx, R.string.err_msg_connection_problem);
+                throw new MyRemoteException(e);
             } catch (UserapiLoginException e) {
                 PreferenceHelper.clearPrivateInfo(ctx);
                 e.printStackTrace();
+                throw new MyRemoteException(e);
             }
         } else {
             Log.d(TAG, "No Login/Password stored");
         }
-        return result;
     }
 
     private void restartScheduledUpdates(Context ctx) {
@@ -94,40 +90,38 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public boolean sendMessage(String text, long id) throws RemoteException {
+    public void sendMessage(String text, long id) throws RemoteException {
         Message message = new Message();
         message.setDate(new Date());
         message.setReceiverId(id);
         message.setText(text);
+        
         try {
-            try {
-                ApiCheckingKit.getApi().sendMessageToUser(message);
-            } catch (UserapiLoginException e) {
-                e.printStackTrace();
-            }
+            ApiCheckingKit.getApi().sendMessageToUser(message);
             m_service.doCheck(CheckingService.ContentToUpdate.MESSAGES_OUT.ordinal(), new Bundle(), false);
         } catch (IOException e) {
-            UpdatesNotifier.showError(m_context,
-                    R.string.err_msg_check_connection_to_send);
             e.printStackTrace();
-            return false;
-        }
-        return true;
+            throw new MyRemoteException(e);
+        } catch (UserapiLoginException e) {
+			e.printStackTrace();
+			throw new MyRemoteException(e);
+		}
     }
 
     @Override
-    public boolean sendStatus(String status) throws RemoteException {
-        boolean result = false;
+    public void sendStatus(String status) throws RemoteException {
         try {
-            result = ApiCheckingKit.getApi().setStatus(status);
+            ApiCheckingKit.getApi().setStatus(status);
         } catch (IOException e) {
             e.printStackTrace();
+            throw new MyRemoteException(e);
         } catch (JSONException e) {
             e.printStackTrace();
+            throw new MyRemoteException(e);
         } catch (UserapiLoginException e) {
             e.printStackTrace();
+            throw new MyRemoteException(e);
         }
-        return result;
     }
 
     @Override
@@ -136,7 +130,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public boolean logout() throws RemoteException {
+    public void logout() throws RemoteException {
         try {
             Log.d(TAG, "Logout");
             ApiCheckingKit.getApi().logout();
@@ -144,35 +138,34 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         } catch (IOException e) {
             UpdatesNotifier.showError(m_context, R.string.err_msg_connection_problem);
             e.printStackTrace();
-            return false;
+            throw new MyRemoteException(e);
         }
-        return true;
     }
 
     @Override
-    public boolean loadPrivateMessages(int type, int first, int last) throws RemoteException {
+    public void loadPrivateMessages(int type, int first, int last) throws RemoteException {
         try {
             switch (CheckingService.ContentToUpdate.values()[type]) {
                 case MESSAGES_IN:
                     m_service.loadMoreMessages(CheckingService.ContentToUpdate.MESSAGES_IN);
-                    return true;
+                    break;
                 case MESSAGES_OUT:
                     m_service.loadMoreMessages(CheckingService.ContentToUpdate.MESSAGES_OUT);
-                    return true;
+                    break;
                 default:
 //                    m_service.updateInMessages(first, last / 2);
 //                    m_service.updateOutMessages(first, last / 2);
-                    return true;
+                    break;
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            throw new MyRemoteException(e);
         } catch (JSONException e) {
             e.printStackTrace();
-            return false;
+            throw new MyRemoteException(e);
         } catch (UserapiLoginException e) {
             e.printStackTrace();
-            return false;
+            throw new MyRemoteException(e);
         }
     }
 
@@ -270,7 +263,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
      * Load photos for users with given ids
      */
     @Override
-    public synchronized boolean loadUsersPhotos(List<String> l) throws RemoteException {
+    public synchronized void loadUsersPhotos(List<String> l) throws RemoteException {
         StringBuffer users = new StringBuffer(" ");
         for (String ids : l) {
             users.append(ids).append(",");
@@ -289,14 +282,14 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             } catch (IOException e) {
                 Log.e(TAG, "Cannot download photo");
                 e.printStackTrace();
+                throw new MyRemoteException(e);
             }
         }
         c.close();
-        return false;
     }
 
     @Override
-    public boolean loadAllUsersPhotos() throws RemoteException {
+    public void loadAllUsersPhotos() throws RemoteException {
         Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null,
                 null, null, null);
         while (c.moveToNext()) {
@@ -308,9 +301,9 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             } catch (IOException e) {
                 Log.e(TAG, "Cannot download photo");
                 e.printStackTrace();
+                throw new MyRemoteException(e);
             }
         }
         c.close();
-        return false;
     }
 }

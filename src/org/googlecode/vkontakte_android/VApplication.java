@@ -8,6 +8,7 @@ import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
@@ -30,6 +31,7 @@ public class VApplication extends Application implements ServiceConnection {
 		super.onCreate();
 		s_instance = this;	
 		bindService(new Intent(this, CheckingService.class), this, Context.BIND_AUTO_CREATE);
+		
 	}
 
 	@Override
@@ -78,6 +80,15 @@ public class VApplication extends Application implements ServiceConnection {
     	VApplication.getInstance().unbindService(VApplication.getInstance());
     	VApplication.getInstance().stopService(new Intent(VApplication.getInstance(), CheckingService.class));
         activity.finish();
-    } 
+   } 
+    
+    // brutal way to finish both application and service
+    public static void exit() {
+    	
+    	//TODO make all cleanups
+    	
+    	ActivityManager am = (ActivityManager) getInstance().getSystemService(ACTIVITY_SERVICE);
+    	am.restartPackage(getInstance().getPackageName());
+    }
 
 }

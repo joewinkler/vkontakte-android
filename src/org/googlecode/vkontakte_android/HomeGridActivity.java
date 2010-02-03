@@ -80,7 +80,8 @@ public class HomeGridActivity extends Activity implements OnItemClickListener{
                     protected Boolean doInBackground(String... params) {
                         try {
                             m_status = params[0];
-                            return ServiceHelper.getService().sendStatus(m_status);
+                            ServiceHelper.getService().sendStatus(m_status);
+                            return true;
                         } catch (RemoteException e) {
                             e.printStackTrace();
                             AppHelper.showFatalError(HomeGridActivity.this, "Error while launching the application");
@@ -149,7 +150,8 @@ public class HomeGridActivity extends Activity implements OnItemClickListener{
                 AboutDialog.makeDialog(this).show();
                 return true;
             case R.id.ExitMenuItem:
-                VApplication.stopService(this);
+                //VApplication.stopService(this);
+            	VApplication.exit();
                 return true;
         }
        return super.onOptionsItemSelected(item);

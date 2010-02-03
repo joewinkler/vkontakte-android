@@ -43,6 +43,22 @@ public class CheckingService extends Service {
         Log.v(TAG, "Service onCreate");
         super.onCreate();
         m_binder = new VkontakteServiceBinder(this);
+        
+        new Thread(){
+
+			@Override
+			public void run() {
+				while (true) {
+					Log.d(TAG, "qqqqqq");
+					try {
+						sleep(2000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
+			}}.start();
     }
 
     @Override
@@ -59,7 +75,7 @@ public class CheckingService extends Service {
             //TODO: Need to save that to show for user later...
         }
     	
-        
+       
     }
 
     /*
