@@ -7,7 +7,7 @@
 	
 	<LinearLayout android:id="@+id/LinearLayout02"
 		android:orientation="vertical" android:layout_width="fill_parent"
-		android:background="#ffffff" android:layout_height="wrap_content" android:layout_weight="3">
+		android:layout_height="wrap_content" android:layout_weight="3" android:background="@drawable/white_background">
 		<EditText android:id="@+id/login" android:layout_height="wrap_content"
 			android:layout_width="fill_parent" android:lines="1"
 			android:inputType="textEmailAddress" android:hint="@string/email" android:layout_marginTop="10dip" android:layout_marginLeft="10dip" android:layout_marginRight="10dip"/>
@@ -31,8 +31,7 @@
 
 	<LinearLayout android:id="@+id/LinearLayout04"
 		android:layout_width="fill_parent"
-		android:background="#7b96a8"
-		android:orientation="horizontal" android:layout_height="wrap_content" android:layout_weight="1">
+		android:orientation="horizontal" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/blue_background ">
 		<LinearLayout android:id="@+id/LinearLayout05"
 			android:layout_height="wrap_content" android:layout_gravity="bottom|left" android:layout_width="fill_parent"
 			android:layout_weight="1" android:orientation="vertical">

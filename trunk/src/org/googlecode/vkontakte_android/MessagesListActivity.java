@@ -74,7 +74,8 @@ public class MessagesListActivity extends AutoLoadActivity {
             @Override
             public Boolean load() {
                 try {
-                    return ServiceHelper.getService().loadPrivateMessages(messagesToUpdate.ordinal(), 0, 0);
+                    ServiceHelper.getService().loadPrivateMessages(messagesToUpdate.ordinal(), 0, 0);
+                    return true;
                 } catch (RemoteException e) {
                     e.printStackTrace();
                     AppHelper.showFatalError(MessagesListActivity.this, "While trying to load messages");
