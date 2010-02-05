@@ -52,8 +52,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MessageDao.deleteAllMessages(this);
-
         if (!PreferenceHelper.isLogged(this)) {
             setupMainView();
         } else {

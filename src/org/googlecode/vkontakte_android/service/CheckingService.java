@@ -192,6 +192,8 @@ public class CheckingService extends Service {
         long timestamp = PreferenceHelper.getMessagesTimestamp(this);
         // If we haven't got messages yet...
         if (timestamp == -1) {
+            // Removing old messages
+            MessageDao.deleteAllMessages(this);
             long inTs, outTs;
             // This loop is needed to be sure that no new messages user will receive between loadInboxMessages and
             // loadOutboxMessages calls
@@ -205,7 +207,14 @@ public class CheckingService extends Service {
             // Getting messages changes from server and applying them to DB
             VkontakteAPI api = ApiCheckingKit.getApi();
             List<MessageHistory> history = api.getPrivateMessagesHistory(timestamp);
-            MessageDao.applyMessagesHistory(this, history);
+            if (history != null)
+                MessageDao.applyMessagesHistory(this, history);
+            else {
+                // New session
+                Log.d(TAG, "New session - need to update timestamp");
+                PreferenceHelper.setMessagesTimestamp(this, -1);
+                updateMessages();
+            }
         }
     }
 
@@ -225,7 +234,8 @@ public class CheckingService extends Service {
         Log.v(TAG, "Checking updates");
 
         Timestamps timestamps = new Timestamps();
-        timestamps.setMessagesTs(PreferenceHelper.getMessagesTimestamp(this));
+        long timestamp = PreferenceHelper.getMessagesTimestamp(this);
+        timestamps.setMessagesTs(timestamp);
 
         ChangesHistory changesHistory = ApiCheckingKit.getApi().getChangesHistory(timestamps);
 
@@ -233,6 +243,12 @@ public class CheckingService extends Service {
         List<MessageHistory> messagesHistory = changesHistory.getMessagesHistory();
         if (messagesHistory != null)
             MessageDao.applyMessagesHistory(this, messagesHistory);
+        else if (timestamp != -1) {
+            // New session
+            Log.d(TAG, "New session - need to update timestamp");
+            PreferenceHelper.setMessagesTimestamp(this, -1);
+            updateMessages();
+        }
 
         int changes = prevChangesHistory.compareTo(changesHistory);
 
