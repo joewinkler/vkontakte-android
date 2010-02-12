@@ -98,7 +98,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         
         try {
             ApiCheckingKit.getApi().sendMessageToUser(message);
-            m_service.doCheck(CheckingService.ContentToUpdate.MESSAGES_OUT.ordinal(), new Bundle(), false);
+            m_service.doCheck(CheckingService.ContentToUpdate.MESSAGES_OUT.ordinal(), new Bundle(), true);
         } catch (IOException e) {
             e.printStackTrace();
             throw new MyRemoteException(e);
