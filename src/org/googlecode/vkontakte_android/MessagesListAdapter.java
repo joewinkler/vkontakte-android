@@ -27,16 +27,14 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         MessageDao messageDao = new MessageDao(cursor);
 
-        String strName = "";
-        String strDate = "";
+        String strName;
+        String strDate;
 
         Long senderid = messageDao.getSenderId();
         Long receiverid = messageDao.getReceiverId();
         Long receivedate = messageDao.date;
 
-        
 		if (view.findViewById(R.id.name) != null) {
-
 			if (receiverid.equals(PreferenceHelper.getMyId(context))) {
 				strName = getNameById(context, senderid);
 			} else {
@@ -54,22 +52,13 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
 			strDate = DateFormat.getMediumDateFormat(context).format( receivedate);
 			strDate +=" ("+DateFormat.getTimeFormat(context).format(receivedate)+")";
 		}        	
-        
-        
-
-        
-        
-        //Date recdate= new Date();
-        
-        
 
         TextView date = (TextView) view.findViewById(R.id.date);
         date.setText(strDate);
-        
-        
+
         TextView message = (TextView) view.findViewById(R.id.message);
         //warning! setting spanned text causes StackOverflow
-        message.setText(Html.fromHtml((messageDao.text).toString()));
+        message.setText(Html.fromHtml(messageDao.text));
 
         View indicator = view.findViewById(R.id.unread_indicator);
         if (!messageDao.read) indicator.setVisibility(View.VISIBLE);
@@ -77,7 +66,6 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
     }
 
     private String getNameById(Context context, Long userid) {
-
         String username = userid.toString();
         if (userid.equals(PreferenceHelper.getMyId(context))) {
             return context.getString(R.string.send_by_me);
