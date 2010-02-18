@@ -64,18 +64,18 @@ public class FriendsListTabActivity extends ListActivity implements AdapterView.
 
         switch (type) {
             case NEW:
-                return managedQuery(USERS_URI, null, KEY_USER_NEW + "=1", null,
-                        KEY_USER_USERID + " ASC," + KEY_USER_NEW + " DESC, " + KEY_USER_ONLINE + " DESC"
+                return managedQuery(USERS_URI, null, KEY_USER_NEW_FRIEND + "=1", null,
+                        KEY_USER_ID + " ASC," + KEY_USER_NEW_FRIEND + " DESC, " + KEY_USER_ONLINE + " DESC"
 
                 );
             case ONLINE:
                 return managedQuery(USERS_URI, null, KEY_USER_ONLINE + "=1", null,
-                        KEY_USER_USERID + " ASC," + KEY_USER_NEW + " DESC, " + KEY_USER_ONLINE + " DESC"
+                        KEY_USER_ID + " ASC," + KEY_USER_NEW_FRIEND + " DESC, " + KEY_USER_ONLINE + " DESC"
                 );
             case ALL:
                 return managedQuery(USERS_URI, null,
                         KEY_USER_IS_FRIEND + "=?", new String[]{"1"},
-                        KEY_USER_USERID + " ASC," + KEY_USER_NEW + " DESC, " + KEY_USER_ONLINE + " DESC"
+                        KEY_USER_ID + " ASC," + KEY_USER_NEW_FRIEND + " DESC, " + KEY_USER_ONLINE + " DESC"
                 );
             default:
                 return managedQuery(USERS_URI, null, null, null, null);
@@ -99,7 +99,7 @@ public class FriendsListTabActivity extends ListActivity implements AdapterView.
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         long rowId = info.id;
         UserDao user = UserDao.get(this, rowId);
-        long userId = user.userId;
+        long userId = user.getUserId();
         switch (item.getItemId()) {
             case R.id.view_profile:
                 UserHelper.viewProfile(this, userId);
@@ -118,6 +118,6 @@ public class FriendsListTabActivity extends ListActivity implements AdapterView.
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long rowId) {
         UserDao user = UserDao.get(this, rowId);
-        UserHelper.viewProfile(this, user.userId);
+        UserHelper.viewProfile(this, user.getUserId());
     }
 }

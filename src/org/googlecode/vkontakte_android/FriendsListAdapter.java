@@ -34,9 +34,9 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
     
     
     @SuppressWarnings("unused")
-	private void fillPhotoCache(Context context,Cursor cursor){
+	private void fillPhotoCache(Context context, Cursor cursor){
     	while (cursor.moveToNext()){
-    		UserDao userDao = new UserDao(cursor);
+    		UserDao userDao = UserDao.make(context, cursor);
     		UserHelper.getPhotoByUser2(context, userDao);
     	}
     	Log.d(TAG,"photos cached:"+UserHelper.bitmapCache.size());
@@ -46,16 +46,16 @@ public class FriendsListAdapter extends ResourceCursorAdapter {
     @Override
     public void bindView(View view, Context context, final Cursor cursor) {
      //   Long startViewtime=java.lang.System.currentTimeMillis();
-    	UserDao userDao = new UserDao(cursor);
+    	UserDao userDao = UserDao.make(context, cursor);
         TextView name = (TextView) view.findViewById(R.id.name);
         TextView status = (TextView) view.findViewById(R.id.status);
-        name.setText(userDao.userName);
-        status.setText(userDao.online?ONLINE_STATUS:OFFLINE_STATUS);
+        name.setText(userDao.getUserName());
+        status.setText(userDao.isOnline() ? ONLINE_STATUS : OFFLINE_STATUS);
 
         //if (userDao.newFriend) {view.findViewById(R.id.indicator).setVisibility(View.VISIBLE);
         //} else view.findViewById(R.id.indicator).setVisibility(View.INVISIBLE);
 
-        String photoViewTag="photoview"+userDao.userId;
+        String photoViewTag="photoview"+userDao.getUserId();
         ImageView photo = (ImageView)view.findViewWithTag(photoViewTag);
         if (photo==null){
         	photo = (ImageView) view.findViewById(R.id.photo);

@@ -33,7 +33,7 @@ public class ComposeMessageActivity extends ListActivity implements AbsListView.
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         userId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_MESSAGE_SENDERID,
-                getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_USER_USERID, -1));
+                getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_USER_ID, -1));
         if (userId == -1) {
             userId = Long.parseLong(getIntent().getData().getLastPathSegment()); // toDo new
         }

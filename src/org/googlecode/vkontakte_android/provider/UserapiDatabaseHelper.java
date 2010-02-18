@@ -10,12 +10,11 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "VK:UserapiDatabaseHelper";
 
-    public static final String KEY_USER_ROWID = BaseColumns._ID;
-    public static final String KEY_USER_USERID = "userid";
+    public static final String KEY_USER_ID = BaseColumns._ID;
     public static final String KEY_USER_NAME = "name";
     public static final String KEY_USER_MALE = "male";
     public static final String KEY_USER_ONLINE = "online";
-    public static final String KEY_USER_NEW = "newfriend";
+    public static final String KEY_USER_NEW_FRIEND = "newfriend";
     public static final String KEY_USER_IS_FRIEND = "isfriend";
     public static final String KEY_USER_AVATAR_URL = "photo_small_url";
     public static final String KEY_USER_AVATAR_SMALL = "_data";
@@ -55,16 +54,15 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_STATUS_TEXT = "text";
 
     public static final String DATABASE_NAME = "userapi";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     public static final String DATABASE_USERS_TABLE = "users";
     private static final String DATABASE_USERS_CREATE = "create table " + DATABASE_USERS_TABLE + " (" +
-            KEY_USER_ROWID + " integer primary key autoincrement, " +
-            KEY_USER_USERID + " long, " +
+            KEY_USER_ID + " long primary key, " +
             KEY_USER_NAME + " text , " +
             KEY_USER_MALE + " int, " +
             KEY_USER_ONLINE + " int, " +
-            KEY_USER_NEW + " int," +
+                                                        KEY_USER_NEW_FRIEND + " int," +
             KEY_USER_IS_FRIEND + " int," +
             KEY_USER_AVATAR_URL + " text," +
             KEY_USER_AVATAR_SMALL + " text" +
