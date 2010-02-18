@@ -272,11 +272,11 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
         Log.d(TAG, "Ids to update:" + users);
         Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null,
-                UserapiDatabaseHelper.KEY_USER_USERID + " IN(" + users + ")", null, null);
+                UserapiDatabaseHelper.KEY_USER_ID + " IN(" + users + ")", null, null);
         while (c.moveToNext()) {
-            UserDao ud = new UserDao(c);
+            UserDao ud = UserDao.make(m_context, c);
             try {
-                if (ud._data == null) {   ////!!!
+                if (ud.getData() == null) {   ////!!!
                     ud.updatePhoto(m_context);
                 }
             } catch (IOException e) {
@@ -293,9 +293,9 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
         Cursor c = m_context.getContentResolver().query(UserapiProvider.USERS_URI, null,
                 null, null, null);
         while (c.moveToNext()) {
-            UserDao ud = new UserDao(c);
+            UserDao ud = UserDao.make(m_context, c);
             try {
-                if (ud._data == null) {
+                if (ud.getData() == null) {
                     ud.updatePhoto(m_context);
                 }
             } catch (IOException e) {

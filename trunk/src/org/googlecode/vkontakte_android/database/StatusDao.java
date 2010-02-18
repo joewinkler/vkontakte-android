@@ -138,7 +138,7 @@ public class StatusDao {
     @Override
     public String toString() {
         return "StatusDao{" +
-                "rowId=" + rowId +
+                "id=" + rowId +
                 ", statusId=" + statusId +
                 ", userId=" + userId +
                 ", userName='" + userName + '\'' +

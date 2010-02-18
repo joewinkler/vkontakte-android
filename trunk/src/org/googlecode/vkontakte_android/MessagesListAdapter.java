@@ -13,7 +13,7 @@ import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 
-import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_USER_USERID;
+import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_USER_ID;
 
 
 public class MessagesListAdapter extends ResourceCursorAdapter {
@@ -72,11 +72,11 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
         }
 
         Cursor sc = context.getContentResolver().query(
-                UserapiProvider.USERS_URI, null, KEY_USER_USERID + "=?",
+                UserapiProvider.USERS_URI, null, KEY_USER_ID + "=?",
                 new String[]{userid.toString()}, null);
         if (sc.moveToNext()) {
-            UserDao ud = new UserDao(sc);
-            if (ud.userName != null) { username = ud.userName; }
+            UserDao ud = UserDao.make(context, sc);
+            if (ud.getUserName() != null) { username = ud.getUserName(); }
         } else {
             Log.e(TAG, "No such user in DB ");
             username = userid.toString();

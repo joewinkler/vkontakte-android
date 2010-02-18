@@ -3,7 +3,6 @@ package org.googlecode.vkontakte_android.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -106,7 +105,8 @@ public class CheckingService extends Service {
         try {
             switch (what) {
                 case FRIENDS:
-                    updateFriends();
+                    refreshFriends();
+                    refreshNewFriends();
                     break;
                 case WALL:
                     updateWall();
@@ -130,7 +130,7 @@ public class CheckingService extends Service {
                     updateStatuses(0, STATUS_NUM_LOAD);
                     updateMessages();
                     //updateWall();
-                    updateFriends();
+                    refreshFriends();
                     //checkUpdates();
             }
         } catch (IOException e) {
@@ -218,13 +218,6 @@ public class CheckingService extends Service {
         }
     }
 
-    private void updateFriends() throws IOException, JSONException {
-        Log.d(TAG, "updating friends:");
-        refreshFriends(ApiCheckingKit.getApi(), getApplicationContext());
-        Log.d(TAG, "updating new friends:");
-        refreshNewFriends(ApiCheckingKit.getApi(), getApplicationContext());
-    }
-
     private void updateWall() {
         Log.d(TAG, "updating wall");
         // todo: implement
@@ -301,78 +294,23 @@ public class CheckingService extends Service {
         StatusDao.bulkSaveOrUpdate(getApplicationContext(), statusDaos);
     }
 
-    //todo: use 'partial' lock for instead of synchronized(?)
-
-    private synchronized void refreshFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
-        boolean firstUpdate = false;
-        Cursor cursor = getContentResolver().query(UserapiProvider.USERS_URI, new String[]{UserapiDatabaseHelper.KEY_USER_ROWID}, null, null, null);
-        if (cursor != null && cursor.getCount() == 0) {
-            firstUpdate = true;
-            cursor.close();
-        }
-        List<User> friends = null;
-        try {
-            friends = api.getMyFriends();
-        } catch (UserapiLoginException e) {
-            e.printStackTrace();
-        }
-        if (friends != null) {
-            Log.d(TAG, "got users: " + friends.size());
-        }
-        StringBuilder notIn = new StringBuilder(" ");
-        int counter = 0;
-        boolean isNew = false;
-        List<UserDao> users = null;
-        if (friends != null) {
-            users = new ArrayList<UserDao>(friends.size());
-        }
-        if (friends != null) {
-            for (User user : friends) {
-                UserDao userDao = new UserDao(user, isNew, true);
-                notIn.append(user.getUserId()).append(",");
-                Uri useruri = userDao.saveOrUpdate(this);
-                if (!firstUpdate) {  //special hack for photo update - load it when needed
-                    //userDao.updatePhoto(this, user, useruri);
-                }
-                if (counter++ == 10) {
-                    getContentResolver().notifyChange(useruri, null);
-                    counter = 0;
-                }
-                users.add(userDao);
-            }
-        }
-
-        notIn.deleteCharAt(notIn.length() - 1);//remove last ','
-        getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=0" + " AND "
-                + UserapiDatabaseHelper.KEY_USER_USERID + " NOT IN(" + notIn + ")" + " AND " +
-                UserapiDatabaseHelper.KEY_USER_IS_FRIEND + "=1", null);
-
+    private synchronized void refreshFriends() throws IOException, JSONException, UserapiLoginException {
+        Log.v(TAG, "Refreshing friends");
+        List<User> users = ApiCheckingKit.getApi().getMyFriends();
+        UserDao.synchronizeAllFriends(this, users, UserDao.UserTypes.FRIENDS);
     }
 
-
-    //todo: use 'partial' lock for instead of synchronized(?)
-
-    private synchronized void refreshNewFriends(VkontakteAPI api, Context context) throws IOException, JSONException {
-        List<User> friends = null;
-        try {
-            friends = api.getMyNewFriends();
-        } catch (UserapiLoginException e) {
-            e.printStackTrace();
-        }
-        if (friends != null) {
-            Log.d(TAG, "got new users: " + friends.size());
-            boolean isNew = true;
-            //todo: delete only partial; use date/timestamp
-            getContentResolver().delete(UserapiProvider.USERS_URI, UserapiDatabaseHelper.KEY_USER_NEW + "=1", null);
-            for (User user : friends) {
-                UserDao userDao = new UserDao(user, isNew, false);
-                Uri useruri = userDao.saveOrUpdate(context);
-                userDao.updatePhoto(this, user, useruri);
-            }
-            getContentResolver().notifyChange(UserapiProvider.USERS_URI, null);
-        }
+    private synchronized void refreshNewFriends() throws IOException, JSONException, UserapiLoginException {
+        Log.v(TAG, "Refreshing new friends");
+        List<User> users = ApiCheckingKit.getApi().getMyNewFriends();
+        UserDao.synchronizeAllFriends(this, users, UserDao.UserTypes.NEW_FRIENDS);
     }
 
+    private synchronized void refreshOnlineFriends() throws IOException, JSONException, UserapiLoginException {
+        Log.v(TAG, "Refreshing online friends");
+        List<User> users = ApiCheckingKit.getApi().getMyFriendsOnline();
+        UserDao.synchronizeAllFriends(this, users, UserDao.UserTypes.ONLINE_FRIENDS);
+    }
 
     @Override
     public void onDestroy() {

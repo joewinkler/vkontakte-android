@@ -9,6 +9,7 @@ import android.util.Log;
 
 import org.googlecode.userapi.Message;
 import org.googlecode.userapi.MessageHistory;
+import org.googlecode.userapi.User;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 
@@ -29,8 +30,8 @@ public class MessageDao extends Message {
     public long receiverId;
     public boolean read;
 
-    private UserDao sender = null;
-    private UserDao receiver = null;
+    private User sender = null;
+    private User receiver = null;
 
     public MessageDao(Cursor cursor) {
         this.id = cursor.getLong(0);
@@ -60,8 +61,8 @@ public class MessageDao extends Message {
         this.senderId = mess.getSender().getUserId();
         this.receiverId = mess.getReceiver().getUserId();
         this.read = mess.isRead();
-        sender = new UserDao(mess.getSender(), false, false);
-        receiver = new UserDao(mess.getReceiver(), false, false);
+        sender = mess.getSender();
+        receiver = mess.getReceiver();
     }
 
 //    //TODO add sender/receiver
@@ -94,8 +95,8 @@ public class MessageDao extends Message {
 //    }
 
     public void add(Context context) {
-        Log.d(TAG, "Inserting message with id = " + id + " from " + sender.userId + "(" + sender.userName + ") to " +
-                receiver.userId + "(" + receiver.userName + ")");
+        Log.d(TAG, "Inserting message with id = " + id + " from " + sender.getUserId() + "(" + sender.getUserName() +
+                ") to " + receiver.getUserId() + "(" + receiver.getUserName() + ")");
 
         ContentValues insertValues = new ContentValues();
         insertValues.put(KEY_MESSAGE_ID, id);
@@ -142,19 +143,19 @@ public class MessageDao extends Message {
     }
 
     public UserDao getSender(Context ctx) {
-        return UserDao.findByUserId(ctx, senderId);
+        return UserDao.get(ctx, senderId);
     }
 
     public UserDao getReceiver(Context ctx) {
-        return UserDao.findByUserId(ctx, receiverId);
+        return UserDao.get(ctx, receiverId);
     }
 
-    public boolean saveUserIfNeed(Context ctx, UserDao user) {
+    public boolean saveUserIfNeed(Context ctx, User user) {
         if (user == null) {
             return false;
         }
         if (user.getUserId() != PreferenceHelper.getMyId(ctx)) {
-            user.saveOrUpdate(ctx);
+            UserDao.saveOrUpdate(ctx, user);
         }
         return true;
     }

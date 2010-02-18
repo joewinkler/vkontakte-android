@@ -86,7 +86,7 @@ public class UserHelper {
     	    }
     	}
     	if (bm==null){
-    		UserDao user = UserDao.findByUserId(context, userId);
+    		UserDao user = UserDao.get(context, userId);
     		if (user!=null){
     			return getPhotoByUser(context, user);
     		}
@@ -100,7 +100,7 @@ public class UserHelper {
 
     	Bitmap bm=bitmapCache2.get(userId);
     	if (bm==null){
-    		UserDao user = UserDao.findByUserId(context, userId);
+    		UserDao user = UserDao.get(context, userId);
     		if (user!=null){
     			return getPhotoByUser2(context, user);
     		}
@@ -111,14 +111,14 @@ public class UserHelper {
     }
     
     public static Bitmap getPhotoByUser2(Context context, UserDao user) {
+        long id = user.getUserId();
+        String data = user.getData();
+    	Bitmap bm=bitmapCache2.get(id);
 
-    	Bitmap bm=bitmapCache2.get(user.userId);
     	if (bm==null){
-    		if (user._data != null && UserapiProvider.isExists(user._data)) {
-    			bm=getPhoto(context, user.rowId);
+    		if (data != null && UserapiProvider.isExists(data)) {
+    			bm=getPhoto(context, id);
     			if (bm!=null){
-    		
-    				
                     int srcWidth = bm.getWidth();
                     int srcHeight = bm.getHeight();
                     int dstWidth = PHOTO_SIZE;
@@ -136,8 +136,8 @@ public class UserHelper {
                       //bm = Bitmap.createBitmap(bm, 0, 0, Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight));
     //                croppedBitmap = Bitmap.createBitmap(croppedBitmap, 0, 0, Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight));
                     
-    				bitmapCache2.put(user.userId, bitmap);
-    				return bitmapCache2.get(user.userId);
+    				bitmapCache2.put(id, bitmap);
+    				return bitmapCache2.get(id);
 				} else {
 
 					return CImagesManager.getBitmap(context, Icons.STUB);
@@ -162,18 +162,20 @@ public class UserHelper {
     
     
     public static Bitmap getPhotoByUser(Context context, UserDao user) {
+        long id = user.getUserId();
+        String data = user.getData();
+    	Bitmap bm = null;
+    	SoftReference<Bitmap> photoRef = bitmapCache.get(id);
 
-    	Bitmap bm=null;
-    	SoftReference<Bitmap> photoRef = bitmapCache.get(user.userId);
     	if (photoRef != null) {
     	    bm = photoRef.get();
     	    if(bm==null){
-    	    	bitmapCache.remove(user.userId);
+    	    	bitmapCache.remove(id);
     	    }
     	}
     	if (bm==null){
-    		if (user._data != null && UserapiProvider.isExists(user._data)) {
-    			bm=getPhoto(context, user.rowId);
+    		if (data != null && UserapiProvider.isExists(data)) {
+    			bm=getPhoto(context, id);
     			if (bm!=null){
     				
                     int srcWidth = bm.getWidth();
@@ -184,8 +186,8 @@ public class UserHelper {
                     Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,dstWidth,dstHeight,true);
                     Bitmap croppedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight));
 
-    				bitmapCache.put(user.userId, new SoftReference<Bitmap>(croppedBitmap));
-    				return bitmapCache.get(user.userId).get();
+    				bitmapCache.put(id, new SoftReference<Bitmap>(croppedBitmap));
+    				return bitmapCache.get(id).get();
     			}else{
     				return CImagesManager.getBitmap(context, Icons.STUB);
     			}

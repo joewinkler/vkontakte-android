@@ -75,12 +75,12 @@ public class UserapiProvider extends ContentProvider {
         switch (uriMatcher.match(uri)) {
             case ALL_USERS:
                 table = DATABASE_USERS_TABLE;
-                mySort = KEY_USER_ROWID;
+                mySort = KEY_USER_ID;
                 break;
             case SINGLE_USER:
                 table = DATABASE_USERS_TABLE;
-                mySort = KEY_USER_ROWID;
-                column = KEY_USER_ROWID;
+                mySort = KEY_USER_ID;
+                column = KEY_USER_ID;
                 break;
             case ALL_MESSAGES:
                 table = DATABASE_MESSAGES_TABLE;
@@ -169,7 +169,7 @@ public class UserapiProvider extends ContentProvider {
         switch (uriMatcher.match(uri)) {
             case ALL_USERS:
                 table = DATABASE_USERS_TABLE;
-                column = KEY_USER_ROWID;
+                column = KEY_USER_ID;
                 break;
             case ALL_MESSAGES:
                 table = DATABASE_MESSAGES_TABLE;
@@ -213,7 +213,7 @@ public class UserapiProvider extends ContentProvider {
                 break;
             case SINGLE_USER:
                 table = DATABASE_USERS_TABLE;
-                column = KEY_USER_ROWID;
+                column = KEY_USER_ID;
                 break;
             case ALL_MESSAGES:
                 table = DATABASE_MESSAGES_TABLE;
@@ -265,7 +265,7 @@ public class UserapiProvider extends ContentProvider {
                 break;
             case SINGLE_USER:
                 table = DATABASE_USERS_TABLE;
-                column = KEY_USER_ROWID;
+                column = KEY_USER_ID;
                 break;
             case ALL_MESSAGES:
                 table = DATABASE_MESSAGES_TABLE;
@@ -317,7 +317,7 @@ public class UserapiProvider extends ContentProvider {
         switch (uriMatcher.match(uri)) {
             case ALL_USERS:
                 table = DATABASE_USERS_TABLE;
-                column = KEY_USER_ROWID;
+                column = KEY_USER_ID;
                 break;
             case ALL_MESSAGES:
                 table = DATABASE_MESSAGES_TABLE;
@@ -342,13 +342,13 @@ public class UserapiProvider extends ContentProvider {
         for (ContentValues values : contentValueses) {
             if (values == null) continue;
             long result = database.insert(table, column, values);
-            if (result != -1) count++;
-            
+            if (result != -1)
+                count++;
         }
-        Log.d(TAG,"Inseted in:"+table+" rows:"+count);
+        Log.d(TAG, "Inserted in: " + table + " rows: " + count);
         database.setTransactionSuccessful();
         database.endTransaction();
-//        getContext().getContentResolver().notifyChange(uri, null);
+
         return count;
     }
 
