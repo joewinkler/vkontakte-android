@@ -59,12 +59,12 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_USERS_TABLE = "users";
     private static final String DATABASE_USERS_CREATE = "create table " + DATABASE_USERS_TABLE + " (" +
             KEY_USER_ID + " long primary key, " +
-            KEY_USER_NAME + " text , " +
+            KEY_USER_NAME + " text, " +
             KEY_USER_MALE + " int, " +
             KEY_USER_ONLINE + " int, " +
-                                                        KEY_USER_NEW_FRIEND + " int," +
-            KEY_USER_IS_FRIEND + " int," +
-            KEY_USER_AVATAR_URL + " text," +
+            KEY_USER_NEW_FRIEND + " int, " +
+            KEY_USER_IS_FRIEND + " int, " +
+            KEY_USER_AVATAR_URL + " text, " +
             KEY_USER_AVATAR_SMALL + " text" +
             ");";
 

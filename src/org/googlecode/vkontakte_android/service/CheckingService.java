@@ -1,9 +1,7 @@
 package org.googlecode.vkontakte_android.service;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -11,7 +9,6 @@ import org.googlecode.userapi.*;
 import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.StatusDao;
 import org.googlecode.vkontakte_android.database.UserDao;
-import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
@@ -297,19 +294,19 @@ public class CheckingService extends Service {
     private synchronized void refreshFriends() throws IOException, JSONException, UserapiLoginException {
         Log.v(TAG, "Refreshing friends");
         List<User> users = ApiCheckingKit.getApi().getMyFriends();
-        UserDao.synchronizeAllFriends(this, users, UserDao.UserTypes.FRIENDS);
+        UserDao.synchronizeFriends(this, users, UserDao.UserTypes.FRIENDS);
     }
 
     private synchronized void refreshNewFriends() throws IOException, JSONException, UserapiLoginException {
         Log.v(TAG, "Refreshing new friends");
         List<User> users = ApiCheckingKit.getApi().getMyNewFriends();
-        UserDao.synchronizeAllFriends(this, users, UserDao.UserTypes.NEW_FRIENDS);
+        UserDao.synchronizeFriends(this, users, UserDao.UserTypes.NEW_FRIENDS);
     }
 
     private synchronized void refreshOnlineFriends() throws IOException, JSONException, UserapiLoginException {
         Log.v(TAG, "Refreshing online friends");
         List<User> users = ApiCheckingKit.getApi().getMyFriendsOnline();
-        UserDao.synchronizeAllFriends(this, users, UserDao.UserTypes.ONLINE_FRIENDS);
+        UserDao.synchronizeFriends(this, users, UserDao.UserTypes.ONLINE_FRIENDS);
     }
 
     @Override
