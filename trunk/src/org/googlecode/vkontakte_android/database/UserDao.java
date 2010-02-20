@@ -15,6 +15,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
@@ -151,25 +152,20 @@ public class UserDao extends User {
      * @param users list of users
      * @param type type of users that should be synchronized
      */
-    public static void synchronizeAllFriends(Context context, List<User> users, UserTypes type) {
+    public static void synchronizeFriends(Context context, List<User> users, UserTypes type) {
+        //TODO: Optimize online user sync
         Log.v(TAG, "Synchronizing friends: " + type);
 
-        String selection = null;
-        switch (type) {
-            case FRIENDS:
-                selection = SELECT_FRIENDS;
-                break;
-            case ONLINE_FRIENDS:
-                selection = SELECT_ONLINE_FRIENDS;
-                break;
-            case NEW_FRIENDS:
-                selection = SELECT_NEW_FRIENDS;
-                break;
+        boolean friend = true;
+        boolean newFriend = false;
+        if (type == UserTypes.NEW_FRIENDS) {
+            friend = false;
+            newFriend = true;
         }
 
         ContentResolver resolver = context.getContentResolver();
         String[] projection = new String[]{KEY_USER_ID, KEY_USER_NAME, KEY_USER_AVATAR_URL, KEY_USER_ONLINE};
-        Cursor cursor = resolver.query(USERS_URI, projection, selection, null, KEY_USER_ID);
+        Cursor cursor = resolver.query(USERS_URI, projection, null, null, KEY_USER_ID);
 
         int toDeleteCount = 0;
 
@@ -177,67 +173,101 @@ public class UserDao extends User {
         ArrayList<ContentProviderOperation> updateList = null;
         ArrayList<ContentValues> addList = null;
 
-        for (User user : users) {
-            User userInDb = null;
-            // Trying to find such user in DB
-            while (cursor != null && cursor.moveToNext()) {
+        User userInDb = null;
+        User userFromResp = null;
+
+        Iterator<User> usersIt = users.iterator();
+        // While cursor and iterator has more user objects
+        do {
+            // Taking next user object from DB if needed
+            if (userInDb == null && cursor != null && cursor.moveToNext())
                 userInDb = makeLite(cursor);
-                if (userInDb.getUserId() >= user.getUserId())
-                    break; // We found corresponding user in DB or user is not in DB yet
+            else
+                userInDb = null;
+
+            // Taking next user object from userapi response if needed
+            if (userFromResp == null && usersIt.hasNext())
+                userFromResp = usersIt.next();
+            else
+                userFromResp = null;
+
+            // If userapi response doesn't have user that we have in DB
+            if (userInDb != null && (userFromResp == null || userFromResp.getUserId() > userInDb.getUserId())) {
+                // Skip that case... 
+                if (type == UserTypes.NEW_FRIENDS && !userInDb.isNewFriend())
+                    userInDb = null;
                 else {
                     // Add that user from DB to list for removing or for update if type != FRIENDS
+                    ContentValues values = new ContentValues();
                     switch (type) {
                         case FRIENDS:
-                            if (deleteList == null)
-                                deleteList = new StringBuilder(String.valueOf(userInDb.getUserId()));
-                            else
-                                deleteList.append(",").append(userInDb.getUserId());
-                            toDeleteCount++;
+                            if (userInDb.isFriend()) {
+                                if (deleteList == null)
+                                    deleteList = new StringBuilder(String.valueOf(userInDb.getUserId()));
+                                else
+                                    deleteList.append(",").append(userInDb.getUserId());
+                                toDeleteCount++;
+                            }
                             break;
                         // In such case we should change data in DB, not delete it
                         case ONLINE_FRIENDS:
-                            userInDb.setOnline(false);
+                            values.put(KEY_USER_ONLINE, false);
+                            break;
                         case NEW_FRIENDS:
-                            userInDb.setNewFriend(false);
-                            if (updateList == null)
-                                updateList = new ArrayList<ContentProviderOperation>();
-                            // Building update operation
-                            Uri userUri = ContentUris.withAppendedId(USERS_URI, user.getUserId());
-                            ContentProviderOperation operation = ContentProviderOperation.newUpdate(userUri).
-                                    withValues(makeContentValuesLite(userInDb)).build();
-                            // Adding that operation to update list for batch
-                            updateList.add(operation);
+                            values.put(KEY_USER_NEW_FRIEND, false);
                             break;
                     }
+                    if (values.size() > 0) {
+                        if (updateList == null)
+                            updateList = new ArrayList<ContentProviderOperation>();
+                        // Building update operation
+                        Uri userUri = ContentUris.withAppendedId(USERS_URI, userInDb.getUserId());
+                        ContentProviderOperation operation = ContentProviderOperation.newUpdate(userUri).
+                                withValues(values).build();
+                        // Adding that operation to update list for batch
+                        updateList.add(operation);
+                    }
+                    // User is processed
+                    userInDb = null;
                 }
             }
-
-            // If there is no such user in DB
-            if (userInDb == null) {
-                // Add user
+            // If userapi response have user that we don't have in DB
+            else if (userFromResp != null && (userInDb == null || userFromResp.getUserId() < userInDb.getUserId())) {
+                // Add that user to DB
                 if (addList == null)
                     addList = new ArrayList<ContentValues>();
-                addList.add(makeContentValuesLite(user));
+                // Setting all fields
+                userFromResp.setMale(true);
+                userFromResp.setFriend(friend);
+                userFromResp.setNewFriend(newFriend);
+                addList.add(makeContentValues(userFromResp));
+                // User is processed
+                userFromResp = null;
             }
-            // Such user already in DB; if it differs from new one
-            else if (userInDb.getUserId() == user.getUserId() &&
-                (userInDb.isOnline() != user.isOnline() || !userInDb.getUserPhotoUrl().equals(user.getUserPhotoUrl()) ||
-                 !userInDb.getUserName().equals(user.getUserName()))) {
-                // Add such user to update list
+            // If userapi response have user that we have too and that user differs
+            else if (userInDb != null && userFromResp != null && userInDb.getUserId() == userFromResp.getUserId() &&
+                (userInDb.isOnline() != userFromResp.isOnline() || !userInDb.getUserPhotoUrl().equals(userFromResp.getUserPhotoUrl()) ||
+                 !userInDb.getUserName().equals(userFromResp.getUserName()) || userInDb.isFriend() != userFromResp.isFriend() ||
+                    userInDb.isNewFriend() != userFromResp.isNewFriend())) {
+                // Add that user to update list
                 if (updateList == null)
                     updateList = new ArrayList<ContentProviderOperation>();
                 // Building update operation
-                Uri userUri = ContentUris.withAppendedId(USERS_URI, user.getUserId());
+                Uri userUri = ContentUris.withAppendedId(USERS_URI, userFromResp.getUserId());
                 ContentProviderOperation operation = ContentProviderOperation.newUpdate(userUri).
-                        withValues(makeContentValuesLite(user)).build();
+                        withValues(makeContentValuesLite(userFromResp)).build();
                 // Adding that operation to update list for batch
                 updateList.add(operation);
+                // User is processed
+                userInDb = null;
+                userFromResp = null;
             }
-        }
+
+        } while ((cursor != null && !cursor.isAfterLast()) || usersIt.hasNext());
 
         // Apply changes to DB
         if (deleteList != null) {
-            resolver.delete(USERS_URI, KEY_USER_ID + " IN (" + deleteList.toString() + ") AND " + selection, null);
+            resolver.delete(USERS_URI, KEY_USER_ID + " IN (" + deleteList.toString() + ")", null);
             Log.d(TAG, "Deleted users: " + toDeleteCount);
         }
         if (updateList != null) {
@@ -263,9 +293,21 @@ public class UserDao extends User {
             resolver.notifyChange(USERS_URI, null);
     }
 
-    private static ContentValues makeContentValuesLite(User user) {
+    private static ContentValues makeContentValues(User user) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_USER_ID, user.getUserId());
+        contentValues.put(KEY_USER_NAME, user.getUserName());
+        contentValues.put(KEY_USER_MALE, user.isMale());
+        contentValues.put(KEY_USER_ONLINE, user.isOnline());
+        contentValues.put(KEY_USER_NEW_FRIEND, user.isNewFriend());
+        contentValues.put(KEY_USER_IS_FRIEND, user.isFriend());
+        contentValues.put(KEY_USER_AVATAR_URL, user.getUserPhotoUrl());
+        contentValues.put(KEY_USER_AVATAR_SMALL, user.getUserPhotoUrlSmall());
+        return contentValues;
+    }
+
+    private static ContentValues makeContentValuesLite(User user) {
+        ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_USER_NAME, user.getUserName());
         contentValues.put(KEY_USER_AVATAR_URL, user.getUserPhotoUrl());
         contentValues.put(KEY_USER_ONLINE, user.isOnline());

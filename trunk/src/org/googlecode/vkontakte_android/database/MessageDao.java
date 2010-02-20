@@ -230,6 +230,7 @@ public class MessageDao extends Message {
     }
 
     public static void deleteAllMessages(Context ctx) {
+        Log.v(TAG, "Deleting all messages");
         ContentResolver cr = ctx.getContentResolver();
         cr.delete(MESSAGES_URI, null, null);
         PreferenceHelper.setMessagesTimestamp(ctx, -1);
