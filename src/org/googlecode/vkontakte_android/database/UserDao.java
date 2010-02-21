@@ -1,6 +1,9 @@
 package org.googlecode.vkontakte_android.database;
 
-import android.content.*;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
@@ -8,7 +11,6 @@ import org.googlecode.userapi.User;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.ApiCheckingKit;
-import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -95,6 +97,11 @@ public class UserDao extends User {
         return user;
     }
 
+    public static void deleteAll(Context context) {
+        Log.v(TAG, "Deleting all users");
+        context.getContentResolver().delete(USERS_URI, null, null);
+    }
+
     /**
      * Returns user entity by it's ID.
      *
@@ -170,7 +177,7 @@ public class UserDao extends User {
         int toDeleteCount = 0;
 
         StringBuilder deleteList = null;
-        ArrayList<ContentProviderOperation> updateList = null;
+        ArrayList<ContentValues> updateList = null;
         ArrayList<ContentValues> addList = null;
 
         User userInDb = null;
@@ -218,14 +225,8 @@ public class UserDao extends User {
                             break;
                     }
                     if (values.size() > 0) {
-                        if (updateList == null)
-                            updateList = new ArrayList<ContentProviderOperation>();
-                        // Building update operation
-                        Uri userUri = ContentUris.withAppendedId(USERS_URI, userInDb.getUserId());
-                        ContentProviderOperation operation = ContentProviderOperation.newUpdate(userUri).
-                                withValues(values).build();
-                        // Adding that operation to update list for batch
-                        updateList.add(operation);
+                        values.put(KEY_USER_ID, userInDb.getUserId());
+                        updateList.add(values);
                     }
                     // User is processed
                     userInDb = null;
@@ -251,13 +252,10 @@ public class UserDao extends User {
                     userInDb.isNewFriend() != userFromResp.isNewFriend())) {
                 // Add that user to update list
                 if (updateList == null)
-                    updateList = new ArrayList<ContentProviderOperation>();
-                // Building update operation
-                Uri userUri = ContentUris.withAppendedId(USERS_URI, userFromResp.getUserId());
-                ContentProviderOperation operation = ContentProviderOperation.newUpdate(userUri).
-                        withValues(makeContentValuesLite(userFromResp)).build();
-                // Adding that operation to update list for batch
-                updateList.add(operation);
+                    updateList = new ArrayList<ContentValues>();
+                ContentValues values = makeContentValuesLite(userFromResp);
+                values.put(KEY_USER_ID, userInDb.getUserId());
+                updateList.add(values);
                 // User is processed
                 userInDb = null;
                 userFromResp = null;
@@ -272,7 +270,10 @@ public class UserDao extends User {
         }
         if (updateList != null) {
             try {
-                resolver.applyBatch(AppHelper.AUTHORITY, updateList);
+                for (ContentValues values : updateList) {
+                    long id = (Long) values.get(KEY_USER_ID);
+                    resolver.update(ContentUris.withAppendedId(USERS_URI, id), values, null, null);
+                }
                 Log.d(TAG, "Updated users: " + updateList.size());
             }
             catch (Exception e) {
