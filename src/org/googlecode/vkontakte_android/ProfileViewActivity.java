@@ -134,11 +134,11 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         
         profileDao = profile;
         ((ImageView) findViewById(R.id.photo)).setImageBitmap(UserHelper.getPhotoByUserId(this, profileDao.id));
-//        if (friendProfile.status != null) {
-//            TextView status = ((TextView) findViewById(R.id.InfoStatusText));
-//            status.setText(friendProfile.status);
-//            status.setVisibility(View.VISIBLE);
-//        }
+        if (profileDao.status != null) {
+            TextView status = ((TextView) findViewById(R.id.status));
+            status.setText(profileDao.status);
+            status.setVisibility(View.VISIBLE);
+        }
 
         
         TextView userName= ((TextView)findViewById(R.id.firstname_lastname));
