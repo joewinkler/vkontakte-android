@@ -7,7 +7,7 @@
     <string name="login">Вход</string>
     <string name="nologin">Нет аккаунта?</string>
     <string name="signup">Регистрация</string>
-    <string name="app_name"> В Контакте</string>
+    <string name="app_name">В Контакте</string>
     <string name="app_description">Android-клиент для социальной сети Вконтакте</string>
     <string name="legal">Информация о лицензии</string>
     <string name="copyright">© 2009-2010 Ильдар Каримов, Евгений Баландин, Сергей Подтынный, Анастасия Дремина и другие</string>

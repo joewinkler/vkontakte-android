@@ -7,7 +7,7 @@
     <string name="signup">Sign up</string>
     <string name="login">Login</string>
     <string name="nologin">New user?</string>
-    <string name="app_name"> VK</string>
+    <string name="app_name">VK</string>
     <string name="app_description">Android client for vk.com social network</string>
     <string name="legal">Legal Information</string>
     <string name="copyright">© 2009-2010 Ildar Karimov, Evgeny Balandin, Serg Podtynnyi, Anastasia Dremina and others.</string>

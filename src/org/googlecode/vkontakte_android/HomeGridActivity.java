@@ -100,7 +100,8 @@ public class HomeGridActivity extends Activity implements OnItemClickListener{
     }
     
     private void changeTitle(String uiComponent){
-    	this.setTitle(" "+getResources().getString(R.string.app_name) + " -> " + uiComponent);
+//    	this.setTitle(getResources().getString(R.string.app_name) + " -> " + uiComponent);
+        // looks not good; TODO see facebook app
     }
     
     @Override
