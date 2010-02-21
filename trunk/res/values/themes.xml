@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-
     <style name="vk" parent="@android:style/Theme.Light">
-        <item name="android:windowTitleBackgroundStyle">@style/vk_bcgr</item>
+        <item name="android:windowTitleBackgroundStyle">@style/vk_title</item>
     </style>
-    <style name="vk_bcgr">
+    <style name="vk_title">
         <item name="android:background">#21507C</item>
+        <item name="android:paddingLeft">7dip</item>
     </style>
 </resources>
