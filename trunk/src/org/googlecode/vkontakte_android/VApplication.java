@@ -6,6 +6,7 @@ import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.ui.LoginActivity;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
+import org.googlecode.vkontakte_android.utils.VLog;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -30,8 +31,8 @@ public class VApplication extends Application implements ServiceConnection {
 	public void onCreate() { 
 		super.onCreate();
 		s_instance = this;	
+		VLog.initialize(s_instance);
 		bindService(new Intent(this, CheckingService.class), this, Context.BIND_AUTO_CREATE);
-		
 	}
 
 	@Override

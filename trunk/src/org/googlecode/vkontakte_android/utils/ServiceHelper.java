@@ -25,10 +25,10 @@ public class ServiceHelper {
     
     public static void connect(IBinder service) {
         ServiceHelper.mVKService = IVkontakteService.Stub.asInterface(service);
-        Log.d(TAG, "Service has been connected");
+        VLog.d(TAG, "Service has been connected");
     }
 
     public static void disconnect() {
-        Log.d(TAG, "Service has been disconnected");
+        VLog.d(TAG, "Service has been disconnected");
     }
 }

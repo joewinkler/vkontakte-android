@@ -39,6 +39,8 @@ import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Random;
 
+import org.googlecode.vkontakte_android.utils.VLog;
+
 import android.util.Log;
 
 public class DefaultExceptionHandler implements UncaughtExceptionHandler {
@@ -60,14 +62,9 @@ public class DefaultExceptionHandler implements UncaughtExceptionHandler {
 	    final PrintWriter printWriter = new PrintWriter(result);
 	    e.printStackTrace(printWriter);
 	    try {
-	    	// Random number to avoid duplicate files
-	    	Random generator = new Random();
-	    	int random = generator.nextInt(99999);    	
-	    	// Embed version in stacktrace filename
-	    	String filename = G.APP_VERSION+"-"+Integer.toString(random);
-	    	Log.d(TAG, "Writing unhandled exception to: " + G.FILES_PATH+"/"+filename+".stacktrace");
+	    	Log.d(TAG, "Writing unhandled exception to: " + G.FILES_PATH+"/"+VLog.filename+".stacktrace");
 		    // Write the stacktrace to disk
-	    	BufferedWriter bos = new BufferedWriter(new FileWriter(G.FILES_PATH+"/"+filename+".stacktrace"));
+	    	BufferedWriter bos = new BufferedWriter(new FileWriter(G.FILES_PATH+"/"+VLog.filename+".stacktrace"));
             bos.write(G.ANDROID_VERSION + "\n");
             bos.write(G.PHONE_MODEL + "\n");
             bos.write(result.toString());
