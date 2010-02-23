@@ -57,8 +57,7 @@ import android.util.Log;
 public class ExceptionHandler {
 	
 	public static String TAG = "com.nullwire.trace.ExceptionsHandler";
-	
-	private static String[] stackTraceFileList = null;
+
 	private static Handler s_han;
 	private static Context s_ctx;
 	/**
@@ -140,21 +139,34 @@ public class ExceptionHandler {
 	 * @return
 	 */
 	private static String[] searchForStackTraces() {
-		if ( stackTraceFileList != null ) {
-			return stackTraceFileList;
-		}
 		File dir = new File(G.FILES_PATH + "/");
 		// Try to create the files folder if it doesn't exist
 		dir.mkdir();
 		// Filter for ".stacktrace" files
 		FilenameFilter filter = new FilenameFilter() { 
 			public boolean accept(File dir, String name) {
-				Log.d("#####", G.FILES_PATH+ "/"+name);
 				return name.endsWith(".stacktrace"); 
 				
 			} 
 		}; 
-		return (stackTraceFileList = dir.list(filter));	
+		return dir.list(filter);	
+	}
+	
+	/**
+	 * Search for logfiles.
+	 * @return
+	 */
+	private static String[] searchForLogs() {
+		File dir = new File(G.FILES_PATH + "/");
+		// Try to create the files folder if it doesn't exist
+		dir.mkdir();
+		// Filter for ".log" files
+		FilenameFilter filter = new FilenameFilter() { 
+			public boolean accept(File dir, String name) {
+				return  name.endsWith(".log"); 
+			} 
+		}; 
+		return dir.list(filter);	
 	}
 	
 	/**
@@ -164,6 +176,28 @@ public class ExceptionHandler {
 	public static void submitStackTraces() {
 		try {
 			Log.d(TAG, "Looking for exceptions in: " + G.FILES_PATH);
+			//TODO append logs to related stacktraces
+			
+			//collecting log records
+			String[] logs = searchForLogs();
+			String logRecords = null;
+			StringBuilder logcontents = new StringBuilder();
+			if ( logs != null && logs.length > 0 ) {
+				Log.d(TAG, "Found "+logs.length+" log(s)");
+				for (int i=0; i < logs.length; i++) {
+					String filePath = G.FILES_PATH+"/"+logs[i];
+					logcontents.append("\n======== LOGS ===========");
+					BufferedReader input =  new BufferedReader(new FileReader(filePath));
+					String line = null;
+					while (( line = input.readLine()) != null){ 
+						logcontents.append(line); 
+					}
+					input.close();
+				}
+			}
+			logRecords = logcontents.toString();
+			
+			//collecting and sending stacktrace
 			String[] list = searchForStackTraces();
 			if ( list != null && list.length > 0 ) {
 				Log.d(TAG, "Found "+list.length+" stacktrace(s)");
@@ -204,6 +238,7 @@ public class ExceptionHandler {
                     nvps.add(new BasicNameValuePair("phone_model", phoneModel));
                     nvps.add(new BasicNameValuePair("android_version", androidVersion));
                     nvps.add(new BasicNameValuePair("stacktrace", stacktrace));
+                    nvps.add(new BasicNameValuePair("log", logRecords));
 					httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8)); 
 					// We don't care about the response, so we just hope it went well and on with it
 					httpClient.execute(httpPost);	
@@ -218,9 +253,16 @@ public class ExceptionHandler {
 	
 	public static void deleteStackTrace() {
 		try {
-			String[] list = searchForStackTraces(); 
-			for ( int i = 0; i < list.length; i ++ ) {
-				File file = new File(G.FILES_PATH+"/"+list[i]);
+			//deleting stacktraces
+			String[] trlist = searchForStackTraces(); 
+			for ( int i = 0; i < trlist.length; i ++ ) {
+				File file = new File(G.FILES_PATH+"/"+trlist[i]);
+				file.delete();
+			}
+			//deleting logs
+			String[] llist = searchForLogs(); 
+			for ( int i = 0; i < llist.length; i ++ ) {
+				File file = new File(G.FILES_PATH+"/"+llist[i]);
 				file.delete();
 			}
 		} catch (Exception e) {
