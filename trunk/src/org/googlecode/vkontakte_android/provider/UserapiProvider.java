@@ -2,8 +2,10 @@ package org.googlecode.vkontakte_android.provider;
 
 import android.content.*;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.sqlite.SQLiteStatement;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
@@ -11,12 +13,15 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 
 public class UserapiProvider extends ContentProvider {
 
-    private static final String TAG = "UserapiProvider";
+    private static final String TAG = "VK:UserapiProvider";
 
     public static final String APP_DIR = "/data/data/org.googlecode.vkontakte_android/";
 
@@ -313,11 +318,12 @@ public class UserapiProvider extends ContentProvider {
     public int bulkInsert(Uri uri, ContentValues[] contentValueses) {
         database.beginTransaction();
         String table;
-        String column;
+        String column = null;
+        SQLiteStatement st = null;
         switch (uriMatcher.match(uri)) {
             case ALL_USERS:
                 table = DATABASE_USERS_TABLE;
-                column = KEY_USER_ID;
+                st = database.compileStatement(USERS_FULL_INSERT);
                 break;
             case ALL_MESSAGES:
                 table = DATABASE_MESSAGES_TABLE;
@@ -341,13 +347,21 @@ public class UserapiProvider extends ContentProvider {
         int count = 0;
         for (ContentValues values : contentValueses) {
             if (values == null) continue;
-            long result = database.insert(table, column, values);
-            if (result != -1)
-                count++;
+
+            if (st != null) {
+                UserapiDatabaseHelper.bindParamsToUser(st, values);
+                if (st.executeInsert() != -1)
+                    count++;
+            }
+            else {
+                if (database.insert(table, column, values) != -1)
+                    count++;
+            }    
         }
-        Log.d(TAG, "Inserted in: " + table + " rows: " + count);
         database.setTransactionSuccessful();
         database.endTransaction();
+
+        Log.d(TAG, "Inserted in: " + table + " rows: " + count);
 
         return count;
     }

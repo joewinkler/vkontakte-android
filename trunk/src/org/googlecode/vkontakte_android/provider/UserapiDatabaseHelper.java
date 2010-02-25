@@ -1,8 +1,11 @@
 package org.googlecode.vkontakte_android.provider;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -10,6 +13,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "VK:UserapiDatabaseHelper";
 
+    public static final String DATABASE_USERS_TABLE = "users";
     public static final String KEY_USER_ID = BaseColumns._ID;
     public static final String KEY_USER_NAME = "name";
     public static final String KEY_USER_MALE = "male";
@@ -18,6 +22,8 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_USER_IS_FRIEND = "isfriend";
     public static final String KEY_USER_AVATAR_URL = "photo_small_url";
     public static final String KEY_USER_AVATAR_SMALL = "_data";
+
+    public static final String USERS_FULL_INSERT = "INSERT INTO " + DATABASE_USERS_TABLE + " VALUES (?,?,?,?,?,?,?,?)";
 
     public static final String KEY_MESSAGE_ID = BaseColumns._ID;
     public static final String KEY_MESSAGE_DATE = "date";
@@ -56,7 +62,6 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "userapi";
     private static final int DATABASE_VERSION = 4;
 
-    public static final String DATABASE_USERS_TABLE = "users";
     private static final String DATABASE_USERS_CREATE = "create table " + DATABASE_USERS_TABLE + " (" +
             KEY_USER_ID + " long primary key, " +
             KEY_USER_NAME + " text, " +
@@ -113,6 +118,17 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
             + KEY_STATUS_TEXT + " text"
             + ");";
 
+
+    public static void bindParamsToUser(SQLiteStatement st, ContentValues values) {
+        DatabaseUtils.bindObjectToProgram(st, 1, values.get(KEY_USER_ID));
+        DatabaseUtils.bindObjectToProgram(st, 2, values.get(KEY_USER_NAME));
+        DatabaseUtils.bindObjectToProgram(st, 3, values.get(KEY_USER_MALE));
+        DatabaseUtils.bindObjectToProgram(st, 4, values.get(KEY_USER_ONLINE));
+        DatabaseUtils.bindObjectToProgram(st, 5, values.get(KEY_USER_NEW_FRIEND));
+        DatabaseUtils.bindObjectToProgram(st, 6, values.get(KEY_USER_IS_FRIEND));
+        DatabaseUtils.bindObjectToProgram(st, 7, values.get(KEY_USER_AVATAR_URL));
+        DatabaseUtils.bindObjectToProgram(st, 8, values.get(KEY_USER_AVATAR_SMALL));
+    }
 
     public UserapiDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
