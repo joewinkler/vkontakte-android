@@ -46,15 +46,7 @@ public class HomeGridAdapter extends BaseAdapter {
         intent = new Intent(context, UpdatesListActivity.class);
         items.add(new Item(ItemType.UPDATES, context.getString(R.string.updates), R.drawable.my_updates, intent));
 
-        intent = new Intent(context, FriendListActivity.class).putExtra("type", FriendListActivity.REQUESTS);
-        items.add(new Item(ItemType.REQUESTS, context.getString(R.string.requests), R.drawable.my_requests,intent));
-
         items.add(new Item(ItemType.SEARCH, context.getString(R.string.search), R.drawable.my_search));
-
-        intent = new Intent(context, Settings.class);
-        items.add(new Item(ItemType.SETTINGS, context.getString(R.string.settings), R.drawable.my_settings, intent));
-
-        items.add(new Item(ItemType.HELP, context.getString(R.string.help), R.drawable.my_help));
 
         this.context = context;
     }
