@@ -17,11 +17,14 @@
 
 
     <GridView android:id="@+id/HomeGrid"
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              android:numColumns="3"
+              android:numColumns="2"
               android:paddingTop="5dip"
-              android:background="#FFECEEF4" android:fadingEdge="none" android:layout_width="fill_parent"
-              android:layout_height="wrap_content" android:paddingBottom="5dip" android:horizontalSpacing="8dp"
+              android:background="#FFECEEF4"
+              android:fadingEdge="none"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:paddingBottom="5dip"
+              android:horizontalSpacing="8dp"
               android:verticalSpacing="8dp">
 
     </GridView>

@@ -25,6 +25,7 @@ import org.googlecode.vkontakte_android.service.ApiCheckingKit;
 import org.googlecode.vkontakte_android.service.CheckingService;
 import org.googlecode.vkontakte_android.service.UpdatesNotifier;
 import org.googlecode.vkontakte_android.service.CheckingService.ContentToUpdate;
+import org.googlecode.vkontakte_android.ui.MessageTabActivity;
 import org.googlecode.vkontakte_android.utils.AppHelper;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
 import org.googlecode.vkontakte_android.utils.ServiceHelper;
@@ -36,20 +37,14 @@ import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KE
 public class MessagesListActivity extends AutoLoadActivity {
     private static final String TAG = "org.googlecode.vkontakte_android.MessagesListTabActivity";
 
-    
-    
-    enum MessagesCursorType {
-        ALL, INCOMING, OUTCOMING
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        
         setContentView(R.layout.message_list);
-
         registerForContextMenu(getListView());
+
+        int type = getIntent().getIntExtra("type", 0);
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -62,12 +57,12 @@ public class MessagesListActivity extends AutoLoadActivity {
             }
         });
         refreshOnStart();
-        setupLoaders(ContentToUpdate.MESSAGES_IN, MessagesCursorType.INCOMING);
+        setupLoaders(ContentToUpdate.MESSAGES_IN, type);
     }
 
     
     
-    private void setupLoaders( final CheckingService.ContentToUpdate messagesToUpdate, MessagesCursorType cursorType){
+    private void setupLoaders( final CheckingService.ContentToUpdate messagesToUpdate, int cursorType){
     	
         setupLoader(new AutoLoadActivity.Loader() {
 
@@ -178,14 +173,6 @@ public class MessagesListActivity extends AutoLoadActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.inbox:
-            	setupLoaders(CheckingService.ContentToUpdate.MESSAGES_IN, MessagesCursorType.INCOMING);
-                return true;
-                
-            case R.id.sent:
-            	setupLoaders(ContentToUpdate.MESSAGES_OUT, MessagesCursorType.OUTCOMING);
-            	return true;
-
             case R.id.refresh:
             	refreshOnStart();
             	return true;
@@ -194,13 +181,13 @@ public class MessagesListActivity extends AutoLoadActivity {
                 return super.onContextItemSelected(item);
         }
     }
-    private Cursor getCursor(MessagesCursorType type) {
+    private Cursor getCursor(int type) {
         switch (type) {
-            case INCOMING:
+            case MessageTabActivity.INCOMING_MESSSAGES_TAB:
                 return managedQuery(UserapiProvider.MESSAGES_URI, null,
                         UserapiDatabaseHelper.KEY_MESSAGE_RECEIVERID + "="
                                 + PreferenceHelper.getMyId(this), null, KEY_MESSAGE_DATE + " DESC");
-            case OUTCOMING:
+            case MessageTabActivity.OUTGOING_MESSSAGES_TAB:
                 return managedQuery(UserapiProvider.MESSAGES_URI, null,
                         UserapiDatabaseHelper.KEY_MESSAGE_SENDERID + "="
                                 + PreferenceHelper.getMyId(this), null, KEY_MESSAGE_DATE + " DESC");
