@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.util.Log;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
+import org.googlecode.vkontakte_android.utils.AppHelper;
 
 import java.util.Date;
 
@@ -74,7 +75,7 @@ public class ProfileDao {
 
         if (profile == null) {
             //TODO updating "_data"
-            String filename = UserapiProvider.APP_DIR + "profiles/id" + this.id + ".ava";
+            String filename = AppHelper.APP_DIR + "profiles/id" + this.id + ".ava";
             insertValues.put("_data", filename);
             Log.d(TAG, "Writing " + filename);
             return context.getContentResolver().insert(UserapiProvider.PROFILES_URI, insertValues);

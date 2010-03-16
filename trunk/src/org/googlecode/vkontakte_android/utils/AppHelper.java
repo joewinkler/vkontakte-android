@@ -14,6 +14,9 @@ public class AppHelper {
 
     public static final String AUTHORITY = "org.googlecode.vkontakte_android";
 
+    public static final String APP_DIR = "/data/data/" + AUTHORITY + "/";
+    public static final String AVATARS_DIR = AppHelper.APP_DIR + "avatars/";
+
     public static final String ACTION_NOTIFICATION_CLEARED = "org.googlecode.vkontakte_android.action.NOTIFICATION_CLEARED";
     public static final String ACTION_SET_AUTOUPDATE = "org.googlecode.vkontakte_android.action.SET_AUTOUPDATE";
     public static final String ACTION_CHECK_UPDATES = "org.googlecode.vkontakte_android.action.CHECK_UPDATES";

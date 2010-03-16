@@ -1,74 +1,78 @@
 package org.googlecode.vkontakte_android;
 
 
-
-
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
-
 import org.googlecode.vkontakte_android.CImagesManager.Icons;
 import org.googlecode.vkontakte_android.database.UserDao;
+import org.googlecode.vkontakte_android.utils.AvatarLoader;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
-import org.googlecode.vkontakte_android.utils.UserHelper;
 
 
-public class FriendsListAdapter extends ResourceCursorAdapter {
+public class FriendsListAdapter extends ResourceCursorAdapter implements OnScrollListener {
+
     private static final String TAG = "VK:FriendsListAdapter";
     
-    private   String ONLINE_STATUS;
-    private   String OFFLINE_STATUS;
-    
-    
+    private String ONLINE_STATUS;
+    private String OFFLINE_STATUS;
+
+    private int scrollState;
+    private AvatarLoader avatarLoader;
+
     public FriendsListAdapter(Context context, int layout, Cursor cursor) {
     	super(context, layout, cursor);
-    	ONLINE_STATUS=context.getResources().getString(R.string.status_online);
-    	OFFLINE_STATUS=context.getResources().getString(R.string.status_offline);
-    	//fillPhotoCache(context, cursor);
-    	
-    }
-    
-    
-    @SuppressWarnings("unused")
-	private void fillPhotoCache(Context context, Cursor cursor){
-    	while (cursor.moveToNext()){
-    		UserDao userDao = UserDao.make(context, cursor);
-    		UserHelper.getPhotoByUser2(context, userDao);
-    	}
-    	Log.d(TAG,"photos cached:"+UserHelper.bitmapCache.size());
-    }
-    
+    	ONLINE_STATUS = context.getResources().getString(R.string.status_online);
+    	OFFLINE_STATUS = context.getResources().getString(R.string.status_offline);
 
+        avatarLoader = new AvatarLoader(context);
+    }
+    
     @Override
     public void bindView(View view, Context context, final Cursor cursor) {
-     //   Long startViewtime=java.lang.System.currentTimeMillis();
     	UserDao userDao = UserDao.make(context, cursor);
         TextView name = (TextView) view.findViewById(R.id.name);
         TextView status = (TextView) view.findViewById(R.id.status);
         name.setText(userDao.getUserName());
         status.setText(userDao.isOnline() ? ONLINE_STATUS : OFFLINE_STATUS);
 
-        //if (userDao.newFriend) {view.findViewById(R.id.indicator).setVisibility(View.VISIBLE);
-        //} else view.findViewById(R.id.indicator).setVisibility(View.INVISIBLE);
+        ImageView avatarView = (ImageView) view.findViewById(R.id.photo);
+        avatarView.setTag(userDao.getUserPhotoUrl());
 
-        String photoViewTag="photoview"+userDao.getUserId();
-        ImageView photo = (ImageView)view.findViewWithTag(photoViewTag);
-        if (photo==null){
-        	photo = (ImageView) view.findViewById(R.id.photo);
-        	photo.setTag(photoViewTag);
-        }
-        
         if (PreferenceHelper.shouldLoadPics(context)) {
-        	photo.setImageBitmap(UserHelper.getPhotoByUser2(context, userDao));
-        } else {
-            photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
-            photo.setVisibility(View.GONE);
+            if (scrollState != OnScrollListener.SCROLL_STATE_FLING) {
+                // Scrolling is idle or slow, getting the avatar right now
+                avatarLoader.setAvatarNow(avatarView);
+            }
+            else {
+                avatarLoader.setAvatarDeferred(avatarView);
+            }
         }
-       // Long diffTime=java.lang.System.currentTimeMillis()-startViewtime;
-        //Log.d(TAG,"BindView done:"+diffTime);
+        else {
+            avatarView.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
+            avatarView.setVisibility(View.GONE);
+        }
     }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        this.scrollState = scrollState;
+        if (scrollState == OnScrollListener.SCROLL_STATE_FLING) {
+            // If we are in a fling, stop loading avatars.
+            avatarLoader.cancelDeferredLoading();
+        }
+        else
+            avatarLoader.loadMissedAvatars();
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        // Nothing to do
+    }
+
 }

@@ -17,9 +17,9 @@ import static org.googlecode.vkontakte_android.provider.UserapiProvider.USERS_UR
 
 public class FriendsListTabActivity extends ListActivity implements AdapterView.OnItemClickListener {
     private FriendsListAdapter adapter;
-    
+
     @SuppressWarnings("unused")
-	private static String TAG = "VK:FriendsListTabActivity";
+    private static String TAG = "VK:FriendsListTabActivity";
 
     enum FriendsCursorType {
         ALL, NEW, ONLINE
@@ -29,53 +29,52 @@ public class FriendsListTabActivity extends ListActivity implements AdapterView.
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.friend_list);
-    
+
         Cursor cursor;
-        int type=FriendListActivity.ONLINE;
-        
-        if (getIntent().getExtras()!=null){
-        	type=getIntent().getExtras().getInt("type");
+        int type = FriendListActivity.ONLINE;
+
+        if (getIntent().getExtras() != null) {
+            type = getIntent().getExtras().getInt("type");
         }
 
-        if(type==FriendListActivity.ALL){
-        	cursor=makeCursor(FriendsCursorType.ALL);
-        }else if(type==FriendListActivity.ONLINE){
-        	cursor=makeCursor(FriendsCursorType.ONLINE);
-        }else if(type==FriendListActivity.REQUESTS){
-        	cursor=makeCursor(FriendsCursorType.NEW);
-        }else{
-        	cursor=makeCursor(FriendsCursorType.ONLINE);
+        if (type == FriendListActivity.ALL) {
+            cursor = makeCursor(FriendsCursorType.ALL);
         }
-        	
-        
+        else if (type == FriendListActivity.ONLINE) {
+            cursor = makeCursor(FriendsCursorType.ONLINE);
+        }
+        else if (type == FriendListActivity.REQUESTS) {
+            cursor = makeCursor(FriendsCursorType.NEW);
+        }
+        else {
+            cursor = makeCursor(FriendsCursorType.ONLINE);
+        }
+
         adapter = new FriendsListAdapter(this, R.layout.friend_row, cursor);
 
-      
         registerForContextMenu(getListView());
         getListView().setOnItemClickListener(this);
         getListView().setAdapter(adapter);
-   
+        getListView().setOnScrollListener(adapter);
     }
 
-   
-    
 
     private Cursor makeCursor(FriendsCursorType type) {
 
         switch (type) {
             case NEW:
                 return managedQuery(USERS_URI, null, KEY_USER_NEW_FRIEND + "=1", null,
-                        KEY_USER_ID + " ASC," + KEY_USER_NEW_FRIEND + " DESC, " + KEY_USER_ONLINE + " DESC"
+                                    KEY_USER_ID + " ASC," + KEY_USER_NEW_FRIEND + " DESC, " + KEY_USER_ONLINE + " DESC"
 
                 );
             case ONLINE:
                 return managedQuery(USERS_URI, null, KEY_USER_ONLINE + "=1", null,
-                        KEY_USER_ID + " ASC," + KEY_USER_NEW_FRIEND + " DESC, " + KEY_USER_ONLINE + " DESC"
+                                    KEY_USER_ID + " ASC," + KEY_USER_NEW_FRIEND + " DESC, " + KEY_USER_ONLINE + " DESC"
                 );
             case ALL:
                 return managedQuery(USERS_URI, null,
-                        KEY_USER_IS_FRIEND + "=?", new String[]{"1"},
-                        KEY_USER_ID + " ASC," + KEY_USER_NEW_FRIEND + " DESC, " + KEY_USER_ONLINE + " DESC"
+                                    KEY_USER_IS_FRIEND + "=?", new String[]{"1"},
+                                    KEY_USER_ID + " ASC," + KEY_USER_NEW_FRIEND + " DESC, " + KEY_USER_ONLINE + " DESC"
                 );
             default:
                 return managedQuery(USERS_URI, null, null, null, null);
@@ -90,7 +89,8 @@ public class FriendsListTabActivity extends ListActivity implements AdapterView.
         UserDao user = UserDao.get(this, info.id);
         if (user.isNewFriend()) {
             menu.removeItem(R.id.remove_from_friends);
-        } else {
+        }
+        else {
             menu.removeItem(R.id.add_to_friends);
         }
     }
