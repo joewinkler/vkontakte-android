@@ -127,15 +127,15 @@ public class UserHelper {
                     Canvas canvas=new Canvas();
 
                     Bitmap bitmap = Bitmap.createBitmap( Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight), Bitmap.Config.RGB_565);
-                    
+
                     canvas.setBitmap(bitmap);
 
                     canvas.drawBitmap(bm, 0, 0, null);
-                    
+
 //                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,dstWidth,dstHeight,true);
                       //bm = Bitmap.createBitmap(bm, 0, 0, Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight));
     //                croppedBitmap = Bitmap.createBitmap(croppedBitmap, 0, 0, Math.min(PHOTO_SIZE, dstWidth), Math.min(PHOTO_SIZE, dstHeight));
-                    
+
     				bitmapCache2.put(id, bitmap);
     				return bitmapCache2.get(id);
 				} else {
@@ -143,12 +143,12 @@ public class UserHelper {
 					return CImagesManager.getBitmap(context, Icons.STUB);
 				}
 			} else {
-				try {
-					user.updatePhoto(context);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+//				try {
+//					user.updatePhoto(context);
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 
 				return CImagesManager.getBitmap(context, Icons.STUB);
 			}

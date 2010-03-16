@@ -275,15 +275,15 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 UserapiDatabaseHelper.KEY_USER_ID + " IN(" + users + ")", null, null);
         while (c.moveToNext()) {
             UserDao ud = UserDao.make(m_context, c);
-            try {
-                if (ud.getData() == null) {   ////!!!
-                    ud.updatePhoto(m_context);
-                }
-            } catch (IOException e) {
-                Log.e(TAG, "Cannot download photo");
-                e.printStackTrace();
-                throw new MyRemoteException(e);
-            }
+//            try {
+//                if (ud.getData() == null) {   ////!!!
+//                   z ud.updatePhoto(m_context);
+//                }
+//            } catch (IOException e) {
+//                Log.e(TAG, "Cannot download photo");
+//                e.printStackTrace();
+//                throw new MyRemoteException(e);
+//            }
         }
         c.close();
     }
@@ -294,7 +294,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 null, null, null);
         while (c.moveToNext()) {
             UserDao ud = UserDao.make(m_context, c);
-            try {
+            /*try {
                 if (ud.getData() == null) {
                     ud.updatePhoto(m_context);
                 }
@@ -302,7 +302,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
                 Log.e(TAG, "Cannot download photo");
                 e.printStackTrace();
                 throw new MyRemoteException(e);
-            }
+            }*/
         }
         c.close();
     }

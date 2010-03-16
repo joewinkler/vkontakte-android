@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Log;
+import org.googlecode.vkontakte_android.utils.AppHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,8 +23,6 @@ import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 public class UserapiProvider extends ContentProvider {
 
     private static final String TAG = "VK:UserapiProvider";
-
-    public static final String APP_DIR = "/data/data/org.googlecode.vkontakte_android/";
 
     public static final Uri USERS_URI = Uri.parse("content://org.googlecode.vkontakte_android/users");
     public static final Uri MESSAGES_URI = Uri.parse("content://org.googlecode.vkontakte_android/messages");
@@ -372,9 +371,11 @@ public class UserapiProvider extends ContentProvider {
     }
 
     private void createFolders() {
-        File f = new File(APP_DIR + "profiles");
+        File f = new File(AppHelper.APP_DIR + "profiles");
         f.mkdir();
-        f = new File(APP_DIR + "photos");
+        f = new File(AppHelper.APP_DIR + "photos");
+        f.mkdir();
+        f = new File(AppHelper.AVATARS_DIR);
         f.mkdir();
     }
 

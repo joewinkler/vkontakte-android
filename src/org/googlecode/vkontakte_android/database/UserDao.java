@@ -97,6 +97,11 @@ public class UserDao extends User {
         return user;
     }
 
+    /**
+     * Removes all users from DB.
+     *
+     * @param context application context
+     */
     public static void deleteAll(Context context) {
         Log.v(TAG, "Deleting all users");
         context.getContentResolver().delete(USERS_URI, null, null);
@@ -361,61 +366,6 @@ public class UserDao extends User {
             return useruri;
         }
 
-    }
-
-    public synchronized void updatePhoto(Context ctx) throws IOException {
-        if (this.userPhotoUrl == null) {
-            this.userPhotoUrl = User.STUB_URL;
-        }
-
-        ContentValues insertValues = new ContentValues();
-        this.data = getPath();
-        insertValues.put(KEY_USER_AVATAR_SMALL, data);
-        Uri uri = Uri.withAppendedPath(UserapiProvider.USERS_URI, String.valueOf(userId));
-		if (1 == ctx.getContentResolver().update(uri, insertValues, null, null)) {
-			Log.d(TAG, "Updating photo of " + this.userName + " "+ this.userPhotoUrl);
-			byte[] photo = null;
-
-			try {
-				photo = ApiCheckingKit.getApi().getFileFromUrl(userPhotoUrl);
-				OutputStream os = null;
-				os = ctx.getContentResolver().openOutputStream(uri);
-				if (photo != null) {
-					os.write(photo);
-					os.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			ctx.getContentResolver().notifyChange(uri, null);
-		}
-        
-    }
-
-    public synchronized void updatePhoto(Context ctx, User proto, Uri uri) throws IOException {
-        String oldPhotoUrl = userPhotoUrl;
-        String newPhotoUrl = proto.getUserPhotoUrl();
-
-        //photo was updated or file was not downloaded
-        if ((newPhotoUrl != null && !newPhotoUrl.equalsIgnoreCase(oldPhotoUrl)) || !UserapiProvider.isExists(getPath())) {
-
-            //initialize _data field
-            ContentValues insertValues = new ContentValues();
-            data = getPath();
-            insertValues.put(KEY_USER_AVATAR_SMALL, data);
-            if (1 == ctx.getContentResolver().update(uri, insertValues, null, null)) {
-                Log.d(TAG, "Saving photo of " + proto.getUserName() + " " + newPhotoUrl);
-                byte[] photo = proto.getUserPhoto();
-                OutputStream os = ctx.getContentResolver().openOutputStream(uri);
-                os.write(photo);
-                os.close();
-                ctx.getContentResolver().notifyChange(uri, null);
-            }
-        }
-    }
-
-    private String getPath() {
-        return UserapiProvider.APP_DIR + "profiles/id" + userId + ".smallava";
     }
 
     public String getData() {
