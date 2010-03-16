@@ -81,23 +81,6 @@ public class UserDao extends User {
     }
 
     /**
-     * Makes User object from cursor with only such data: KEY_USER_ID, KEY_USER_NAME, KEY_USER_ONLINE,
-     * KEY_USER_AVATAR_URL. It returns User object because this data doesn't fully correspond to object in DB.
-     *
-     * @param cursor cursor from users table
-     * @return User object
-     */
-    public static User makeLite(Cursor cursor) {
-        UserDao user = new UserDao();
-        user.userId = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_USER_ID));
-        user.userName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_NAME));
-        user.online = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_ONLINE)) == 1;
-        user.userPhotoUrl = cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_AVATAR_URL));
-
-        return user;
-    }
-
-    /**
      * Removes all users from DB.
      *
      * @param context application context
@@ -176,8 +159,7 @@ public class UserDao extends User {
         }
 
         ContentResolver resolver = context.getContentResolver();
-        String[] projection = new String[]{KEY_USER_ID, KEY_USER_NAME, KEY_USER_AVATAR_URL, KEY_USER_ONLINE};
-        Cursor cursor = resolver.query(USERS_URI, projection, null, null, KEY_USER_ID);
+        Cursor cursor = resolver.query(USERS_URI, null, null, null, KEY_USER_ID);
 
         int toDeleteCount = 0;
 
@@ -192,16 +174,20 @@ public class UserDao extends User {
         // While cursor and iterator has more user objects
         do {
             // Taking next user object from DB if needed
-            if (userInDb == null && cursor != null && cursor.moveToNext())
-                userInDb = makeLite(cursor);
-            else
-                userInDb = null;
+            if (userInDb == null) {
+                if (cursor != null && cursor.moveToNext())
+                    userInDb = make(context, cursor);
+                else
+                    userInDb = null;
+            }
 
             // Taking next user object from userapi response if needed
-            if (userFromResp == null && usersIt.hasNext())
-                userFromResp = usersIt.next();
-            else
-                userFromResp = null;
+            if (userFromResp == null) {
+                if (usersIt.hasNext())
+                    userFromResp = usersIt.next();
+                else
+                    userFromResp = null;
+            }
 
             // If userapi response doesn't have user that we have in DB
             if (userInDb != null && (userFromResp == null || userFromResp.getUserId() > userInDb.getUserId())) {
@@ -250,22 +236,23 @@ public class UserDao extends User {
                 // User is processed
                 userFromResp = null;
             }
-            // If userapi response have user that we have too and that user differs
-            else if (userInDb != null && userFromResp != null && userInDb.getUserId() == userFromResp.getUserId() &&
-                (userInDb.isOnline() != userFromResp.isOnline() || !userInDb.getUserPhotoUrl().equals(userFromResp.getUserPhotoUrl()) ||
-                 !userInDb.getUserName().equals(userFromResp.getUserName()) || userInDb.isFriend() != userFromResp.isFriend() ||
-                    userInDb.isNewFriend() != userFromResp.isNewFriend())) {
-                // Add that user to update list
-                if (updateList == null)
-                    updateList = new ArrayList<ContentValues>();
-                ContentValues values = makeContentValuesLite(userFromResp);
-                values.put(KEY_USER_ID, userInDb.getUserId());
-                updateList.add(values);
+            // If userapi response have user that we have too
+            else if (userInDb != null && userFromResp != null && userInDb.getUserId() == userFromResp.getUserId()) {
+                // If that user differs
+                if (userInDb.isOnline() != userFromResp.isOnline() || !userInDb.getUserPhotoUrl().equals(userFromResp.getUserPhotoUrl()) ||
+                    !userInDb.getUserName().equals(userFromResp.getUserName()) || userInDb.isFriend() != userFromResp.isFriend() ||
+                    userInDb.isNewFriend() != userFromResp.isNewFriend()) {
+                    // Add that user to update list
+                    if (updateList == null)
+                        updateList = new ArrayList<ContentValues>();
+                    ContentValues values = makeContentValuesLite(userFromResp);
+                    values.put(KEY_USER_ID, userInDb.getUserId());
+                    updateList.add(values);
+                }
                 // User is processed
                 userInDb = null;
                 userFromResp = null;
             }
-
         } while ((cursor != null && !cursor.isAfterLast()) || usersIt.hasNext());
 
         // Apply changes to DB
@@ -317,6 +304,7 @@ public class UserDao extends User {
         contentValues.put(KEY_USER_NAME, user.getUserName());
         contentValues.put(KEY_USER_AVATAR_URL, user.getUserPhotoUrl());
         contentValues.put(KEY_USER_ONLINE, user.isOnline());
+        contentValues.put(KEY_USER_IS_FRIEND, user.isFriend());
         return contentValues;
     }
 
