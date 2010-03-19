@@ -2,7 +2,6 @@ package org.googlecode.vkontakte_android.provider;
 
 import android.content.*;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
@@ -14,9 +13,6 @@ import org.googlecode.vkontakte_android.utils.AppHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 
