@@ -8,7 +8,6 @@ package org.googlecode.vkontakte_android.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -16,16 +15,17 @@ import android.widget.ImageView;
 import org.googlecode.vkontakte_android.CImagesManager;
 import org.googlecode.vkontakte_android.service.ApiCheckingKit;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.io.InterruptedIOException;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- *
+ * This class helps to populate UI (ImageView) with avatars, it responsible for avatars background loading
+ * and caching.
  *
  * @author Ayzen
  */
@@ -36,9 +36,22 @@ public class AvatarLoader {
     private static final int FETCH_AVATAR_MSG = 1;
 
     private static HashMap<String, Bitmap> bitmapCache = new HashMap<String, Bitmap>();
-    private List<ImageView> missedAvatars = new ArrayList<ImageView>();
+    /**
+     * Stack of avatars that should be loaded from remote server.
+     */
+    private Stack<AvatarInfo> missedAvatars = new Stack<AvatarInfo>();
 
-    private ExecutorService threadPool;
+    /**
+     * Thread pool for loading avatars from device.
+     */
+    private ExecutorService threadPool = null;
+    /**
+     * Is used for downloading avatars from remote server.
+     */
+    private Thread avatarLoadThread = null;
+    /**
+     * Handler for applying avatars in UI thread.
+     */
     private AvatarFetchHandler avatarFetchHandler;
 
     private Context context;
@@ -48,17 +61,27 @@ public class AvatarLoader {
         avatarFetchHandler = new AvatarFetchHandler();
     }
 
-    public void setAvatarNow(ImageView view) {
-        setAvatar(view, true);
+    /**
+     * Removes cached avatar from device.
+     *
+     * @param avatarUrl avatar URL
+     */
+    public static void removeCachedAvatar(String avatarUrl) {
+        String avatarFileName = avatarUrl.substring(avatarUrl.lastIndexOf("/") + 1);
+        File avatar = new File(AppHelper.AVATARS_DIR + avatarFileName);
+        if (avatar.delete())
+            Log.d(TAG, "Removed cached avatar: " + avatarUrl);
     }
 
-    public void setAvatarDeferred(ImageView view) {
-        setAvatar(view, false);
-    }
-
-    private void setAvatar(ImageView view, boolean loadNow) {
+    /**
+     * Applies avatar bitmap to corresponding ImageView.
+     *
+     * @param info information about avatar
+     */
+    public void setAvatar(AvatarInfo info) {
         Bitmap avatar;
-        String avatarUrl = (String) view.getTag();
+        ImageView view = info.view;
+        String avatarUrl = info.avatarUrl;
 
         Log.v(TAG, "Request for avatar: " + avatarUrl);
 
@@ -74,39 +97,73 @@ public class AvatarLoader {
             // Cache miss
             // Set default image
             view.setImageBitmap(CImagesManager.getBitmap(context, CImagesManager.Icons.STUB));
-            // That avatar should be loaded
-            missedAvatars.add(view);
 
-            if (loadNow)
-                loadAvatar(view);
+            loadAvatar(info, false);
         }
     }
 
+    /**
+     * Starts to load missed avatars from remote server.
+     */
     public void loadMissedAvatars() {
         int missedItems = missedAvatars.size();
-        if (missedItems > 0) {
-            Log.v(TAG, "Starting to load missed avatars: " + missedItems);
-            for (ImageView view : missedAvatars)
-                loadAvatar(view);
+        synchronized (AvatarLoader.this) {
+            if (avatarLoadThread == null && missedItems > 0) {
+                Log.d(TAG, "Starting to load missed avatars: " + missedItems);
+                loadAvatar(missedAvatars.pop(), true);
+            }
         }
     }
 
-    public synchronized void cancelDeferredLoading() {
+    /**
+     * Cancel avatar remote loading and loading from device.
+     */
+    public void cancelLoading() {
+        Log.d(TAG, "Canceling all load threads");
+        if (avatarLoadThread != null) {
+            avatarLoadThread.interrupt();
+            avatarLoadThread = null;
+        }
         if (threadPool != null) {
-            Log.v(TAG, "Canceling all deferred avatar loadings");
             threadPool.shutdownNow();
             threadPool = null;
         }
-        avatarFetchHandler.clearAvatarFetching();
     }
 
-    private void loadAvatar(ImageView view) {
-        if (threadPool == null)
-            threadPool = Executors.newFixedThreadPool(3);
-
-        threadPool.execute(new AvatarFetcher(view));
+    /**
+     * Stops avatar loading and clears all deferred loadings.
+     */
+    public void abortProcess() {
+        Log.d(TAG, "Abort avatar loading process");
+        cancelLoading();
+        missedAvatars.clear();
     }
 
+    /**
+     * Starts a thread to load avatar.
+     *
+     * @param info information about avatar
+     * @param loadNow true, if avatar should be loaded instantly
+     */
+    private void loadAvatar(AvatarInfo info, boolean loadNow) {
+        AvatarFetcher fetcher = new AvatarFetcher(info, loadNow);
+        if (loadNow) {
+            avatarLoadThread = new Thread(fetcher);
+            avatarLoadThread.start();
+        }
+        else {
+            if (threadPool == null)
+                threadPool = Executors.newSingleThreadExecutor();
+            threadPool.execute(fetcher);
+        }
+    }
+
+    /**
+     * Downloading avatar from remote server.
+     *
+     * @param avatarUrl avatar URL
+     * @return bitmap with avatar
+     */
     private Bitmap downloadAvatar(String avatarUrl) {
         Log.d(TAG, "Downloading avatar: " + avatarUrl);
 
@@ -129,6 +186,9 @@ public class AvatarLoader {
                 return BitmapFactory.decodeByteArray(avatar, 0, avatar.length);
             }
         }
+        catch (InterruptedIOException e) {
+            Log.d(TAG, "Avatar download process was aborted: " + avatarUrl);
+        }
         catch (IOException e) {
             Log.e(TAG, "Error while downloading avatar: " + avatarUrl, e);
         }
@@ -136,48 +196,45 @@ public class AvatarLoader {
         return null;
     }
 
+    /**
+     * Handler for applying bitmaps with avatars to corresponding ImageViews in UI thread.
+     */
     private class AvatarFetchHandler extends Handler {
 
         @Override
         public void handleMessage(Message message) {
             switch (message.what) {
                 case FETCH_AVATAR_MSG: {
-                    final ImageView view = (ImageView) message.obj;
-                    String avatarUrl = (String) view.getTag();
+                    AvatarInfo info = (AvatarInfo) message.obj;
+                    ImageView view = info.view;
+                    String url = info.avatarUrl;
+                    Bitmap avatar = info.bitmap;
 
-                    Bitmap avatar = bitmapCache.get(avatarUrl);
-
-                    if (avatar != null) {
-                        Log.v(TAG, "Applying avatar to view: " + avatarUrl);
-
+                    // Here ImageView could represent different avatar (if user scrolled from that avatar)
+                    if (avatar != null && url.equals(view.getTag()))
                         view.setImageBitmap(avatar);
-                        missedAvatars.remove(view);
-                    }
                 }
             }
         }
 
-        public void clearAvatarFetching() {
-            removeMessages(FETCH_AVATAR_MSG);
-        }
-
     }
 
+    /**
+     * Loads avatar from device if it's cached, otherwise downloads avatar from remote server.
+     */
     private class AvatarFetcher implements Runnable {
 
-        private ImageView view;
+        private AvatarInfo info;
+        private boolean loadNow;
 
-        public AvatarFetcher(ImageView imageView) {
-            this.view = imageView;
+        public AvatarFetcher(AvatarInfo info, boolean loadNow) {
+            this.info = info;
+            this.loadNow = loadNow;
         }
 
         public void run() {
-            String avatarUrl = (String) view.getTag();
-
-            Log.v(TAG, "Fetching avatar: " + avatarUrl);
-
-            if (Thread.interrupted())
-                return; // shutdown has been called.
+            ImageView view = info.view;
+            String avatarUrl = info.avatarUrl;
 
             Bitmap avatar = null;
             try {
@@ -187,32 +244,85 @@ public class AvatarLoader {
 
                 // If avatar is not saved on device
                 if (avatar == null) {
-                    if (Thread.interrupted())
-                        return; // shutdown has been called.
+                    if (loadNow) {
+                        if (Thread.interrupted())
+                            return; // shutdown has been called.
 
-                    avatar = downloadAvatar(avatarUrl);
+                        avatar = downloadAvatar(avatarUrl);
+                        if (avatar != null) {
+                            // View for avatar could be changed
+                            int index = missedAvatars.indexOf(info);
+                            if (index != -1) {
+                                info = missedAvatars.elementAt(index);
+                                view = info.view;
+                                missedAvatars.remove(info);
+                            }
+                        }
+                    }
+                    else {
+                        // Should load avatars later
+                        // Ensure that there will be only one such avatar in stack
+                        missedAvatars.remove(info);
+                        missedAvatars.push(info);
+                        Log.v(TAG, "Added avatar to pending load: " + avatarUrl);
+                    }
                 }
             }
             catch (OutOfMemoryError e) {
                 // Not enough memory for the avatar, do nothing.
             }
 
-            if (avatar == null) {
+            if (avatar == null)
                 return;
-            }
 
             bitmapCache.put(avatarUrl, avatar);
+            info.bitmap = avatar;
 
             if (Thread.interrupted())
                 return; // shutdown has been called.
 
-            // Update must happen on UI thread
-            Message msg = new Message();
-            msg.what = FETCH_AVATAR_MSG;
-            msg.obj = view;
-            avatarFetchHandler.sendMessage(msg);
+            // Here ImageView could represent different avatar (if user scrolled from that avatar)
+            if (avatar != null && avatarUrl.equals(view.getTag())) {
+                // Update must happen on UI thread
+                Message msg = new Message();
+                msg.what = FETCH_AVATAR_MSG;
+                msg.obj = info;
+                avatarFetchHandler.sendMessage(msg);
+            }
+
+            synchronized (AvatarLoader.this) {
+                if (avatarLoadThread == Thread.currentThread()) {
+                    avatarLoadThread = null;
+                    if (missedAvatars.size() > 0) {
+                        // Load next avatar from stack
+                        if (!Thread.interrupted())
+                            loadAvatar(missedAvatars.pop(), true);
+                    }
+                }
+            }
         }
 
+    }
+
+    /**
+     * Information about avatar and it's corresponding ImageView.
+     */
+    public static class AvatarInfo {
+        
+        public ImageView view;
+        public String avatarUrl;
+        public Bitmap bitmap;
+
+        public AvatarInfo() {
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null || !(obj instanceof AvatarInfo))
+                return false;
+
+            return avatarUrl.equals(((AvatarInfo) obj).avatarUrl);
+        }
     }
 
 }

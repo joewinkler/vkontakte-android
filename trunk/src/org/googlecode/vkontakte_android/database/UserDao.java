@@ -11,6 +11,7 @@ import org.googlecode.userapi.User;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.ApiCheckingKit;
+import org.googlecode.vkontakte_android.utils.AvatarLoader;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -242,6 +243,9 @@ public class UserDao extends User {
                 if (userInDb.isOnline() != userFromResp.isOnline() || !userInDb.getUserPhotoUrl().equals(userFromResp.getUserPhotoUrl()) ||
                     !userInDb.getUserName().equals(userFromResp.getUserName()) || userInDb.isFriend() != userFromResp.isFriend() ||
                     userInDb.isNewFriend() != userFromResp.isNewFriend()) {
+                    // Check whether old cached avatar should be deleted
+                    if (!userInDb.getUserPhotoUrl().equals(userFromResp.getUserPhotoUrl()))
+                        AvatarLoader.removeCachedAvatar(userInDb.getUserPhotoUrl());    
                     // Add that user to update list
                     if (updateList == null)
                         updateList = new ArrayList<ContentValues>();

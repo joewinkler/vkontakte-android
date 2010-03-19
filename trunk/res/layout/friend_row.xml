@@ -16,8 +16,7 @@
             android:src="@drawable/icon"
             android:scaleType="centerCrop"
             android:layout_height="wrap_content"
-            android:layout_width="80px" android:padding="3dp"
-            />
+            android:layout_width="80px" android:padding="3dp"/>
 
     <TextView android:id="@+id/status"
               android:layout_width="fill_parent"

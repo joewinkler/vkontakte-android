@@ -42,16 +42,16 @@ public class FriendsListAdapter extends ResourceCursorAdapter implements OnScrol
         status.setText(userDao.isOnline() ? ONLINE_STATUS : OFFLINE_STATUS);
 
         ImageView avatarView = (ImageView) view.findViewById(R.id.photo);
-        avatarView.setTag(userDao.getUserPhotoUrl());
+        AvatarLoader.AvatarInfo info = new AvatarLoader.AvatarInfo();
+        info.view = avatarView;
+        info.avatarUrl = userDao.getUserPhotoUrl();
+        avatarView.setTag(info.avatarUrl);
 
         if (PreferenceHelper.shouldLoadPics(context)) {
-            if (scrollState != OnScrollListener.SCROLL_STATE_FLING) {
+            avatarLoader.setAvatar(info);
+            if (scrollState != OnScrollListener.SCROLL_STATE_FLING)
                 // Scrolling is idle or slow, getting the avatar right now
-                avatarLoader.setAvatarNow(avatarView);
-            }
-            else {
-                avatarLoader.setAvatarDeferred(avatarView);
-            }
+                avatarLoader.loadMissedAvatars();
         }
         else {
             avatarView.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
@@ -64,7 +64,7 @@ public class FriendsListAdapter extends ResourceCursorAdapter implements OnScrol
         this.scrollState = scrollState;
         if (scrollState == OnScrollListener.SCROLL_STATE_FLING) {
             // If we are in a fling, stop loading avatars.
-            avatarLoader.cancelDeferredLoading();
+            avatarLoader.cancelLoading();
         }
         else
             avatarLoader.loadMissedAvatars();
@@ -73,6 +73,20 @@ public class FriendsListAdapter extends ResourceCursorAdapter implements OnScrol
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         // Nothing to do
+    }
+
+    public void resumeAvatarLoading() {
+        avatarLoader.loadMissedAvatars();
+    }
+
+    public void pauseAvatarLoading() {
+        avatarLoader.cancelLoading();
+        scrollState = SCROLL_STATE_IDLE;
+    }
+
+    public void cancelAvatarLoading() {
+        avatarLoader.abortProcess();
+        scrollState = SCROLL_STATE_IDLE;
     }
 
 }

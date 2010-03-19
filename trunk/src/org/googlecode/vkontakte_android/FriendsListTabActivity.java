@@ -58,6 +58,23 @@ public class FriendsListTabActivity extends ListActivity implements AdapterView.
         getListView().setOnScrollListener(adapter);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adapter.resumeAvatarLoading();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        adapter.pauseAvatarLoading();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.cancelAvatarLoading();
+    }
 
     private Cursor makeCursor(FriendsCursorType type) {
 
