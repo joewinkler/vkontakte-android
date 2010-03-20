@@ -218,6 +218,8 @@ public class UserDao extends User {
                     }
                     if (values.size() > 0) {
                         values.put(KEY_USER_ID, userInDb.getUserId());
+                        if (updateList == null)
+                            updateList = new ArrayList<ContentValues>();
                         updateList.add(values);
                     }
                     // User is processed
