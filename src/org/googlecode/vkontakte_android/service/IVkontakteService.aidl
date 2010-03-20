@@ -6,7 +6,7 @@ interface IVkontakteService {
   void sendMessage(String mess, long id);
   void sendStatus(String status);
   
-  void login(String login, String pass, String remix);
+  void login(String login, String pass, String remix, String sid);
 //  void login(Credentials credentials);
   void loginAuth();
   void logout();
