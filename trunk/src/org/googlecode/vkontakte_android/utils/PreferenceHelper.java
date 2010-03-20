@@ -15,6 +15,7 @@ public class PreferenceHelper {
     public static final String LOGIN = "login";
     public static final String PASSWORD = "password";
     public static final String REMIX = "remix";
+    public static final String SID = "sid";
     public static final String SYNC_PERIOD = "sync_period";
     public static final String MY_ID = "my_id";
     public static final String TS_MESSAGES = "ts_messages";
@@ -23,6 +24,7 @@ public class PreferenceHelper {
     private static final String DEFAULT_LOGIN_NAME = "";
     private static final String DEFAULT_PASSWORD = "";
     private static final String DEFAULT_REMIX = null;
+    private static final String DEFAULT_SID = null;
     private static final int DEFAULT_SYNC_INTERVAL = SYNC_INTERVAL_NEVER;
 
 
@@ -53,7 +55,8 @@ public class PreferenceHelper {
         String login = prefs.getString(LOGIN, DEFAULT_LOGIN_NAME);
         String pass = prefs.getString(PASSWORD, DEFAULT_PASSWORD);
         String remix = prefs.getString(REMIX, DEFAULT_REMIX);
-        return new Credentials(login, pass, remix);
+        String sid = prefs.getString(SID, DEFAULT_SID);
+        return new Credentials(login, pass, remix, sid);
     }
 
     public static boolean shouldLoadPics(Context ctx) {
@@ -69,6 +72,8 @@ public class PreferenceHelper {
         ed.remove(PASSWORD);
         ed.commit();
         ed.remove(REMIX);
+        ed.commit();
+        ed.remove(SID);
         ed.commit();
     }
 
@@ -105,7 +110,9 @@ public class PreferenceHelper {
         if (credentials.getRemixpass() != null) {
             ed.putString(REMIX, credentials.getRemixpass()).commit();
         }
-        //todo: move from here
+        if (credentials.getSid() != null) {
+            ed.putString(SID, credentials.getSid()).commit();
+        }
         setLogged(context, true);
     }
 

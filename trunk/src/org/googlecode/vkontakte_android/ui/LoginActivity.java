@@ -56,7 +56,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             setupMainView();
         } else {
             Credentials credentials = PreferenceHelper.getCredentials(this);
-            login(credentials.getLogin(), credentials.getPass(), credentials.getRemixpass());
+            System.out.println("credentials.getSid() = " + credentials.getSid());
+            login(credentials.getLogin(), credentials.getPass(), credentials.getRemixpass(), credentials.getSid());
         }
     }
 
@@ -100,7 +101,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_login:
-                login(getLogin(), getPass(), null);
+                login(getLogin(), getPass(), null, null);
                 break;
             case R.id.button_signup: 
             	Intent i = new Intent(Intent.ACTION_VIEW); 
@@ -111,7 +112,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    private void login(final String login, final String pass, final String remixpass) {
+    private void login(final String login, final String pass, final String remixpass, final String sid) {
         currentTask = new AsyncTask<String, Void, RemoteException>() {
             @Override
             protected void onPreExecute() {
@@ -172,13 +173,13 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                         }
                     }
                 try {
-                    ServiceHelper.getService().login(params[0], params[1], params[2]);
+                    ServiceHelper.getService().login(params[0], params[1], params[2], params[3]);
                 } catch (RemoteException e) {
                     return e;
                 }
                 return null;
             }
-        }.execute(login, pass, remixpass);
+        }.execute(login, pass, remixpass, sid);
 
     }
 
@@ -242,8 +243,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //todo: not sure this should be called from here
-        //unbindService(this);
     }
     
     public static boolean isEmailValid(String s) {
