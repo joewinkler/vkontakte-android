@@ -53,6 +53,7 @@ public class AvatarLoader {
      * Handler for applying avatars in UI thread.
      */
     private AvatarFetchHandler avatarFetchHandler;
+    private boolean shouldLoadNext = false;
 
     private Context context;
 
@@ -108,6 +109,7 @@ public class AvatarLoader {
     public void loadMissedAvatars() {
         int missedItems = missedAvatars.size();
         synchronized (AvatarLoader.this) {
+            shouldLoadNext = true;
             if (avatarLoadThread == null && missedItems > 0) {
                 Log.d(TAG, "Starting to load missed avatars: " + missedItems);
                 loadAvatar(missedAvatars.pop(), true);
@@ -122,7 +124,6 @@ public class AvatarLoader {
         Log.d(TAG, "Canceling all load threads");
         if (avatarLoadThread != null) {
             avatarLoadThread.interrupt();
-            avatarLoadThread = null;
         }
         if (threadPool != null) {
             threadPool.shutdownNow();
@@ -216,7 +217,6 @@ public class AvatarLoader {
                 }
             }
         }
-
     }
 
     /**
@@ -245,8 +245,7 @@ public class AvatarLoader {
                 // If avatar is not saved on device
                 if (avatar == null) {
                     if (loadNow) {
-                        if (Thread.interrupted())
-                            return; // shutdown has been called.
+                        interruptAndTryLoadNext(false);
 
                         avatar = downloadAvatar(avatarUrl);
                         if (avatar != null) {
@@ -258,6 +257,8 @@ public class AvatarLoader {
                                 missedAvatars.remove(info);
                             }
                         }
+                        else
+                            missedAvatars.push(info);
                     }
                     else {
                         // Should load avatars later
@@ -272,32 +273,42 @@ public class AvatarLoader {
                 // Not enough memory for the avatar, do nothing.
             }
 
-            if (avatar == null)
-                return;
+            if (avatar != null) {
+                bitmapCache.put(avatarUrl, avatar);
+                info.bitmap = avatar;
 
-            bitmapCache.put(avatarUrl, avatar);
-            info.bitmap = avatar;
+                interruptAndTryLoadNext(false);
 
-            if (Thread.interrupted())
-                return; // shutdown has been called.
-
-            // Here ImageView could represent different avatar (if user scrolled from that avatar)
-            if (avatar != null && avatarUrl.equals(view.getTag())) {
-                // Update must happen on UI thread
-                Message msg = new Message();
-                msg.what = FETCH_AVATAR_MSG;
-                msg.obj = info;
-                avatarFetchHandler.sendMessage(msg);
+                // Here ImageView could represent different avatar (if user scrolled from that avatar)
+                if (avatar != null && avatarUrl.equals(view.getTag())) {
+                    // Update must happen on UI thread
+                    Message msg = new Message();
+                    msg.what = FETCH_AVATAR_MSG;
+                    msg.obj = info;
+                    avatarFetchHandler.sendMessage(msg);
+                }
             }
 
+            interruptAndTryLoadNext(true);
+        }
+
+        private void interruptAndTryLoadNext(boolean finished) {
             synchronized (AvatarLoader.this) {
-                if (avatarLoadThread == Thread.currentThread()) {
+                // If this threat is about to finish
+                if (avatarLoadThread == Thread.currentThread() && (Thread.interrupted() || finished)) {
                     avatarLoadThread = null;
-                    if (missedAvatars.size() > 0) {
+
+                    // If avatar loading was not finished, finish it next time
+                    if (Thread.interrupted())
+                        missedAvatars.push(info);
+
+                    // If there are not loaded avatars, and they should be loaded now...
+                    if (missedAvatars.size() > 0 &&
+                        (!Thread.interrupted() || (Thread.interrupted() && shouldLoadNext))) {
                         // Load next avatar from stack
-                        if (!Thread.interrupted())
-                            loadAvatar(missedAvatars.pop(), true);
+                        loadAvatar(missedAvatars.pop(), true);
                     }
+                    shouldLoadNext = false;
                 }
             }
         }
