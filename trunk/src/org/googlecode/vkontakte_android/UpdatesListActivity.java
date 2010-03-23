@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 
 import org.googlecode.vkontakte_android.database.StatusDao;
@@ -24,11 +25,15 @@ import static org.googlecode.vkontakte_android.provider.UserapiProvider.STATUSES
 public class UpdatesListActivity extends AutoLoadActivity implements AdapterView.OnItemClickListener {
     private static final String TAG = "org.googlecode.vkontakte_android.UpdatesListTabActivity";
 
+    private UpdatesListAdapter adapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.status_list);
         final Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_PERSONAL + "=0", null, KEY_STATUS_DATE + " DESC ");
+
+        adapter = new UpdatesListAdapter(this, R.layout.status_row, statusesCursor);
 
         setupLoader(new UpdatesListActivity.Loader() {
             @Override
@@ -42,14 +47,32 @@ public class UpdatesListActivity extends AutoLoadActivity implements AdapterView
                 }
                 return false;
             }
-        }, new UpdatesListAdapter(this, R.layout.status_row, statusesCursor));
+        }, adapter);
 
         registerForContextMenu(getListView());
         getListView().setOnItemClickListener(this);
         getListView().setOnScrollListener(this);
         refreshOnStart();
-
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adapter.resumeAvatarLoading();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        adapter.pauseAvatarLoading();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.cancelAvatarLoading();
+    }
+
     private void refreshOnStart() {
         new AsyncTask<Object, Object, Object>(){
         	
@@ -123,5 +146,11 @@ public class UpdatesListActivity extends AutoLoadActivity implements AdapterView
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long rowId) {
         StatusDao status = StatusDao.get(this, rowId);
         UserHelper.viewProfile(this, status.getUserId());
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        super.onScrollStateChanged(view, scrollState);
+        adapter.onScrollStateChanged(view, scrollState);
     }
 }

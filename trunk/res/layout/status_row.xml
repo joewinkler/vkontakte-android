@@ -7,7 +7,7 @@
             android:id="@+id/photo"
             android:layout_alignParentTop="true"
             android:src="@drawable/icon"
-            android:scaleType="fitStart"
+            android:scaleType="centerCrop"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content" android:padding="3dp"/>
     <TextView android:id="@+id/name"

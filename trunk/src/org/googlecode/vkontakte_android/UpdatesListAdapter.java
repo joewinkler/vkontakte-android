@@ -3,36 +3,31 @@ package org.googlecode.vkontakte_android;
 import android.content.Context;
 import android.database.Cursor;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
-import org.googlecode.vkontakte_android.CImagesManager.Icons;
 import org.googlecode.vkontakte_android.database.StatusDao;
+import org.googlecode.vkontakte_android.utils.AvatarLoader;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
-import org.googlecode.vkontakte_android.utils.UserHelper;
 
 import java.text.SimpleDateFormat;
 
-public class UpdatesListAdapter extends ResourceCursorAdapter {
+public class UpdatesListAdapter extends ResourceCursorAdapter implements OnScrollListener {
     private static final String TAG = "VK:UpdatesListAdapter";
 
     public static final  SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm ");//todo: get rid of extra space by using padding(?)
     public static final SimpleDateFormat weektimeFormat = new SimpleDateFormat("EEE, HH:mm ");
+
+    private int scrollState;
+    private AvatarLoader avatarLoader;
     
     public UpdatesListAdapter(Context context, int layout, Cursor cursor) {
         super(context, layout, cursor);
-        //fillPhotoCache(context, cursor);
-    }
-
-    @SuppressWarnings("unused")
-	private void fillPhotoCache(Context context,Cursor cursor){
-    	while (cursor.moveToNext()){
-    		StatusDao status = new StatusDao(cursor);
-    		UserHelper.getPhotoByUserId2(context, status.getUserId());
-    	}
-    	Log.d(TAG,"photos cached:"+UserHelper.bitmapCache.size());
+        avatarLoader = new AvatarLoader(context);
+        scrollState = SCROLL_STATE_IDLE;
     }
     
     @Override
@@ -44,19 +39,52 @@ public class UpdatesListAdapter extends ResourceCursorAdapter {
         statusLine.setText(Html.fromHtml(status.getText()));
         TextView timeLine = (TextView) view.findViewById(R.id.time);
         timeLine.setText(weektimeFormat.format(status.getDate()));
-     
-        //caching photoViews for faster access via findViewWithTag 
-        String photoViewTag="photoview"+status.getUserId();
-        ImageView photo = (ImageView)view.findViewWithTag(photoViewTag);
-        if (photo==null){
-        	photo = (ImageView) view.findViewById(R.id.photo);
+
+        ImageView avatarView = (ImageView) view.findViewById(R.id.photo);
+        AvatarLoader.AvatarInfo info = new AvatarLoader.AvatarInfo();
+        info.view = avatarView;
+        info.userId = status.getUserId();
+        avatarView.setTag(info.avatarUrl);
+
+        if (PreferenceHelper.shouldLoadPics(context)) {
+            avatarLoader.applyAvatarDeferred(info);
+            if (scrollState != OnScrollListener.SCROLL_STATE_FLING)
+                // Scrolling is idle or slow, getting the avatar right now
+                avatarLoader.loadMissedAvatars();
         }
-        if(photo!=null && PreferenceHelper.shouldLoadPics(context)){
-        	photo.setTag(photoViewTag);
-        	photo.setImageBitmap(UserHelper.getPhotoByUserId2(context, status.getUserId()));
-        }else if(photo!=null) {
-            photo.setImageBitmap(CImagesManager.getBitmap(context, Icons.STUB));
-            photo.setVisibility(View.GONE);
+        else {
+            avatarView.setImageBitmap(CImagesManager.getBitmap(context, CImagesManager.Icons.STUB));
+            avatarView.setVisibility(View.GONE);
         }
    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        this.scrollState = scrollState;
+        if (scrollState == OnScrollListener.SCROLL_STATE_FLING) {
+            // If we are in a fling, stop loading avatars.
+            avatarLoader.cancelLoading();
+        }
+        else
+            avatarLoader.loadMissedAvatars();
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+    }
+
+    public void resumeAvatarLoading() {
+        avatarLoader.loadMissedAvatars();
+    }
+
+    public void pauseAvatarLoading() {
+        avatarLoader.cancelLoading();
+        scrollState = SCROLL_STATE_IDLE;
+    }
+
+    public void cancelAvatarLoading() {
+        avatarLoader.abortProcess();
+        scrollState = SCROLL_STATE_IDLE;
+    }
+
 }
