@@ -48,7 +48,7 @@ public class FriendsListAdapter extends ResourceCursorAdapter implements OnScrol
         avatarView.setTag(info.avatarUrl);
 
         if (PreferenceHelper.shouldLoadPics(context)) {
-            avatarLoader.setAvatar(info);
+            avatarLoader.applyAvatarDeferred(info);
             if (scrollState != OnScrollListener.SCROLL_STATE_FLING)
                 // Scrolling is idle or slow, getting the avatar right now
                 avatarLoader.loadMissedAvatars();

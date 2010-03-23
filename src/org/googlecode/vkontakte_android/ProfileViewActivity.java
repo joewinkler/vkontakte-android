@@ -133,7 +133,12 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         
         
         profileDao = profile;
-        ((ImageView) findViewById(R.id.photo)).setImageBitmap(UserHelper.getPhotoByUserId(this, profileDao.id));
+        AvatarLoader avatarLoader = new AvatarLoader(this);
+        AvatarLoader.AvatarInfo info = new AvatarLoader.AvatarInfo();
+        info.view = (ImageView) findViewById(R.id.photo);
+        info.userId = profileDao.id;
+        avatarLoader.applyAvatarImmediately(info);
+
         if (profileDao.status != null) {
             TextView status = ((TextView) findViewById(R.id.status));
             status.setText(profileDao.status);

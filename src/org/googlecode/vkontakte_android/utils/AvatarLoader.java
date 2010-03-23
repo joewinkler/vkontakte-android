@@ -5,6 +5,7 @@
  */
 package org.googlecode.vkontakte_android.utils;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,7 +13,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.ImageView;
+import org.googlecode.userapi.UrlBuilder;
 import org.googlecode.vkontakte_android.CImagesManager;
+import org.googlecode.vkontakte_android.database.UserDao;
+import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
+import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.service.ApiCheckingKit;
 
 import java.io.File;
@@ -74,12 +79,23 @@ public class AvatarLoader {
             Log.d(TAG, "Removed cached avatar: " + avatarUrl);
     }
 
+    public void applyAvatarImmediately(AvatarInfo info) {
+        applyAvatar(info, true);
+    }
+
+    public void applyAvatarDeferred(AvatarInfo info) {
+        applyAvatar(info, false);
+    }
+
     /**
      * Applies avatar bitmap to corresponding ImageView.
      *
-     * @param info information about avatar
+     * @param info information about avatar, better to provide avatar url instead of user id
+     * @param loadNow true, if avatar should be loaded immediately
      */
-    public void setAvatar(AvatarInfo info) {
+    public void applyAvatar(AvatarInfo info, boolean loadNow) {
+        checkUrl(info);
+
         Bitmap avatar;
         ImageView view = info.view;
         String avatarUrl = info.avatarUrl;
@@ -99,7 +115,7 @@ public class AvatarLoader {
             // Set default image
             view.setImageBitmap(CImagesManager.getBitmap(context, CImagesManager.Icons.STUB));
 
-            loadAvatar(info, false);
+            loadAvatar(info, loadNow);
         }
     }
 
@@ -138,6 +154,15 @@ public class AvatarLoader {
         Log.d(TAG, "Abort avatar loading process");
         cancelLoading();
         missedAvatars.clear();
+    }
+
+    private void checkUrl(AvatarInfo info) {
+        if (info.avatarUrl != null)
+            return;
+
+        UserDao user = UserDao.get(context, info.userId);
+        info.avatarUrl = user.getUserPhotoUrl();
+        info.view.setTag(info.avatarUrl);
     }
 
     /**
@@ -321,6 +346,7 @@ public class AvatarLoader {
     public static class AvatarInfo {
         
         public ImageView view;
+        public long userId;
         public String avatarUrl;
         public Bitmap bitmap;
 
