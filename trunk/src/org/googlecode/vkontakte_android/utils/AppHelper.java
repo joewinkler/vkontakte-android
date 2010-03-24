@@ -1,5 +1,7 @@
 package org.googlecode.vkontakte_android.utils;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,7 +16,7 @@ public class AppHelper {
 
     public static final String AUTHORITY = "org.googlecode.vkontakte_android";
 
-    public static final String APP_DIR = "/data/data/" + AUTHORITY + "/";
+    public static final String APP_DIR = "/sdcard/" + AUTHORITY + "/";
     public static final String AVATARS_DIR = AppHelper.APP_DIR + "avatars/";
 
     public static final String ACTION_NOTIFICATION_CLEARED = "org.googlecode.vkontakte_android.action.NOTIFICATION_CLEARED";
@@ -23,6 +25,8 @@ public class AppHelper {
 
     public static final String EXTRA_AUTOUPDATE_PERIOD = "autoupdate_period";
 
+
+    
     public static void showFatalError(final Activity act, String text) {
         AlertDialog.Builder builder = new AlertDialog.Builder(act);
         AlertDialog dialog = builder.setPositiveButton(R.string.exit,
