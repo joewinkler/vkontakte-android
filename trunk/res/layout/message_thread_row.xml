@@ -2,13 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
-              android:orientation="horizontal">
-    <ImageView android:id="@+id/unread_indicator"
-               android:layout_width="wrap_content"
-               android:layout_height="fill_parent"
-               android:layout_alignParentLeft="true"
-               android:visibility="invisible"
-               android:src="@drawable/ic_sms_unread_msg_indicator"/>
+              android:orientation="horizontal"
+              android:id="@+id/bkg">
     <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
         
     

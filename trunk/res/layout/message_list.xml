@@ -5,5 +5,7 @@
               android:layout_height="fill_parent">
     <ListView android:id="@android:id/list"
               android:layout_width="fill_parent"
-              android:layout_height="fill_parent"/>
+              android:layout_height="fill_parent"
+              android:divider="@color/msg_divider_color"
+              android:dividerHeight="2dp"/>
 </LinearLayout>
