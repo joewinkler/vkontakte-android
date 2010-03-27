@@ -2,7 +2,6 @@ package org.googlecode.vkontakte_android;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.text.Html;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -18,9 +17,13 @@ import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KE
 
 public class MessagesListAdapter extends ResourceCursorAdapter {
     private static final String TAG = "MessagesListAdapter";
+    private int readColor;
+    private int unreadColor;
 
     public MessagesListAdapter(Context context, int layout, Cursor cursor) {
         super(context, layout, cursor);
+        readColor = context.getResources().getColor(R.color.msg_read_bkg);
+        unreadColor = context.getResources().getColor(R.color.msg_unread_bkg);
     }
 
     @Override
@@ -61,9 +64,13 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
 //        message.setText(Html.fromHtml(messageDao.text));
         message.setText((messageDao.text));
 
-        View indicator = view.findViewById(R.id.unread_indicator);
-        if (!messageDao.read) indicator.setVisibility(View.VISIBLE);
-        else indicator.setVisibility(View.INVISIBLE);
+        View bkg = view.findViewById(R.id.bkg);
+        if (messageDao.read) {
+            bkg.setBackgroundColor(readColor);
+        }
+        else {
+            bkg.setBackgroundColor(unreadColor);
+        }
     }
 
     private String getNameById(Context context, Long userid) {

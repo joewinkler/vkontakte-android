@@ -7,4 +7,9 @@
     <color name="tab_unselected_text">#2b587a</color>
     <color name="tab_selected_bkg">#36638E</color>
     <color name="tab_unselected_bkg">#dae1e8</color>
+
+    <color name="msg_unread_bkg">#F5F9FB</color>
+    <color name="msg_read_bkg">#ffffff</color>
+
+    <color name="msg_divider_color">#EEEEEE</color>
 </resources>
