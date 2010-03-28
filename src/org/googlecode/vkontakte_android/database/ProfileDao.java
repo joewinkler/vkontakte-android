@@ -29,6 +29,8 @@ public class ProfileDao {
     public int politicalViews;
     public int familyStatus;
     public String currentCity;
+    public int allPhotosCount;
+    public int taggedPhotosCount;
 
     public ProfileDao(Cursor cursor) {
         rowid = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_PROFILE_ROWID));

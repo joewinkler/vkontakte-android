@@ -9,11 +9,7 @@ import android.os.RemoteException;
 import android.provider.Contacts;
 import android.util.Log;
 import android.view.*;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.TabHost;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import org.googlecode.vkontakte_android.AutoLoadList.Loader;
 import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;
@@ -38,6 +34,11 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
     private Menu menuToRefresh; //menu is disabled until we haven't friend data
     private static final int SEX_FEMALE = 1;
 
+    private static final String INFO_TAB = "info_tab";
+    private static final String UPDATES_TAB = "updates_tab";
+    private static final String PHOTOS_TAB = "photos_tab";
+    private static final String WALL_TAB = "wall_tab";
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +46,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         setContentView(R.layout.profile_view);
 
         initTabHost();
-        initInfoTab();
+        initInfoAndPhotosTab();
         initWallTab();
         initUpdatesTab();
     }
@@ -53,20 +54,23 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
     private void initTabHost() {
         final TabHost tabHost = (TabHost) findViewById(R.id.ProfileTabHost);
         tabHost.setup();
-        tabHost.addTab(tabHost.newTabSpec("info_tab")
+        tabHost.addTab(tabHost.newTabSpec(INFO_TAB)
                 .setIndicator("Info")
                 .setContent(this));
-        tabHost.addTab(tabHost.newTabSpec("wall_tab")
+        tabHost.addTab(tabHost.newTabSpec(WALL_TAB)
                 .setIndicator("Wall")
                 .setContent(this));
-        tabHost.addTab(tabHost.newTabSpec("updates_tab")
+        tabHost.addTab(tabHost.newTabSpec(UPDATES_TAB)
                 .setIndicator("Updates")
+                .setContent(this));
+        tabHost.addTab(tabHost.newTabSpec(PHOTOS_TAB)
+                .setIndicator("Photos")
                 .setContent(this));
 
     }
 
 
-    private void initInfoTab() {
+    private void initInfoAndPhotosTab() {
         profileId = PreferenceHelper.getMyId(this);
         if (getIntent().getExtras() != null)
             profileId = getIntent().getExtras().getLong(UserapiDatabaseHelper.KEY_PROFILE_USERID, profileId);
@@ -182,8 +186,11 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
             DATA.add(new PropertiesHolder(getString(R.string.info_city), profileDao.currentCity));
         }
 
-        android.widget.ListView listView = (android.widget.ListView) findViewById(R.id.profile_info_list);
-        listView.setAdapter(new ProfileInfoAdapter(this, DATA));
+        ListView infoListView = (ListView) findViewById(R.id.profile_info_list);
+        infoListView.setAdapter(new ProfileInfoAdapter(this, DATA));
+        final TabHost tabHost = (TabHost) findViewById(R.id.ProfileTabHost);
+//        ListView photoListView = (ListView) findViewById(R.id.profile_photo_tab_list);
+//        photoListView.setAdapter(new ProfileInfoAdapter(this, DATA));
         refreshMenu();  //TODO: avoid unnecessary calls
     }
 
@@ -243,11 +250,14 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
     @Override
     public View createTabContent(String tag) {
+        System.out.println("tag = " + tag);
         View tv = new View(this);
 
-        if (tag.equals("info_tab")) {
+        if (tag.equals(INFO_TAB)) {
             tv = getLayoutInflater().inflate(R.layout.profile_info, null);
-        } else if (tag.equals("updates_tab")) {
+        } else if (tag.equals(PHOTOS_TAB)) {
+            tv = getLayoutInflater().inflate(R.layout.profile_photo_tab, null);
+        } else if (tag.equals(UPDATES_TAB)) {
 
             final AutoLoadList arl = new AutoLoadList(this);
             Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_USERID + "=" + profileId, null, KEY_STATUS_DATE + " DESC ");
