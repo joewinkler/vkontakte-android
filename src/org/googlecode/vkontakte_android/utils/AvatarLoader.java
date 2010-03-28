@@ -122,21 +122,19 @@ public class AvatarLoader {
     /**
      * Starts to load missed avatars from remote server.
      */
-    public void loadMissedAvatars() {
+    public synchronized void loadMissedAvatars() {
         int missedItems = missedAvatars.size();
-        synchronized (AvatarLoader.this) {
-            shouldLoadNext = true;
-            if (avatarLoadThread == null && missedItems > 0) {
-                Log.d(TAG, "Starting to load missed avatars: " + missedItems);
-                loadAvatar(missedAvatars.pop(), true);
-            }
+        shouldLoadNext = true;
+        if (avatarLoadThread == null && missedItems > 0) {
+            Log.d(TAG, "Starting to load missed avatars: " + missedItems);
+            loadAvatar(missedAvatars.pop(), true);
         }
     }
 
     /**
      * Cancel avatar remote loading and loading from device.
      */
-    public void cancelLoading() {
+    public synchronized void cancelLoading() {
         Log.d(TAG, "Canceling all load threads");
         if (avatarLoadThread != null) {
             avatarLoadThread.interrupt();
@@ -150,7 +148,7 @@ public class AvatarLoader {
     /**
      * Stops avatar loading and clears all deferred loadings.
      */
-    public void abortProcess() {
+    public synchronized void abortProcess() {
         Log.d(TAG, "Abort avatar loading process");
         cancelLoading();
         missedAvatars.clear();
@@ -275,21 +273,28 @@ public class AvatarLoader {
                         avatar = downloadAvatar(avatarUrl);
                         if (avatar != null) {
                             // View for avatar could be changed
-                            int index = missedAvatars.indexOf(info);
-                            if (index != -1) {
-                                info = missedAvatars.elementAt(index);
-                                view = info.view;
-                                missedAvatars.remove(info);
-                            }
+                        	synchronized (missedAvatars) {
+                        		int index = missedAvatars.indexOf(info);
+                                if (index != -1) {
+                                    info = missedAvatars.elementAt(index);
+                                    view = info.view;
+                                    missedAvatars.remove(info);
+                                }
+							}
                         }
                         else
-                            missedAvatars.push(info);
+                        	synchronized (missedAvatars) {
+                        		 missedAvatars.push(info);
+                        	}
+                           
                     }
                     else {
                         // Should load avatars later
                         // Ensure that there will be only one such avatar in stack
-                        missedAvatars.remove(info);
-                        missedAvatars.push(info);
+                    	synchronized (missedAvatars) {
+                            missedAvatars.remove(info);
+                            missedAvatars.push(info);	
+                    	}
                         Log.v(TAG, "Added avatar to pending load: " + avatarUrl);
                     }
                 }
