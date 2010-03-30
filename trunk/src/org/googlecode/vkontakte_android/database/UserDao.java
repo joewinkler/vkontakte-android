@@ -247,7 +247,7 @@ public class UserDao extends User {
                     userInDb.isNewFriend() != userFromResp.isNewFriend()) {
                     // Check whether old cached avatar should be deleted
                     if (!userInDb.getUserPhotoUrl().equals(userFromResp.getUserPhotoUrl()))
-                        AvatarLoader.removeCachedAvatar(userInDb.getUserPhotoUrl());    
+                        AvatarLoader.removeCachedAvatar(context, userInDb.getUserPhotoUrl());
                     // Add that user to update list
                     if (updateList == null)
                         updateList = new ArrayList<ContentValues>();

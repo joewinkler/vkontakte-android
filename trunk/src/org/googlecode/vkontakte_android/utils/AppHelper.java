@@ -8,16 +8,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 
+import android.os.Environment;
+import android.util.Log;
 import org.googlecode.vkontakte_android.R;
 
 import com.nullwire.trace.ExceptionHandler;
 
 public class AppHelper {
 
+    private static final String TAG = "VK:AppHelper";
+
+    public static final String NAME = "vkontakte";
     public static final String AUTHORITY = "org.googlecode.vkontakte_android";
 
-    public static final String APP_DIR = "/sdcard/" + AUTHORITY + "/";
-    public static final String AVATARS_DIR = AppHelper.APP_DIR + "avatars/";
+    private static String appDir;
+    private static String avatarsDir;
 
     public static final String ACTION_NOTIFICATION_CLEARED = "org.googlecode.vkontakte_android.action.NOTIFICATION_CLEARED";
     public static final String ACTION_SET_AUTOUPDATE = "org.googlecode.vkontakte_android.action.SET_AUTOUPDATE";
@@ -25,8 +30,27 @@ public class AppHelper {
 
     public static final String EXTRA_AUTOUPDATE_PERIOD = "autoupdate_period";
 
+    public static String getAppDir(Context context) {
+        if (appDir == null) {    
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                Log.i(TAG, "SDCard is found, using it");
+                appDir = Environment.getExternalStorageDirectory().getPath() + "/" + NAME + "/";
+            }
+            else {
+                Log.i(TAG, "SDCard is not found, using cache folder");
+                appDir = context.getCacheDir().getPath() + "/" + NAME + "/";
+            }
+        }
+        return appDir;
+    }
 
-    
+    public static String getAvatarsDir(Context context) {
+        if (avatarsDir == null)
+            avatarsDir = getAppDir(context) + "avatars/";
+
+        return avatarsDir;
+    }
+
     public static void showFatalError(final Activity act, String text) {
         AlertDialog.Builder builder = new AlertDialog.Builder(act);
         AlertDialog dialog = builder.setPositiveButton(R.string.exit,
