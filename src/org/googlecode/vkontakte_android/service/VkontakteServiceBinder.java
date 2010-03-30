@@ -43,9 +43,11 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             api.login(cred);
             Log.d(TAG, "Login successful");
             PreferenceHelper.saveLogin(m_context, cred);
+            Log.d("#############", "");
             if (remix == null) {
                 //myId is available only when logging with login/pass but not with remix
-                PreferenceHelper.saveMyId(m_context, api.myId);
+                Log.d("#############", api.myId+"");
+            	PreferenceHelper.saveMyId(m_context, api.myId);
             }
 
             //todo: is really required here?
@@ -184,7 +186,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
 
             ProfileDao dao = null;
             if (pr != null) {
-                dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr.getSurname(), (pr.getStatus() == null) ? null : pr.getStatus().getText(),
+                dao = new ProfileDao(pr.getId(), pr.getFirstname(), pr.getSurname(), pr.getPhoto(), (pr.getStatus() == null) ? null : pr.getStatus().getText(),
                         pr.getSex(), pr.getBirthday(), pr.getPhone(), pr.getPoliticalViews(), pr.getFamilyStatus(), pr.getCurrentCity());
             }
             Uri uri = null;
@@ -194,26 +196,6 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             if (uri != null) {
                 Log.d(TAG, uri.toString());
             }
-
-            String photoUrl = null;
-            if (pr != null) {
-                photoUrl = pr.getPhoto();
-            }
-            byte photo[] = null;
-            if (photoUrl != null) {
-                try {
-                    photo = ApiCheckingKit.getApi().getFileFromUrl(photoUrl);
-                } catch (Exception e) {
-                    Log.e(TAG, "cannot load photo", e);
-                }
-            }
-            
-            if (photo!=null){
-            OutputStream os = m_context.getContentResolver().openOutputStream(uri);
-            os.write(photo);
-            os.close();
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -223,7 +205,7 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             Log.d(TAG,"Finish loading:"+ pr.toString());
         }else{
         	throw new RemoteException();
-        }
+        }  
         	
         
     }

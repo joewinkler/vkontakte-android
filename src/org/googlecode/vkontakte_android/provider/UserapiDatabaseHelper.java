@@ -23,7 +23,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_USER_AVATAR_URL = "photo_small_url";
     public static final String KEY_USER_AVATAR_SMALL = "_data";
 
-    public static final String USERS_FULL_INSERT = "INSERT INTO " + DATABASE_USERS_TABLE + " VALUES (?,?,?,?,?,?,?,?)";
+    public static final String USERS_FULL_INSERT = "REPLACE INTO " + DATABASE_USERS_TABLE + " VALUES (?,?,?,?,?,?,?,?)";
 
     public static final String KEY_MESSAGE_ID = BaseColumns._ID;
     public static final String KEY_MESSAGE_DATE = "date";

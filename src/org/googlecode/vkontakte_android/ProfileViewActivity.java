@@ -100,6 +100,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 				Cursor cursor = managedQuery(PROFILES_URI, null,
 						UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?",
 						new String[] { String.valueOf(id[0]) }, null);
+				
 				cursor.moveToFirst();
 				return new ProfileDao(cursor);
 
@@ -141,6 +142,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         AvatarLoader.AvatarInfo info = new AvatarLoader.AvatarInfo();
         info.view = (ImageView) findViewById(R.id.photo);
         info.userId = profileDao.id;
+        info.type = AvatarLoader.AvatarInfo.AvatarType.PROFILE;
         avatarLoader.applyAvatarImmediately(info);
 
         if (profileDao.status != null) {

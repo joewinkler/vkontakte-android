@@ -14,7 +14,9 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.ImageView;
 import org.googlecode.userapi.UrlBuilder;
+import org.googlecode.userapi.User;
 import org.googlecode.vkontakte_android.CImagesManager;
+import org.googlecode.vkontakte_android.database.ProfileDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
@@ -162,8 +164,22 @@ public class AvatarLoader {
         if (info.avatarUrl != null)
             return;
 
-        UserDao user = UserDao.get(context, info.userId);
-        info.avatarUrl = user.getUserPhotoUrl();
+        switch (info.type) {
+        case FRIENDS:
+        case UPDATES:
+        	UserDao user = UserDao.get(context, info.userId);
+            info.avatarUrl = user.getUserPhotoUrl();
+        break;
+        case PROFILE:
+        	ProfileDao profile = ProfileDao.findByUserId(context, info.userId);
+        	info.avatarUrl = profile.photo;
+        break;
+        default:
+        	info.avatarUrl = User.STUB_URL;
+        }
+        
+        
+        
         info.view.setTag(info.avatarUrl);
     }
 
@@ -354,7 +370,7 @@ public class AvatarLoader {
                 // If this threat is about to finish
                 if (avatarLoadThread == Thread.currentThread() && (interrupted || finished)) {
                     avatarLoadThread = null;
-
+ 
                     // If avatar loading was not finished, finish it next time
                     if (interrupted)
                         missedAvatars.push(info);
@@ -380,11 +396,14 @@ public class AvatarLoader {
      */
     public static class AvatarInfo {
         
+    	public enum AvatarType {FRIENDS, PROFILE, UPDATES}
+    	
         public ImageView view;
         public long userId;
         public String avatarUrl;
         public Bitmap bitmap;
-
+        public AvatarType type;
+        
         public AvatarInfo() {
         }
 
