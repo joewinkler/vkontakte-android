@@ -13,6 +13,7 @@ import org.googlecode.vkontakte_android.utils.AppHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.*;
 
@@ -71,8 +72,9 @@ public class UserapiProvider extends ContentProvider {
         String table;
         String column = null;
         String mySort;
-        
-        switch (uriMatcher.match(uri)) {
+
+        int dataType = uriMatcher.match(uri);
+        switch (dataType) {
             case ALL_USERS:
                 table = DATABASE_USERS_TABLE;
                 mySort = KEY_USER_ID;
@@ -367,11 +369,14 @@ public class UserapiProvider extends ContentProvider {
     }
 
     private void createFolders() {
-        File f = new File(AppHelper.APP_DIR + "profiles");
+        String appDir = AppHelper.getAppDir(getContext());
+        File f = new File(appDir);
         f.mkdir();
-        f = new File(AppHelper.APP_DIR + "photos");
+        f = new File(appDir + "profiles");
         f.mkdir();
-        f = new File(AppHelper.AVATARS_DIR);
+        f = new File(appDir + "photos");
+        f.mkdir();
+        f = new File(AppHelper.getAvatarsDir(getContext()));
         f.mkdir();
     }
 

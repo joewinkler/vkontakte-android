@@ -77,7 +77,7 @@ public class ProfileDao {
 
         if (profile == null) {
             //TODO updating "_data"
-            String filename = AppHelper.APP_DIR + "profiles/id" + this.id + ".ava";
+            String filename = AppHelper.getAppDir(context) + "profiles/id" + this.id + ".ava";
             insertValues.put("_data", filename);
             Log.d(TAG, "Writing " + filename);
             return context.getContentResolver().insert(UserapiProvider.PROFILES_URI, insertValues);

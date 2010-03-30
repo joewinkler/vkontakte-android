@@ -44,7 +44,7 @@ public class AvatarLoader {
     /**
      * Stack of avatars that should be loaded from remote server.
      */
-    private Stack<AvatarInfo> missedAvatars = new Stack<AvatarInfo>();
+    private final Stack<AvatarInfo> missedAvatars = new Stack<AvatarInfo>();
 
     /**
      * Thread pool for loading avatars from device.
@@ -59,6 +59,7 @@ public class AvatarLoader {
      */
     private AvatarFetchHandler avatarFetchHandler;
     private boolean shouldLoadNext = false;
+    private int exceptions = 0;
 
     private Context context;
 
@@ -70,11 +71,12 @@ public class AvatarLoader {
     /**
      * Removes cached avatar from device.
      *
+     * @param context application context
      * @param avatarUrl avatar URL
      */
-    public static void removeCachedAvatar(String avatarUrl) {
+    public static void removeCachedAvatar(Context context, String avatarUrl) {
         String avatarFileName = avatarUrl.substring(avatarUrl.lastIndexOf("/") + 1);
-        File avatar = new File(AppHelper.AVATARS_DIR + avatarFileName);
+        File avatar = new File(AppHelper.getAvatarsDir(context) + avatarFileName);
         if (avatar.delete())
             Log.d(TAG, "Removed cached avatar: " + avatarUrl);
     }
@@ -137,6 +139,7 @@ public class AvatarLoader {
     public synchronized void cancelLoading() {
         Log.d(TAG, "Canceling all load threads");
         if (avatarLoadThread != null) {
+            shouldLoadNext = false;
             avatarLoadThread.interrupt();
         }
         if (threadPool != null) {
@@ -152,6 +155,7 @@ public class AvatarLoader {
         Log.d(TAG, "Abort avatar loading process");
         cancelLoading();
         missedAvatars.clear();
+        exceptions = 0;
     }
 
     private void checkUrl(AvatarInfo info) {
@@ -187,8 +191,13 @@ public class AvatarLoader {
      *
      * @param avatarUrl avatar URL
      * @return bitmap with avatar
+     * @throws java.io.InterruptedIOException if thread was interrupted
      */
-    private Bitmap downloadAvatar(String avatarUrl) {
+    private Bitmap downloadAvatar(String avatarUrl) throws InterruptedIOException {
+        if (exceptions > 5) {
+            Log.d(TAG, "Avatar loading was canceled due to exceptions");
+            return null;
+        }
         Log.d(TAG, "Downloading avatar: " + avatarUrl);
 
         FileOutputStream out = null;
@@ -198,7 +207,7 @@ public class AvatarLoader {
 
             if (avatar != null) {
                 try {
-                    out = new FileOutputStream(AppHelper.AVATARS_DIR + avatarFileName);
+                    out = new FileOutputStream(AppHelper.getAvatarsDir(context) + avatarFileName);
                     out.write(avatar);
                     out.close();
                 }
@@ -207,13 +216,15 @@ public class AvatarLoader {
                         out.close();
                 }
 
+                exceptions = 0;
                 return BitmapFactory.decodeByteArray(avatar, 0, avatar.length);
             }
         }
         catch (InterruptedIOException e) {
-            Log.d(TAG, "Avatar download process was aborted: " + avatarUrl);
+            throw e;
         }
         catch (IOException e) {
+            exceptions++;
             Log.e(TAG, "Error while downloading avatar: " + avatarUrl, e);
         }
 
@@ -256,89 +267,108 @@ public class AvatarLoader {
         }
 
         public void run() {
-            ImageView view = info.view;
-            String avatarUrl = info.avatarUrl;
-
-            Bitmap avatar = null;
             try {
-                // Trying to load avatar from file system
-                String avatarFileName = avatarUrl.substring(avatarUrl.lastIndexOf("/") + 1);
-                avatar = BitmapFactory.decodeFile(AppHelper.AVATARS_DIR + avatarFileName);
+                ImageView view = info.view;
+                String avatarUrl = info.avatarUrl;
 
-                // If avatar is not saved on device
-                if (avatar == null) {
-                    if (loadNow) {
-                        interruptAndTryLoadNext(false);
+                Bitmap avatar = null;
+                try {
+                    // Trying to load avatar from file system
+                    String avatarFileName = avatarUrl.substring(avatarUrl.lastIndexOf("/") + 1);
+                    avatar = BitmapFactory.decodeFile(AppHelper.getAvatarsDir(context) + avatarFileName);
 
-                        avatar = downloadAvatar(avatarUrl);
-                        if (avatar != null) {
-                            // View for avatar could be changed
-                        	synchronized (missedAvatars) {
-                        		int index = missedAvatars.indexOf(info);
-                                if (index != -1) {
-                                    info = missedAvatars.elementAt(index);
-                                    view = info.view;
-                                    missedAvatars.remove(info);
+                    // If avatar is not saved on device
+                    if (avatar == null) {
+                        if (loadNow) {
+                            interruptAndTryLoadNext(false);
+
+                            avatar = downloadAvatar(avatarUrl);
+                            if (avatar != null) {
+                                // View for avatar could be changed
+                                synchronized (missedAvatars) {
+                                    int index = missedAvatars.indexOf(info);
+                                    if (index != -1) {
+                                        info = missedAvatars.elementAt(index);
+                                        view = info.view;
+                                        missedAvatars.remove(info);
+                                    }
                                 }
-							}
+                            }
+                            else if (exceptions <= 5)
+                                synchronized (missedAvatars) {
+                                     missedAvatars.push(info);
+                                }
+
                         }
-                        else
-                        	synchronized (missedAvatars) {
-                        		 missedAvatars.push(info);
-                        	}
-                           
-                    }
-                    else {
-                        // Should load avatars later
-                        // Ensure that there will be only one such avatar in stack
-                    	synchronized (missedAvatars) {
-                            missedAvatars.remove(info);
-                            missedAvatars.push(info);	
-                    	}
-                        Log.v(TAG, "Added avatar to pending load: " + avatarUrl);
+                        else {
+                            // Should load avatars later
+                            // Ensure that there will be only one such avatar in stack
+                            synchronized (missedAvatars) {
+                                missedAvatars.remove(info);
+                                missedAvatars.push(info);
+                            }
+                            Log.v(TAG, "Added avatar to pending load: " + avatarUrl);
+                        }
                     }
                 }
+                catch (OutOfMemoryError e) {
+                    // Not enough memory for the avatar
+                    synchronized (missedAvatars) {
+                        missedAvatars.remove(info);
+                    }
+                }
+
+                if (avatar != null) {
+                    bitmapCache.put(avatarUrl, avatar);
+                    info.bitmap = avatar;
+
+                    interruptAndTryLoadNext(false);
+
+                    // Here ImageView could represent different avatar (if user scrolled from that avatar)
+                    if (avatar != null && avatarUrl.equals(view.getTag())) {
+                        // Update must happen on UI thread
+                        Message msg = new Message();
+                        msg.what = FETCH_AVATAR_MSG;
+                        msg.obj = info;
+                        avatarFetchHandler.sendMessage(msg);
+                    }
+                }
+
+                interruptAndTryLoadNext(true);
             }
-            catch (OutOfMemoryError e) {
-                // Not enough memory for the avatar, do nothing.
-            }
-
-            if (avatar != null) {
-                bitmapCache.put(avatarUrl, avatar);
-                info.bitmap = avatar;
-
-                interruptAndTryLoadNext(false);
-
-                // Here ImageView could represent different avatar (if user scrolled from that avatar)
-                if (avatar != null && avatarUrl.equals(view.getTag())) {
-                    // Update must happen on UI thread
-                    Message msg = new Message();
-                    msg.what = FETCH_AVATAR_MSG;
-                    msg.obj = info;
-                    avatarFetchHandler.sendMessage(msg);
+            catch (InterruptedIOException e) {
+                // Thread was interrupted in downloadAvatar
+                avatarLoadThread = null;
+                synchronized (missedAvatars) {
+                    missedAvatars.push(info);
                 }
             }
-
-            interruptAndTryLoadNext(true);
+            catch (InterruptedException e) {
+                // Thread was interrupted in interruptAndTryLoadNext, nothing to do
+            }
         }
 
-        private void interruptAndTryLoadNext(boolean finished) {
+        private void interruptAndTryLoadNext(boolean finished) throws InterruptedException {
             synchronized (AvatarLoader.this) {
+                boolean interrupted = avatarLoadThread != null && avatarLoadThread.isInterrupted();
                 // If this threat is about to finish
-                if (avatarLoadThread == Thread.currentThread() && (Thread.interrupted() || finished)) {
+                if (avatarLoadThread == Thread.currentThread() && (interrupted || finished)) {
                     avatarLoadThread = null;
 
                     // If avatar loading was not finished, finish it next time
-                    if (Thread.interrupted())
+                    if (interrupted)
                         missedAvatars.push(info);
 
-                    // If there are not loaded avatars, and they should be loaded now...
-                    if (missedAvatars.size() > 0 &&
-                        (!Thread.interrupted() || (Thread.interrupted() && shouldLoadNext))) {
+                    // If thread was interrupted and there was no signal to load next avatars
+                    if (interrupted && !shouldLoadNext) {
+                        // End process
+                        throw new InterruptedException();
+                    }
+                    else if (missedAvatars.size() > 0) {
+                        shouldLoadNext = false;
                         // Load next avatar from stack
                         loadAvatar(missedAvatars.pop(), true);
                     }
-                    shouldLoadNext = false;
                 }
             }
         }
