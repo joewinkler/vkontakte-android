@@ -45,6 +45,7 @@ public class FriendsListAdapter extends ResourceCursorAdapter implements OnScrol
         AvatarLoader.AvatarInfo info = new AvatarLoader.AvatarInfo();
         info.view = avatarView;
         info.avatarUrl = userDao.getUserPhotoUrl();
+        info.type = AvatarLoader.AvatarInfo.AvatarType.FRIENDS;
         avatarView.setTag(info.avatarUrl);
 
         if (PreferenceHelper.shouldLoadPics(context)) {

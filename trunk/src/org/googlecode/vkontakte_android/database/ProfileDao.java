@@ -22,6 +22,7 @@ public class ProfileDao {
     public long id;
     public String firstname;
     public String surname;
+    public String photo;
     public String status;  //TODO make Status
     public int sex;
     public Long birthday;
@@ -32,11 +33,14 @@ public class ProfileDao {
     public int allPhotosCount;
     public int taggedPhotosCount;
 
+    
+    
     public ProfileDao(Cursor cursor) {
         rowid = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_PROFILE_ROWID));
         id = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_PROFILE_USERID));
         firstname = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PROFILE_FIRSTNAME));
         surname = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PROFILE_SURNAME));
+        photo = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PROFILE_PHOTO));
         status = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PROFILE_STATUS));
         sex = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_PROFILE_SEX));
         birthday = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_PROFILE_BIRTHDAY));
@@ -46,11 +50,12 @@ public class ProfileDao {
         currentCity = cursor.getString(cursor.getColumnIndexOrThrow(KEY_PROFILE_CURRENT_CITY));
     }
 
-    public ProfileDao(long id, String fn, String sn, String st,
+    public ProfileDao(long id, String fn, String sn, String photo, String st,
                       int sex, Date bd, String phone, int pv, int fs, String curCity) {
         this.id = id;
         this.firstname = fn;
         this.surname = sn;
+        this.photo = photo;
         this.status = st;
         this.sex = sex;
         this.birthday = (bd == null) ? 0 : bd.getTime();
@@ -67,6 +72,7 @@ public class ProfileDao {
         insertValues.put(KEY_PROFILE_USERID, this.id);
         insertValues.put(KEY_PROFILE_FIRSTNAME, this.firstname);
         insertValues.put(KEY_PROFILE_SURNAME, this.surname);
+        insertValues.put(KEY_PROFILE_PHOTO, this.photo);
         insertValues.put(KEY_PROFILE_STATUS, this.status);
         insertValues.put(KEY_PROFILE_SEX, this.sex);
         insertValues.put(KEY_PROFILE_BIRTHDAY, this.birthday);
@@ -88,7 +94,7 @@ public class ProfileDao {
         }
     }
 
-    private static ProfileDao findByUserId(Context context, long id) {
+    public static ProfileDao findByUserId(Context context, long id) {
         if (id == -1) return null;
         Cursor c = context.getContentResolver().query(PROFILES_URI, null, UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?", new String[]{String.valueOf(id)}, null);
         ProfileDao profile = null;

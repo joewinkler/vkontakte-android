@@ -44,6 +44,7 @@ public class UpdatesListAdapter extends ResourceCursorAdapter implements OnScrol
         AvatarLoader.AvatarInfo info = new AvatarLoader.AvatarInfo();
         info.view = avatarView;
         info.userId = status.getUserId();
+        info.type = AvatarLoader.AvatarInfo.AvatarType.UPDATES;
         avatarView.setTag(info.avatarUrl);
 
         if (PreferenceHelper.shouldLoadPics(context)) {
