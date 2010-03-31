@@ -298,7 +298,12 @@ public class AvatarLoader {
                         if (loadNow) {
                             interruptAndTryLoadNext(false);
 
-                            avatar = downloadAvatar(avatarUrl);
+                            try {
+                                avatar = downloadAvatar(avatarUrl);
+                            }
+                            catch (InterruptedIOException e) {
+                                interruptAndTryLoadNext(false);
+                            }
                             if (avatar != null) {
                                 // View for avatar could be changed
                                 synchronized (missedAvatars) {
@@ -351,13 +356,6 @@ public class AvatarLoader {
                 }
 
                 interruptAndTryLoadNext(true);
-            }
-            catch (InterruptedIOException e) {
-                // Thread was interrupted in downloadAvatar
-                avatarLoadThread = null;
-                synchronized (missedAvatars) {
-                    missedAvatars.push(info);
-                }
             }
             catch (InterruptedException e) {
                 // Thread was interrupted in interruptAndTryLoadNext, nothing to do
