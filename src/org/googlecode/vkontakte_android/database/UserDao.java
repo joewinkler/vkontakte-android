@@ -9,14 +9,10 @@ import android.net.Uri;
 import android.util.Log;
 import org.googlecode.userapi.User;
 import org.googlecode.userapi.VkontakteAPI;
-import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import org.googlecode.vkontakte_android.service.ApiCheckingKit;
 import org.googlecode.vkontakte_android.utils.AvatarLoader;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +30,10 @@ public class UserDao extends User {
     public static final String SELECT_ONLINE_FRIENDS = KEY_USER_IS_FRIEND + "=1 AND " + KEY_USER_ONLINE + "=1";
     public static final String SELECT_NEW_FRIENDS = KEY_USER_NEW_FRIEND + "=1";
 
-    public enum UserTypes {FRIENDS, ONLINE_FRIENDS, NEW_FRIENDS}
+    public static final int SYNC_FRIENDS = 0;
+    public static final int SYNC_ONLINE_FRIENDS = 1;
+    public static final int SYNC_NEW_FRIENDS = 2;
+
 
     private String data;
 
@@ -148,13 +147,13 @@ public class UserDao extends User {
      * @param users list of users
      * @param type type of users that should be synchronized
      */
-    public static void synchronizeFriends(Context context, List<User> users, UserTypes type) {
+    public static void synchronizeFriends(Context context, List<User> users, int type) {
         //TODO: Optimize online user sync
-        Log.v(TAG, "Synchronizing friends: " + type);
+        Log.v(TAG, "Synchronizing friends; type=" + type);
 
         boolean friend = true;
         boolean newFriend = false;
-        if (type == UserTypes.NEW_FRIENDS) {
+        if (type == SYNC_NEW_FRIENDS) {
             friend = false;
             newFriend = true;
         }
@@ -162,9 +161,6 @@ public class UserDao extends User {
         ContentResolver resolver = context.getContentResolver();
         Cursor cursor = resolver.query(USERS_URI, null, null, null, KEY_USER_ID);
 
-        int toDeleteCount = 0;
-
-        StringBuilder deleteList = null;
         ArrayList<ContentValues> updateList = null;
         ArrayList<ContentValues> addList = null;
 
@@ -192,27 +188,22 @@ public class UserDao extends User {
 
             // If userapi response doesn't have user that we have in DB
             if (userInDb != null && (userFromResp == null || userFromResp.getUserId() > userInDb.getUserId())) {
-                // Skip that case... 
-                if (type == UserTypes.NEW_FRIENDS && !userInDb.isNewFriend())
+                // Skip that cases...
+                if ((type == SYNC_NEW_FRIENDS && !userInDb.isNewFriend()) ||
+                    (type == SYNC_ONLINE_FRIENDS && !userInDb.isFriend()))
                     userInDb = null;
                 else {
-                    // Add that user from DB to list for removing or for update if type != FRIENDS
+                    // Add that user from DB to list for update
                     ContentValues values = new ContentValues();
                     switch (type) {
-                        case FRIENDS:
-                            if (userInDb.isFriend()) {
-                                if (deleteList == null)
-                                    deleteList = new StringBuilder(String.valueOf(userInDb.getUserId()));
-                                else
-                                    deleteList.append(",").append(userInDb.getUserId());
-                                toDeleteCount++;
-                            }
+                        case SYNC_FRIENDS:
+                            if (userInDb.isFriend())
+                                values.put(KEY_USER_IS_FRIEND, false);
                             break;
-                        // In such case we should change data in DB, not delete it
-                        case ONLINE_FRIENDS:
+                        case SYNC_ONLINE_FRIENDS:
                             values.put(KEY_USER_ONLINE, false);
                             break;
-                        case NEW_FRIENDS:
+                        case SYNC_NEW_FRIENDS:
                             values.put(KEY_USER_NEW_FRIEND, false);
                             break;
                     }
@@ -261,11 +252,6 @@ public class UserDao extends User {
             }
         } while ((cursor != null && !cursor.isAfterLast()) || usersIt.hasNext());
 
-        // Apply changes to DB
-        if (deleteList != null) {
-            resolver.delete(USERS_URI, KEY_USER_ID + " IN (" + deleteList.toString() + ")", null);
-            Log.d(TAG, "Deleted users: " + toDeleteCount);
-        }
         if (updateList != null) {
             try {
                 for (ContentValues values : updateList) {
@@ -288,7 +274,7 @@ public class UserDao extends User {
         if (cursor != null)
             cursor.close();
 
-        if (deleteList != null || updateList != null || addList != null)
+        if (updateList != null || addList != null)
             resolver.notifyChange(USERS_URI, null);
     }
 
