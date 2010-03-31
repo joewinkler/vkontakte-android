@@ -300,6 +300,8 @@ public class CheckingService extends Service {
     private synchronized void refreshNewFriends() throws IOException, JSONException, UserapiLoginException {
         Log.v(TAG, "Refreshing new friends");
         List<User> users = ApiCheckingKit.getApi().getMyNewFriends();
+        // Userapi returns unsorted list
+        Collections.sort(users);
         UserDao.synchronizeFriends(this, users, UserDao.SYNC_NEW_FRIENDS);
     }
 

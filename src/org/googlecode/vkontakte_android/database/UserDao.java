@@ -144,7 +144,7 @@ public class UserDao extends User {
      * Synchronizes users from Userapi with DB.
      *
      * @param context application context
-     * @param users list of users
+     * @param users list of users, list must be sorted
      * @param type type of users that should be synchronized
      */
     public static void synchronizeFriends(Context context, List<User> users, int type) {
