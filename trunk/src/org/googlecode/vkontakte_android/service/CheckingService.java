@@ -294,19 +294,19 @@ public class CheckingService extends Service {
     private synchronized void refreshFriends() throws IOException, JSONException, UserapiLoginException {
         Log.v(TAG, "Refreshing friends");
         List<User> users = ApiCheckingKit.getApi().getMyFriends();
-        UserDao.synchronizeFriends(this, users, UserDao.UserTypes.FRIENDS);
+        UserDao.synchronizeFriends(this, users, UserDao.SYNC_FRIENDS);
     }
 
     private synchronized void refreshNewFriends() throws IOException, JSONException, UserapiLoginException {
         Log.v(TAG, "Refreshing new friends");
         List<User> users = ApiCheckingKit.getApi().getMyNewFriends();
-        UserDao.synchronizeFriends(this, users, UserDao.UserTypes.NEW_FRIENDS);
+        UserDao.synchronizeFriends(this, users, UserDao.SYNC_NEW_FRIENDS);
     }
 
     private synchronized void refreshOnlineFriends() throws IOException, JSONException, UserapiLoginException {
         Log.v(TAG, "Refreshing online friends");
         List<User> users = ApiCheckingKit.getApi().getMyFriendsOnline();
-        UserDao.synchronizeFriends(this, users, UserDao.UserTypes.ONLINE_FRIENDS);
+        UserDao.synchronizeFriends(this, users, UserDao.SYNC_ONLINE_FRIENDS);
     }
 
     @Override
