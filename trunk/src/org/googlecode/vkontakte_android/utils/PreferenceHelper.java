@@ -77,14 +77,14 @@ public class PreferenceHelper {
         ed.commit();
     }
 
-    public static  long getMyId(Context context){
+    public static long getMyId(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getLong(MY_ID, 0L);
     }
-    
-    public static  void saveMyId(Context context,Long _myId){
+
+    public static void saveMyId(Context context, long myId) {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor ed = prefs.edit();
-        ed.putLong(MY_ID, _myId).commit();
+        ed.putLong(MY_ID, myId).commit();
     }
 
     /**
