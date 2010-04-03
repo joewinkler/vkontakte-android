@@ -90,6 +90,6 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
             username = userid.toString();
         }
         sc.close();
-        return username;
+        return username.replaceAll("\t", " ");
     }
 }
