@@ -41,21 +41,23 @@ public class UpdatesListAdapter extends ResourceCursorAdapter implements OnScrol
         timeLine.setText(weektimeFormat.format(status.getDate()));
 
         ImageView avatarView = (ImageView) view.findViewById(R.id.photo);
-        AvatarLoader.AvatarInfo info = new AvatarLoader.AvatarInfo();
-        info.view = avatarView;
-        info.userId = status.getUserId();
-        info.type = AvatarLoader.AvatarInfo.AvatarType.UPDATES;
-        avatarView.setTag(info.avatarUrl);
+        if (avatarView != null) {
+            AvatarLoader.AvatarInfo info = new AvatarLoader.AvatarInfo();
+            info.view = avatarView;
+            info.userId = status.getUserId();
+            info.type = AvatarLoader.AvatarInfo.AvatarType.UPDATES;
+            avatarView.setTag(info.avatarUrl);
 
-        if (PreferenceHelper.shouldLoadPics(context)) {
-            avatarLoader.applyAvatarDeferred(info);
-            if (scrollState != OnScrollListener.SCROLL_STATE_FLING)
-                // Scrolling is idle or slow, getting the avatar right now
-                avatarLoader.loadMissedAvatars();
-        }
-        else {
-            avatarView.setImageBitmap(CImagesManager.getBitmap(context, CImagesManager.Icons.STUB));
-            avatarView.setVisibility(View.GONE);
+
+            if (PreferenceHelper.shouldLoadPics(context)) {
+                avatarLoader.applyAvatarDeferred(info);
+                if (scrollState != OnScrollListener.SCROLL_STATE_FLING)
+                    // Scrolling is idle or slow, getting the avatar right now
+                    avatarLoader.loadMissedAvatars();
+            } else {
+                avatarView.setImageBitmap(CImagesManager.getBitmap(context, CImagesManager.Icons.STUB));
+                avatarView.setVisibility(View.GONE);
+            }
         }
    }
 
