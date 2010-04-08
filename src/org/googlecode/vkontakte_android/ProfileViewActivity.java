@@ -136,13 +136,13 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
     private void showProfileInfo(ProfileDao profile) {
         ArrayList<PropertiesHolder> DATA = new ArrayList<PropertiesHolder>();
         
-        
         profileDao = profile;
         AvatarLoader avatarLoader = new AvatarLoader(this);
         AvatarLoader.AvatarInfo info = new AvatarLoader.AvatarInfo();
         info.view = (ImageView) findViewById(R.id.photo);
         info.userId = profileDao.id;
         info.type = AvatarLoader.AvatarInfo.AvatarType.PROFILE;
+        info.avatarUrl = profileDao.photo;
         avatarLoader.applyAvatarImmediately(info);
 
         if (profileDao.status != null) {

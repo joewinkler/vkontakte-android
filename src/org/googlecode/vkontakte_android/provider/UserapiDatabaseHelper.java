@@ -46,7 +46,7 @@ public class UserapiDatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_PROFILE_SEX = "sex";
     public static final String KEY_PROFILE_BIRTHDAY = "birthday";
     public static final String KEY_PROFILE_PHONE = "phone";
-    public static final String KEY_PROFILE_PHOTO = "_data";
+    public static final String KEY_PROFILE_PHOTO = "photo";
     public static final String KEY_PROFILE_PV = "pv";
     public static final String KEY_PROFILE_FS = "fs";
     public static final String KEY_PROFILE_CURRENT_CITY = "current_city";

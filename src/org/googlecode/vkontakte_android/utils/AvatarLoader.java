@@ -161,25 +161,18 @@ public class AvatarLoader {
     }
 
     private void checkUrl(AvatarInfo info) {
-        if (info.avatarUrl != null)
-            return;
-
-        switch (info.type) {
-        case FRIENDS:
-        case UPDATES:
+        if (info.avatarUrl != null) {
+        	info.view.setTag(info.avatarUrl);
+        	return;
+        } 
+            
+        if (info.type == AvatarLoader.AvatarInfo.AvatarType.UPDATES) {
         	UserDao user = UserDao.get(context, info.userId);
             info.avatarUrl = user.getUserPhotoUrl();
-        break;
-        case PROFILE:
-        	ProfileDao profile = ProfileDao.findByUserId(context, info.userId);
-        	info.avatarUrl = profile.photo;
-        break;
-        default:
+        } else {
         	info.avatarUrl = User.STUB_URL;
         }
-        
-        
-        
+                
         info.view.setTag(info.avatarUrl);
     }
 
