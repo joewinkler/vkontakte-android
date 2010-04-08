@@ -82,10 +82,6 @@ public class ProfileDao {
         insertValues.put(KEY_PROFILE_CURRENT_CITY, this.currentCity);
 
         if (profile == null) {
-            //TODO updating "_data"
-            String filename = AppHelper.getAppDir(context) + "profiles/id" + this.id + ".ava";
-            insertValues.put("_data", filename);
-            Log.d(TAG, "Writing " + filename);
             return context.getContentResolver().insert(UserapiProvider.PROFILES_URI, insertValues);
         } else {
             Uri uri = ContentUris.withAppendedId(UserapiProvider.PROFILES_URI, profile.rowid);

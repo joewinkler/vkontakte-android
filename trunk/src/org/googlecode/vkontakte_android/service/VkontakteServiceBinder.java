@@ -43,7 +43,6 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
             api.login(cred);
             Log.d(TAG, "Login successful");
             PreferenceHelper.saveLogin(m_context, cred);
-            Log.d("#############", "");
             if (api.myId != 0) {//todo: mabe abother check
                 //myId is available only when logging with login/pass but not with remix
                 Log.d("#############", api.myId+"");
