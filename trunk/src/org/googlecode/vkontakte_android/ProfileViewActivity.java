@@ -55,13 +55,13 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         final TabHost tabHost = (TabHost) findViewById(R.id.ProfileTabHost);
         tabHost.setup();
         tabHost.addTab(tabHost.newTabSpec(INFO_TAB)
-                .setIndicator("Info")
+                .setIndicator(getString(R.string.info))
                 .setContent(this));
 //        tabHost.addTab(tabHost.newTabSpec(WALL_TAB)
 //                .setIndicator("Wall")
 //                .setContent(this));
         tabHost.addTab(tabHost.newTabSpec(UPDATES_TAB)
-                .setIndicator("Updates")
+                .setIndicator(getString(R.string.updates))
                 .setContent(this));
 //        tabHost.addTab(tabHost.newTabSpec(PHOTOS_TAB)
 //                .setIndicator("Photos")
