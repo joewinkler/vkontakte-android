@@ -88,6 +88,7 @@
     <string name="mark_as_read">Mark as read</string>
     <string name="remember">Remember me</string>
     <!--user info-->
+    <string name="info">Info</string>
     <string name="info_sex">Sex:</string>
     <string name="info_birthday">Birthday:</string>
     <string name="info_status">Maritial status:</string>
