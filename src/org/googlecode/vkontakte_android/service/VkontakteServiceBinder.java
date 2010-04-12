@@ -35,17 +35,19 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public void login(String login, String pass, String remix, String sid) throws RemoteException {
+    public void login(String login, String pass, String remix, String sid, String captcha_sid, String captcha_decoded) throws RemoteException {
         VkontakteAPI api = ApiCheckingKit.getApi();
         try {
             Log.d(TAG, "Trying to login");
             Credentials cred = new Credentials(login, pass, remix, sid);
+            cred.captcha_decoded = captcha_decoded;
+            cred.captcha_sid = captcha_sid;
+            
             api.login(cred);
             Log.d(TAG, "Login successful");
             PreferenceHelper.saveLogin(m_context, cred);
             if (api.myId != 0) {//todo: mabe abother check
                 //myId is available only when logging with login/pass but not with remix
-                Log.d("#############", api.myId+"");
             	PreferenceHelper.saveMyId(m_context, api.myId);
             }
 

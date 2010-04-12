@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import org.googlecode.userapi.Credentials;
 import org.googlecode.userapi.UserapiLoginException;
+import org.googlecode.userapi.UserapiLoginException.ErrorType;
 import org.googlecode.vkontakte_android.HomeGridActivity;
 import org.googlecode.vkontakte_android.R;
 import org.googlecode.vkontakte_android.VApplication;
@@ -57,7 +58,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         } else {
             Credentials credentials = PreferenceHelper.getCredentials(this);
             System.out.println("credentials.getSid() = " + credentials.getSid());
-            login(credentials.getLogin(), credentials.getPass(), credentials.getRemixpass(), credentials.getSid());
+            login(credentials.getLogin(), credentials.getPass(), 
+            		credentials.getRemixpass(), credentials.getSid(), null, null);
         }
     }
 
@@ -101,7 +103,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_login:
-                login(getLogin(), getPass(), null, null);
+                login(getLogin(), getPass(), null, null, null, null);
                 break;
             case R.id.button_signup: 
             	Intent i = new Intent(Intent.ACTION_VIEW); 
@@ -112,7 +114,21 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    private void login(final String login, final String pass, final String remixpass, final String sid) {
+    /**
+     * 
+     * @param login
+     * @param pass
+     * @param remixpass
+     * @param sid
+     * @param fcsid null-ok generated CAPTCHA's SID
+     * @param fccode null-ok CAPTCHA decoded
+     */
+    private void login(final String login, 
+    		final String pass, 
+    		final String remixpass, 
+    		final String sid,
+    		final String captcha_sid,
+    		final String captcha_decoded) {
         currentTask = new AsyncTask<String, Void, RemoteException>() {
             @Override
             protected void onPreExecute() {
@@ -139,7 +155,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     if (e instanceof MyRemoteException) {
                         Exception exception = ((MyRemoteException) e).innerException;
                         if (exception instanceof UserapiLoginException) {
-                            switch (((UserapiLoginException) exception).getType()) {
+                        	UserapiLoginException usex = (UserapiLoginException) exception;
+                            switch (usex.getType()) {
                                 case LOGIN_INCORRECT:
                                 case LOGIN_INCORRECT_CAPTCHA_NOT_REQUIRED:
                                     LoginActivity.this.showDialog(DIALOG_ERROR_PASSWORD);
@@ -147,7 +164,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                     break;
                                 case CAPTCHA_INCORRECT:
                                 case LOGIN_INCORRECT_CAPTCHA_REQUIRED:
-                                    LoginActivity.this.showDialog(DIALOG_ERROR_CAPTCHA);
+                                    LoginActivity.this.askForCaptcha();
                                     break;
                             }
                         }
@@ -173,13 +190,14 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                         }
                     }
                 try {
-                    ServiceHelper.getService().login(params[0], params[1], params[2], params[3]);
+                    ServiceHelper.getService().login(params[0], params[1], params[2], params[3], params[4], params[5]);
+                    
                 } catch (RemoteException e) {
                     return e;
                 }
                 return null;
             }
-        }.execute(login, pass, remixpass, sid);
+        }.execute(login, pass, remixpass, sid, captcha_sid, captcha_decoded);
 
     }
 
@@ -220,13 +238,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                         .setMessage(getString(R.string.err_msg_wrong_pass_long))
                         .setPositiveButton(android.R.string.ok, null)
                         .create();
-            case DIALOG_ERROR_CAPTCHA:
-                return new AlertDialog.Builder(this)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle(getString(R.string.err_msg_captcha))
-                        .setMessage(getString(R.string.err_msg_captcha_long))
-                        .setPositiveButton(android.R.string.ok, null)
-                        .create();
             case DIALOG_ERROR_REMOTE:
                 return new AlertDialog.Builder(this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
@@ -241,8 +252,18 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == Activity.RESULT_OK) {
+			String captcha_decoded = data.getStringExtra(CaptchaHandlerActivity.CAPTCHA_TEXT);
+			String captcha_sid = data.getStringExtra(CaptchaHandlerActivity.CAPTCHA_SID);
+			Log.d(TAG, "Captcha:"+captcha_decoded+", sid: "+captcha_sid);
+			login(getLogin(), getPass(), null, null, captcha_sid, captcha_decoded);
+		} 
+	}
+
+    private void askForCaptcha() {
+		Intent i = new Intent(this, CaptchaHandlerActivity.class);
+		startActivityForResult(i, 0);
     }
     
     public static boolean isEmailValid(String s) {
