@@ -35,13 +35,11 @@ public class VkontakteServiceBinder extends IVkontakteService.Stub {
     }
 
     @Override
-    public void login(String login, String pass, String remix, String sid, String captcha_sid, String captcha_decoded) throws RemoteException {
+    public void login(String login, String pass, String remix, String sid) throws RemoteException {
         VkontakteAPI api = ApiCheckingKit.getApi();
         try {
             Log.d(TAG, "Trying to login");
             Credentials cred = new Credentials(login, pass, remix, sid);
-            cred.captcha_decoded = captcha_decoded;
-            cred.captcha_sid = captcha_sid;
             
             api.login(cred);
             Log.d(TAG, "Login successful");
