@@ -6,7 +6,7 @@ interface IVkontakteService {
   void sendMessage(String mess, long id);
   void sendStatus(String status);
   
-  void login(String login, String pass, String remix, String sid, String captcha_sid, String captcha_decoded);
+  void login(String login, String pass, String remix, String sid);
   void loginAuth();
   void logout();
   
