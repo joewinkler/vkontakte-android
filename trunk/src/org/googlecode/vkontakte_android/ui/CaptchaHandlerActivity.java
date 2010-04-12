@@ -3,11 +3,14 @@ package org.googlecode.vkontakte_android.ui;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -22,13 +25,19 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Random;
 
+public class CaptchaHandlerActivity extends Activity implements
+		DialogInterface.OnClickListener {
+	
+	public static final String CAPTCHA_TEXT = "captcha_text";
+	public static final String CAPTCHA_SID = "captcha_sid";
+	
+	private Random random = new Random();
+	private Dialog dialog;
+	
+	private String captcha_sid;
+	private String captcha_decoded;
 
-public class CaptchaHandlerActivity extends Activity implements View.OnClickListener {
-    public static final String CAPTCHA_TEXT = "captcha_text";
-    private Random random = new Random();
-    private Dialog dialog;
-
-    @Override
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View mainView = LayoutInflater.from(this).inflate(R.layout.catcha_dialog, null);
@@ -36,18 +45,25 @@ public class CaptchaHandlerActivity extends Activity implements View.OnClickList
                 .setTitle("Catcha required")
                 .setView(mainView)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.ok, null)
-                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.ok, this)
+                .setNegativeButton(android.R.string.cancel, this)
                 .create();
         dialog.show();
 
         View refresh = dialog.findViewById(R.id.captcha_refresh);
-        refresh.setOnClickListener(this);
+        refresh.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				loadCaptcha();
+				
+			}
+		});
         loadCaptcha();
     }
 
     private String generateCaptchaUrl() {
-        String captcha_sid = String.valueOf(Math.abs(random.nextLong()));
+        captcha_sid = String.valueOf(Math.abs(random.nextLong()));
         String captcha_url = UrlBuilder.makeUrl("captcha") + "&csid=" + captcha_sid;
         return captcha_url;
     }
@@ -99,19 +115,19 @@ public class CaptchaHandlerActivity extends Activity implements View.OnClickList
         }.execute();
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.captcha_refresh:
-                loadCaptcha();
-                break;
-            case android.R.id.button1:
-                EditText editText = (EditText) dialog.findViewById(R.id.captcha_text);
-                String captchaText = editText.getText().toString();
-                Intent data = new Intent();
-                data.putExtra(CAPTCHA_TEXT, captchaText);
-                setResult(RESULT_OK, data);
-                finish();
-        }
-    }
+
+	@Override
+	public void onClick(DialogInterface dialog, int which) {
+		Intent data = new Intent();
+		if (DialogInterface.BUTTON_POSITIVE == which) {
+			EditText editText = (EditText) ((AlertDialog) dialog).findViewById(R.id.captcha_text);
+			captcha_decoded = editText.getText().toString();
+			data.putExtra(CAPTCHA_TEXT, captcha_decoded);
+			data.putExtra(CAPTCHA_SID, captcha_sid);
+			setResult(RESULT_OK, data);
+		} else {
+			setResult(RESULT_CANCELED, data);
+		}
+		finish();
+	}
 }
