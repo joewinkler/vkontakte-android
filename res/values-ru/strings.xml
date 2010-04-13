@@ -130,4 +130,5 @@
 
     <string name="captcha_loading">загрузка капчи</string>
     <string name="captcha_load_failed">не удалось загрузить капчу</string>
+    <string name="captcha_request_title">Пожалуйста, введите капчу</string>
 </resources>
