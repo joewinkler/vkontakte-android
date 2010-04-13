@@ -127,4 +127,7 @@
     <string name="notif_friends">Друзей:</string>
     <string name="notif_messages">Сообщений:</string>
     <string name="notif_photos">Фото:</string>
+
+    <string name="captcha_loading">загрузка капчи</string>
+    <string name="captcha_load_failed">не удалось загрузить капчу</string>
 </resources>
