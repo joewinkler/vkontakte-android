@@ -91,6 +91,6 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
             username = userid.toString();
         }
         sc.close();
-        return TextFormatHelper.escapeSimple(username);
+        return username;
     }
 }

@@ -10,6 +10,7 @@ import android.util.Log;
 import org.googlecode.userapi.User;
 import org.googlecode.userapi.VkontakteAPI;
 import org.googlecode.vkontakte_android.utils.AvatarLoader;
+import org.googlecode.vkontakte_android.utils.TextFormatHelper;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -38,6 +39,11 @@ public class UserDao extends User {
     private String data;
 
     private Context context;
+
+    @Override
+    public String getUserName() {
+        return TextFormatHelper.escapeSimple(super.getUserName());
+    }
 
     private UserDao() {
     }
