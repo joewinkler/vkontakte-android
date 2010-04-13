@@ -40,7 +40,7 @@ public class CaptchaHandlerActivity extends Activity implements
         super.onCreate(savedInstanceState);
         View mainView = LayoutInflater.from(this).inflate(R.layout.catcha_dialog, null);
         dialog = new AlertDialog.Builder(this)
-                .setTitle("Catcha required")
+                .setTitle(R.string.captcha_request_title)
                 .setView(mainView)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.ok, this)

@@ -130,6 +130,8 @@
     <string name="notif_friends">Friends:</string>
     <string name="notif_messages">Messages:</string>
     <string name="notif_photos">Photo:</string>
+    
     <string name="captcha_loading">loading captcha</string>
     <string name="captcha_load_failed">failed to load captcha</string>
+    <string name="captcha_request_title">Catcha required</string>
 </resources>
