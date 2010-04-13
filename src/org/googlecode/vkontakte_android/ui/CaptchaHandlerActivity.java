@@ -5,12 +5,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.DialogInterface.OnClickListener;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -26,18 +24,18 @@ import java.net.URL;
 import java.util.Random;
 
 public class CaptchaHandlerActivity extends Activity implements
-		DialogInterface.OnClickListener {
-	
-	public static final String CAPTCHA_TEXT = "captcha_text";
-	public static final String CAPTCHA_SID = "captcha_sid";
-	
-	private Random random = new Random();
-	private Dialog dialog;
-	
-	private String captcha_sid;
-	private String captcha_decoded;
+        DialogInterface.OnClickListener {
 
-	@Override
+    public static final String CAPTCHA_TEXT = "captcha_text";
+    public static final String CAPTCHA_SID = "captcha_sid";
+
+    private Random random = new Random();
+    private Dialog dialog;
+
+    private String captcha_sid;
+    private String captcha_decoded;
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View mainView = LayoutInflater.from(this).inflate(R.layout.catcha_dialog, null);
@@ -52,13 +50,13 @@ public class CaptchaHandlerActivity extends Activity implements
 
         View refresh = dialog.findViewById(R.id.captcha_refresh);
         refresh.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				loadCaptcha();
-				
-			}
-		});
+
+            @Override
+            public void onClick(View v) {
+                loadCaptcha();
+
+            }
+        });
         loadCaptcha();
     }
 
@@ -77,7 +75,7 @@ public class CaptchaHandlerActivity extends Activity implements
             @Override
             protected void onPreExecute() {
                 vs.setDisplayedChild(1);
-                textView.setText("loading captcha");
+                textView.setText(R.string.captcha_loading);
             }
 
             @Override
@@ -87,7 +85,7 @@ public class CaptchaHandlerActivity extends Activity implements
                     imageView.setImageBitmap(bitmap);
                 } else {
                     vs.setDisplayedChild(1);
-                    textView.setText("failed to load captcha");
+                    textView.setText(R.string.captcha_load_failed);
                 }
             }
 
@@ -116,18 +114,18 @@ public class CaptchaHandlerActivity extends Activity implements
     }
 
 
-	@Override
-	public void onClick(DialogInterface dialog, int which) {
-		Intent data = new Intent();
-		if (DialogInterface.BUTTON_POSITIVE == which) {
-			EditText editText = (EditText) ((AlertDialog) dialog).findViewById(R.id.captcha_text);
-			captcha_decoded = editText.getText().toString();
-			data.putExtra(CAPTCHA_TEXT, captcha_decoded);
-			data.putExtra(CAPTCHA_SID, captcha_sid);
-			setResult(RESULT_OK, data);
-		} else {
-			setResult(RESULT_CANCELED, data);
-		}
-		finish();
-	}
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        Intent data = new Intent();
+        if (DialogInterface.BUTTON_POSITIVE == which) {
+            EditText editText = (EditText) ((AlertDialog) dialog).findViewById(R.id.captcha_text);
+            captcha_decoded = editText.getText().toString();
+            data.putExtra(CAPTCHA_TEXT, captcha_decoded);
+            data.putExtra(CAPTCHA_SID, captcha_sid);
+            setResult(RESULT_OK, data);
+        } else {
+            setResult(RESULT_CANCELED, data);
+        }
+        finish();
+    }
 }
