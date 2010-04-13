@@ -2,6 +2,8 @@ package org.googlecode.vkontakte_android;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +13,7 @@ import org.googlecode.vkontakte_android.database.MessageDao;
 import org.googlecode.vkontakte_android.database.UserDao;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
 import org.googlecode.vkontakte_android.utils.PreferenceHelper;
+import org.googlecode.vkontakte_android.utils.TextFormatHelper;
 
 import static org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper.KEY_USER_ID;
 
@@ -60,9 +63,7 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
         date.setText(strDate);
 
         TextView message = (TextView) view.findViewById(R.id.message);
-        //warning! setting spanned text causes StackOverflow
-//        message.setText(Html.fromHtml(messageDao.text));
-        message.setText((messageDao.text));
+        message.setText(Html.fromHtml(messageDao.text));
 
         View bkg = view.findViewById(R.id.bkg);
         if (messageDao.read) {
@@ -90,6 +91,6 @@ public class MessagesListAdapter extends ResourceCursorAdapter {
             username = userid.toString();
         }
         sc.close();
-        return username.replaceAll("\t", " ");
+        return TextFormatHelper.escapeSimple(username);
     }
 }

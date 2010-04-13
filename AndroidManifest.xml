@@ -18,12 +18,7 @@
         </activity>
 
         <activity android:name=".FriendListActivity" android:label="@string/app_name"/>
-        <activity android:name=".ui.CaptchaHandlerActivity" android:theme="@android:style/Theme.Panel">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+        <activity android:name=".ui.CaptchaHandlerActivity" android:theme="@android:style/Theme.Panel"/>
 
         <activity android:name=".MessagesListActivity" android:label="@string/app_name"/>
 
