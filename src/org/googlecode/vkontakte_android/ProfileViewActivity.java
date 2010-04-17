@@ -38,7 +38,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
     private static final String UPDATES_TAB = "updates_tab";
     private static final String PHOTOS_TAB = "photos_tab";
     private static final String WALL_TAB = "wall_tab";
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,23 +89,23 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
             }
 
             @Override
-			protected ProfileDao doInBackground(Long... id) {
-				try {
-					ServiceHelper.getService().loadProfile(id[0]);
-				} catch (RemoteException e) {
-					Log.e(TAG, "Cannot load profile");
-					e.printStackTrace();
-					return null;
-				}
-				Cursor cursor = managedQuery(PROFILES_URI, null,
-						UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?",
-						new String[] { String.valueOf(id[0]) }, null);
-				
-				cursor.moveToFirst();
-				return new ProfileDao(cursor);
+            protected ProfileDao doInBackground(Long... id) {
+                try {
+                    ServiceHelper.getService().loadProfile(id[0]);
+                } catch (RemoteException e) {
+                    Log.e(TAG, "Cannot load profile");
+                    e.printStackTrace();
+                    return null;
+                }
+                Cursor cursor = managedQuery(PROFILES_URI, null,
+                        UserapiDatabaseHelper.KEY_PROFILE_USERID + "=?",
+                        new String[]{String.valueOf(id[0])}, null);
 
-			}
-		}.execute(profileId);
+                cursor.moveToFirst();
+                return new ProfileDao(cursor);
+
+            }
+        }.execute(profileId);
 
     }
 
@@ -114,13 +114,13 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
     private void initUpdatesTab() {
         Cursor statusesCursor = managedQuery(STATUSES_URI, null, KEY_STATUS_USERID + "=" + profileId, null, KEY_STATUS_DATE + " DESC ");
-        if (statusesCursor!=null && statusesCursor.getCount() < 2) {
+        if (statusesCursor != null && statusesCursor.getCount() < 2) {
             new AsyncTask<Long, Object, Boolean>() {
 
                 @Override
                 protected Boolean doInBackground(Long... params) {
                     try {
-                         ServiceHelper.getService().loadStatusesByUser(0, CheckingService.STATUS_NUM_LOAD, profileId);
+                        ServiceHelper.getService().loadStatusesByUser(0, CheckingService.STATUS_NUM_LOAD, profileId);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -135,7 +135,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
 
     private void showProfileInfo(ProfileDao profile) {
         ArrayList<PropertiesHolder> DATA = new ArrayList<PropertiesHolder>();
-        
+
         profileDao = profile;
         AvatarLoader avatarLoader = new AvatarLoader(this);
         AvatarLoader.AvatarInfo info = new AvatarLoader.AvatarInfo();
@@ -145,17 +145,17 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         info.avatarUrl = profileDao.photo;
         avatarLoader.applyAvatarImmediately(info);
 
-        if (profileDao.status != null) {
+        if (profileDao.getStatus() != null) {
             TextView status = ((TextView) findViewById(R.id.status));
-            status.setText(profileDao.status);
+            status.setText(profileDao.getStatus());
             status.setVisibility(View.VISIBLE);
         }
 
-        
-        TextView userName= ((TextView)findViewById(R.id.firstname_lastname));
-         userName.setText(profileDao.firstname+" "+profileDao.surname);       
-        
-        
+
+        TextView userName = ((TextView) findViewById(R.id.firstname_lastname));
+        userName.setText(profileDao.getFirstname() + " " + profileDao.getSurname());
+
+
         if (profileDao.birthday != null && profileDao.birthday != 0) {
             SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy");
             DATA.add(new PropertiesHolder(getString(R.string.info_birthday), format.format(new Date(profileDao.birthday))));
@@ -210,7 +210,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
         if (profileDao.phone != null) {
             intent.putExtra(Contacts.Intents.Insert.PHONE, Phone.formatPhoneNumber(profileDao.phone));
         }
-        intent.putExtra(Contacts.Intents.Insert.NAME, profileDao.firstname + " " + profileDao.surname);
+        intent.putExtra(Contacts.Intents.Insert.NAME, profileDao.getFirstname() + " " + profileDao.getSurname());
         startActivity(intent);
     }
 
@@ -268,7 +268,7 @@ public class ProfileViewActivity extends Activity implements TabHost.TabContentF
                 @Override
                 public Boolean load() {
                     try {
-                         ServiceHelper.getService().loadStatusesByUser(arl.getAdapter().getCount(),
+                        ServiceHelper.getService().loadStatusesByUser(arl.getAdapter().getCount(),
                                 arl.getAdapter().getCount() + CheckingService.STATUS_NUM_LOAD, profileId);
                     } catch (RemoteException e) {
                         e.printStackTrace();
