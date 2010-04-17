@@ -5,10 +5,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
 import org.googlecode.vkontakte_android.provider.UserapiDatabaseHelper;
 import org.googlecode.vkontakte_android.provider.UserapiProvider;
-import org.googlecode.vkontakte_android.utils.AppHelper;
+import org.googlecode.vkontakte_android.utils.TextFormatHelper;
 
 import java.util.Date;
 
@@ -20,10 +19,10 @@ public class ProfileDao {
 
     public long rowid;
     public long id;
-    public String firstname;
-    public String surname;
+    private String firstname;
+    private String surname;
     public String photo;
-    public String status;  //TODO make Status
+    private String status;  //TODO make Status
     public int sex;
     public Long birthday;
     public String phone;
@@ -33,8 +32,7 @@ public class ProfileDao {
     public int allPhotosCount;
     public int taggedPhotosCount;
 
-    
-    
+
     public ProfileDao(Cursor cursor) {
         rowid = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_PROFILE_ROWID));
         id = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_PROFILE_USERID));
@@ -113,4 +111,15 @@ public class ProfileDao {
     }
 
 
+    public String getFirstname() {
+        return TextFormatHelper.escapeSimple(firstname);
+    }
+
+    public String getSurname() {
+        return TextFormatHelper.escapeSimple(surname);
+    }
+
+    public String getStatus() {
+        return TextFormatHelper.escapeSimple(status);
+    }
 }

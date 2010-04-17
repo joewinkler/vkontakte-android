@@ -1,7 +1,11 @@
 package org.googlecode.vkontakte_android.utils;
 
+import android.text.Html;
+
 public class TextFormatHelper {
-    public static String escapeSimple(String src){
-        return src.replaceAll("\t", " ");
+    public static String escapeSimple(String src) {
+        if (src == null) return null;
+        return String.valueOf(Html.fromHtml(src.replaceAll("\t", " ")));
     }
+
 }
